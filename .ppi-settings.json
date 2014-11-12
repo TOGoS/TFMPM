@@ -1,0 +1,11 @@
+{
+	"projectName": "PHP Template Project",
+	"phpNamespace": "PHPTemplateProjectNS",
+	"databaseName": "phptemplateprojectdatabase",
+	"databaseUser": "phptemplateprojectdatabaseuser",
+	"databaseHost": "phptemplateprojectdatabasehost",
+	"databasePassword": "phptemplateprojectdatabasepassword",
+	"databaseObjectPrefix": "phptemplateprojectdatabasenamespace.",
+	"deploymentUrlPrefix": "http://phptemplateprojecthost/",
+	"sourceDirs": ["lib","test"]
+}
