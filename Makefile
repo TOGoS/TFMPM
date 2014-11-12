@@ -1,4 +1,4 @@
-generated_files = \
+dev_resources = \
 	build/db/create-database.sql \
 	build/db/drop-database.sql \
 	build/db/upgrades/0110-create-tables.sql \
@@ -8,6 +8,11 @@ generated_files = \
 	util/SchemaSchemaDemo.jar \
 	schema/schema.php \
 	vendor
+runtime_resources = \
+	schema/schema.php \
+	vendor
+
+resources = ${dev_resources} ${runtime_resources}
 
 run_schema_processor = \
 	java -jar util/SchemaSchemaDemo.jar \
@@ -28,10 +33,12 @@ default: resources
 	rebuild-database \
 	clean
 
-resources: ${generated_files}
+dev-resources: ${dev_resources}
+runtime-resources: ${runtime_resources}
+resources: ${resources}
 
 clean:
-	rm -f ${generated_files}
+	rm -f ${resources}
 
 vendor: composer.lock
 	composer install
@@ -51,7 +58,7 @@ util/phptemplateprojectdatabase-pg_dump: config/dbc.json
 	vendor/bin/generate-psql-script -psql-exe pg_dump "$<" >"$@"
 	chmod +x "$@"
 
-%: %.urn
+%: %.urn vendor
 	cp -n config/ccouch-repos.lst.example config/ccouch-repos.lst
 	vendor/bin/fetch -repo @config/ccouch-repos.lst -o "$@" `cat "$<"`
 
@@ -72,10 +79,10 @@ build/db/drop-database.sql: config/dbc.json
 create-database drop-database: %: build/db/%.sql
 	sudo su postgres -c "cat '$<' | psql"
 
-rebuild-database: ${generated_files}
+rebuild-database: resources
 	cat build/db/upgrades/*.sql | util/phptemplateprojectdatabase-psql -q
 
-run-unit-tests: vendor/autoload.php schema/schema.php resources
+run-unit-tests: runtime-resources
 	vendor/bin/phpunit --bootstrap init-environment.php test
 
 run-tests: run-unit-tests
