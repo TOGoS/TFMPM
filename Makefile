@@ -71,9 +71,9 @@ build/db/upgrades/0097-drop-tables.sql: schema/schema.txt util/SchemaSchemaDemo.
 schema/schema.php: schema/schema.txt util/SchemaSchemaDemo.jar
 	${run_schema_processor}
 
-build/db/create-database.sql: config/dbc.json
+build/db/create-database.sql: config/dbc.json vendor
 	vendor/bin/generate-create-database-sql "$<" >"$@"
-build/db/drop-database.sql: config/dbc.json
+build/db/drop-database.sql: config/dbc.json vendor
 	vendor/bin/generate-drop-database-sql "$<" >"$@"
 
 create-database drop-database: %: build/db/%.sql
