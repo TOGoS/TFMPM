@@ -6,7 +6,8 @@ generated_files = \
 	util/phptemplateprojectdatabase-psql \
 	util/phptemplateprojectdatabase-pg_dump \
 	util/SchemaSchemaDemo.jar \
-	schema/schema.php
+	schema/schema.php \
+	vendor
 
 run_schema_processor = \
 	java -jar util/SchemaSchemaDemo.jar \
@@ -15,18 +16,33 @@ run_schema_processor = \
 	-o-schema-php schema/schema.php -php-schema-class-namespace EarthIT_Schema \
 	schema/schema.txt
 
-all: ${generated_files}
-
-clean:
-	rm -f ${generated_files}
+default: resources
 
 .DELETE_ON_ERROR:
 
 .PHONY: \
-	all \
+	default \
+	resources \
+	run-tests \
+	run-unit-tests \
 	rebuild-database \
-	run-service-tests \
 	clean
+
+resources: ${generated_files}
+
+clean:
+	rm -f ${generated_files}
+
+vendor: composer.lock
+	composer install
+	touch "$@"
+
+# If composer.lock doesn't exist at all,
+# this will 'composer install' for the first time.
+# After that, it's up to you to 'composer update' to get any
+# package updates or apply changes to composer.json.
+composer.lock:
+	composer install
 
 util/phptemplateprojectdatabase-psql: config/dbc.json
 	vendor/bin/generate-psql-script -psql-exe psql "$<" >"$@"
@@ -59,5 +75,7 @@ create-database drop-database: %: build/db/%.sql
 rebuild-database: ${generated_files}
 	cat build/db/upgrades/*.sql | util/phptemplateprojectdatabase-psql -q
 
-run-service-tests:
-	${MAKE} -C service-tests
+run-unit-tests: vendor/autoload.php schema/schema.php resources
+	vendor/bin/phpunit --bootstrap init-environment.php test
+
+run-tests: run-unit-tests

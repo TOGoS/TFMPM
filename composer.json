@@ -2,6 +2,9 @@
 	"name": "earthit/php-template-project",
 	"description": "PHP Template Project",
 	"license": "MIT",
+	"require-dev": {
+		"phpunit/phpunit": "~3.7.37"
+	},
 	"require": {
 		"php": ">=5.2.0",
 		"ryprop/nife": "~0.0.2",
@@ -15,7 +18,12 @@
 	},
 	"autoload": {
 		"psr-0": {
-			"PHPTemplateProjectNS_": ["lib/","test/"]
+			"PHPTemplateProjectNS_": "test/"
+		}
+	},
+	"autoload-dev": {
+		"psr-0": {
+			"PHPTemplateProjectNS_": "lib/"
 		}
 	}
 }

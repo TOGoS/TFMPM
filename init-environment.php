@@ -94,4 +94,8 @@ function eit_autoload_converted( $className ) {
 
 spl_autoload_register('eit_autoload_converted');
 
-return new PHPTemplateProjectNS_Registry( __DIR__.'/config' );
+// Make a global variable for cases where
+// we don't control how the output of this script is used,
+// e.g. PHPUnit tests.
+$PHPTemplateProjectNS_Registry = new PHPTemplateProjectNS_Registry( __DIR__.'/config' );
+return $PHPTemplateProjectNS_Registry;
