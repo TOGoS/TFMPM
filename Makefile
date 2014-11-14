@@ -49,6 +49,9 @@ vendor: composer.lock
 	composer install
 	touch "$@"
 
+config/%.json: config/%.json.example
+	if [ ! -e "$@" ] ; then cp "$<" "$@" ; fi
+
 # If composer.lock doesn't exist at all,
 # this will 'composer install' for the first time.
 # After that, it's up to you to 'composer update' to get any
@@ -98,4 +101,9 @@ run-tests: run-unit-tests
 run-web-server:
 	cd www && php -S localhost:6061 bootstrap.php
 
-everything: create-database rebuild-database run-tests run-web-server
+everything: \
+	config/dbc.json \
+	create-database \
+	rebuild-database \
+	run-tests \
+	run-web-server

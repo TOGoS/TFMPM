@@ -1,0 +1,7 @@
+{
+    "dbname": "phptemplateprojectdatabase",
+    "host": "phptemplateprojectdatabasehost",
+    "user": "phptemplateprojectdatabaseuser",
+    "password": "phptemplateprojectdatabasepassword",
+    "driver": "pdo_pgsql"
+}
