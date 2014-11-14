@@ -14,6 +14,6 @@ require '../init-www-error-handling.php';
 
 $registry = require '../init-environment.php';
 $dispatcher = $registry->getComponent('PHPTemplateProjectNS_Dispatcher');
-$response = $dispatcher->handleRequest( $_SERVER['PATH_INFO'] );
+$response = $dispatcher->handleImplicitRequest( $_SERVER['PATH_INFO'] );
 
 Nife_Util::outputResponse( $response );

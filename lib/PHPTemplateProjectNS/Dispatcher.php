@@ -2,6 +2,10 @@
 
 class PHPTemplateProjectNS_Dispatcher extends EarthIT_Component
 {
+	/**
+	 * Return the object encoded by the request IFF
+	 * It is JSON-encoded.  Otherwise returns null.
+	 */
 	protected static function getRequestContentObject() {
 		static $requestRead;
 		static $requestContentObject;
@@ -41,9 +45,8 @@ class PHPTemplateProjectNS_Dispatcher extends EarthIT_Component
 	 * Handle the request, returning a response if path seems to name some REST resource.
 	 * Otherwise returns null.
 	 */
-	public function handleApiRequest( $path ) {
-		$method = isset($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE']) ? $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] : $_SERVER['REQUEST_METHOD'];
-		if( $crReq = EarthIT_CMIPREST_CMIPRESTRequest::parse( $method, $path, $_REQUEST, self::getRequestContentObject() ) ) {
+	public function handleApiRequest( $method, $path, array $params=array(), $contentObject=null ) {
+		if( $crReq = EarthIT_CMIPREST_CMIPRESTRequest::parse( $method, $path, $params, $contentObject ) ) {
 			$crReq->userId = $this->getCurrentUserId();
 			$collectionName = $crReq->getResourceCollectionName();
 			try {
@@ -57,7 +60,17 @@ class PHPTemplateProjectNS_Dispatcher extends EarthIT_Component
 		}
 	}
 	
-	public function handleRequest( $path ) {
+	/**
+	 * Handles the request that's implied by various global variables.
+	 */
+	public function handleImplicitRequest( $path ) {
+		$method = isset($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE']) ? $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] : $_SERVER['REQUEST_METHOD'];
+		$params = $_REQUEST;
+		$contentObject = self::getRequestContentObject();
+		return $this->handleRequest( $method, $path, $params, $contentObject );
+	}
+	
+	public function handleRequest( $method, $path, array $params=array(), $contentObject=null ) {
 		// Some demonstration routes; remove and replace with your own
 		if( $path == '/' ) {
 			$helloUri = "hello/".rawurlencode("PHP Template Project");
@@ -71,7 +84,6 @@ class PHPTemplateProjectNS_Dispatcher extends EarthIT_Component
 				$dashName = str_replace(' ','-',strtolower($collectionName));
 				$classLinks[] = "<li><a href=\"api/".htmlspecialchars($dashName)."\">".htmlspecialchars($collectionName)."</a></li>";
 			}
-			
 			
 			return Nife_Util::httpResponse( 200,
 				"<html><head><title>Woooo</title></head>\n".
@@ -91,7 +103,10 @@ class PHPTemplateProjectNS_Dispatcher extends EarthIT_Component
 			trigger_error( "An error occurred for demonstrative porpoises.", E_USER_ERROR );
 		} else if( $path == '/exception' ) {
 			throw new Exception( "You asked for an exception and this is it." );
-		} else if( preg_match('#^/api(/.*)#',$path,$bif) and $response = $this->handleApiRequest($bif[1]) ) {
+		} else if(
+			preg_match('#^/api([;/].*)#',$path,$bif) and
+			($response = $this->handleApiRequest($method, $bif[1], $params, $contentObject)) !== null
+		) {
 			return $response;
 		} else {
 			return Nife_Util::httpResponse( 404, "I don't know about $path!" );
