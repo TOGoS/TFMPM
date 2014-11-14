@@ -33,8 +33,10 @@ default: resources run-tests
 	resources \
 	run-tests \
 	run-unit-tests \
+	run-web-server \
 	rebuild-database \
-	clean
+	clean \
+	everything
 
 dev-resources: ${dev_resources}
 runtime-resources: ${runtime_resources}
@@ -92,3 +94,8 @@ run-unit-tests: runtime-resources
 	vendor/bin/phpunit --bootstrap init-environment.php test
 
 run-tests: run-unit-tests
+
+run-web-server:
+	cd www && php -S localhost:6061 bootstrap.php
+
+everything: create-database rebuild-database run-tests run-web-server
