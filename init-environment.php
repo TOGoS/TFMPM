@@ -5,7 +5,7 @@
 // - Initializes some global functions
 // - Creates and returns a new PHPTemplateProjectNS_Registry
 
-require 'vendor/autoload.php';
+require __DIR__.'/vendor/autoload.php';
 
 define('PHPTemplateProjectNS_ROOT_DIR', __DIR__);
 
