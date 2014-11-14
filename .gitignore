@@ -9,3 +9,4 @@ util/phptemplateprojectdatabase-pg_dump
 util/phptemplateprojectdatabase-psql
 util/SchemaSchemaDemo.jar
 vendor
+www/images/head.png
