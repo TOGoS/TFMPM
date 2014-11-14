@@ -28,33 +28,14 @@ class PHPTemplateProjectNS_Dispatcher extends EarthIT_Component
 		return null;
 	}
 	
-	protected function getRester( EarthIT_Schema_ResourceClass $resourceClass ) {
-		$classNames = array(
-			'PHPTemplateProjectNS_'.EarthIT_Schema_WordUtil::toPascalCase($resourceClass->getName()).'RESTer',
-			'PHPTemplateProjectNS_RESTer',
-			'EarthIT_CMIPREST_RESTer'
-		);
-		foreach( $classNames as $cn ) {
-			$c = $this->registry->getComponent($cn, true);
-			if( $c !== null ) return $c;
-		}
-		throw new Exception("No RESTer!");
-	}
-	
 	/**
 	 * Handle the request, returning a response if path seems to name some REST resource.
 	 * Otherwise returns null.
 	 */
 	public function handleApiRequest( $method, $path, array $params=array(), $contentObject=null ) {
-		if( $crReq = EarthIT_CMIPREST_CMIPRESTRequest::parse( $method, $path, $params, $contentObject ) ) {
+		if( ($crReq = EarthIT_CMIPREST_CMIPRESTRequest::parse( $method, $path, $params, $contentObject )) !== null ) {
 			$crReq->userId = $this->getCurrentUserId();
-			$collectionName = $crReq->getResourceCollectionName();
-			try {
-				$resourceClass = $this->registry->getSchema()->getResourceClass( EarthIT_Schema_WordUtil::depluralize($collectionName) );
-			} catch( EarthIT_Schema_NoSuchResourceClass $un ) {
-				return null;
-			}
-			return $this->getRester($resourceClass)->handle($crReq);
+			return $this->registry->getRester()->handle($crReq);
 		} else {
 			return null;
 		}

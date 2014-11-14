@@ -21,7 +21,7 @@ run_schema_processor = \
 	-o-schema-php schema/schema.php -php-schema-class-namespace EarthIT_Schema \
 	schema/schema.txt
 
-default: resources
+default: resources run-tests
 
 .DELETE_ON_ERROR:
 

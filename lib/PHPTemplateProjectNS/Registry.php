@@ -13,6 +13,10 @@ class PHPTemplateProjectNS_Registry extends EarthIT_Registry
 		return new EarthIT_DBC_PostgresNamer();
 	}
 		
+	public function getRester() {
+		return $this->getComponent('EarthIT_CMIPREST_RESTer');
+	}
+	
 	public function getSchema() {
 		return require PHPTemplateProjectNS_ROOT_DIR.'/schema/schema.php';
 	}
