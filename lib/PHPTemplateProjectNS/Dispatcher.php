@@ -75,6 +75,7 @@ class PHPTemplateProjectNS_Dispatcher extends EarthIT_Component
 				"<p>See also: <a href=\"$helloUriHtml\">$helloUriHtml</a></p>\n".
 				"<h4>Some REST Services</h4>\n".
 				"<ul>\n".implode("\n",$classLinks)."</ul>\n".
+				"<div style=\"position:fixed; bottom:0; right:0\">Woo! <img src=\"images/head.png\" width=\"96\" height=\"128\" align=\"middle\"/></div>\n".
 				"</body></html>\n",
 				"text/html; charset=utf-8"
 			);

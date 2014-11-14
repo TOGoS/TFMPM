@@ -10,7 +10,8 @@ dev_resources = \
 	vendor
 runtime_resources = \
 	schema/schema.php \
-	vendor
+	vendor \
+	www/images/head.png
 
 resources = ${dev_resources} ${runtime_resources}
 
@@ -20,6 +21,8 @@ run_schema_processor = \
 	-o-drop-tables-script build/db/upgrades/0097-drop-tables.sql \
 	-o-schema-php schema/schema.php -php-schema-class-namespace EarthIT_Schema \
 	schema/schema.txt
+
+fetch = vendor/bin/fetch -repo @config/ccouch-repos.lst
 
 default: resources run-tests
 
@@ -38,7 +41,7 @@ runtime-resources: ${runtime_resources}
 resources: ${resources}
 
 clean:
-	rm -f ${resources}
+	rm -rf ${resources}
 
 vendor: composer.lock
 	composer install
@@ -60,7 +63,7 @@ util/phptemplateprojectdatabase-pg_dump: config/dbc.json
 
 %: %.urn vendor
 	cp -n config/ccouch-repos.lst.example config/ccouch-repos.lst
-	vendor/bin/fetch -repo @config/ccouch-repos.lst -o "$@" `cat "$<"`
+	${fetch} -o "$@" `cat "$<"`
 
 build/db/upgrades/0110-create-tables.sql: schema/schema.txt util/SchemaSchemaDemo.jar
 	${run_schema_processor}
@@ -75,6 +78,9 @@ build/db/create-database.sql: config/dbc.json vendor
 	vendor/bin/generate-create-database-sql "$<" >"$@"
 build/db/drop-database.sql: config/dbc.json vendor
 	vendor/bin/generate-drop-database-sql "$<" >"$@"
+
+www/images/head.png:
+	${fetch} -o "$@" "urn:bitprint:HYWPXT25DHVRV4BXETMRZQY26E6AQCYW.33QDQ443KBXZB5F5UGYODRN2Y34DOZ4GILDI7ZA"
 
 create-database drop-database: %: build/db/%.sql
 	sudo su postgres -c "cat '$<' | psql"
