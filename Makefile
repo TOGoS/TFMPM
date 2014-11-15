@@ -32,7 +32,7 @@ default: resources run-tests
 	run-tests \
 	run-unit-tests \
 	run-web-server \
-	rebuild-database \
+	upgrade-database \
 	clean \
 	everything
 
@@ -88,7 +88,7 @@ www/images/head.png:
 create-database drop-database: %: build/db/%.sql
 	sudo su postgres -c "cat '$<' | psql"
 
-upgrade-database:: resources
+upgrade-database: resources
 	vendor/bin/upgrade-database -upgrade-table 'phptemplateprojectdatabasenamespace.schemaupgrade'
 
 run-unit-tests: runtime-resources
@@ -102,6 +102,6 @@ run-web-server:
 everything: \
 	config/dbc.json \
 	create-database \
-	rebuild-database \
+	upgrade-database \
 	run-tests \
 	run-web-server
