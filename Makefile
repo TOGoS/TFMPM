@@ -103,6 +103,7 @@ run-web-server:
 
 everything: \
 	config/dbc.json \
+	drop-database \
 	create-database \
 	rebuild-database \
 	run-tests \
