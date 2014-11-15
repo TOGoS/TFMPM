@@ -5,7 +5,7 @@
 	"databaseUser": "phptemplateprojectdatabaseuser",
 	"databaseHost": "phptemplateprojectdatabasehost",
 	"databasePassword": "phptemplateprojectdatabasepassword",
-	"databaseObjectPrefix": "phptemplateprojectdatabasenamespace.",
+	"databaseNamespace": "phptemplateprojectdatabasenamespace",
 	"deploymentUrlPrefix": "http://phptemplateprojecthost/",
 	"sourceDirs": ["lib","test"]
 }

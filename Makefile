@@ -2,7 +2,6 @@ dev_resources = \
 	build/db/create-database.sql \
 	build/db/drop-database.sql \
 	build/db/upgrades/0110-create-tables.sql \
-	build/db/upgrades/0097-drop-tables.sql \
 	util/phptemplateprojectdatabase-psql \
 	util/phptemplateprojectdatabase-pg_dump \
 	util/SchemaSchemaDemo.jar \
@@ -18,7 +17,6 @@ resources = ${dev_resources} ${runtime_resources}
 run_schema_processor = \
 	java -jar util/SchemaSchemaDemo.jar \
 	-o-create-tables-script build/db/upgrades/0110-create-tables.sql \
-	-o-drop-tables-script build/db/upgrades/0097-drop-tables.sql \
 	-o-schema-php schema/schema.php -php-schema-class-namespace EarthIT_Schema \
 	schema/schema.txt
 
@@ -34,7 +32,7 @@ default: resources run-tests
 	run-tests \
 	run-unit-tests \
 	run-web-server \
-	rebuild-database \
+	upgrade-database \
 	clean \
 	everything
 
@@ -90,8 +88,8 @@ www/images/head.png:
 create-database drop-database: %: build/db/%.sql
 	sudo su postgres -c "cat '$<' | psql"
 
-rebuild-database: resources
-	cat build/db/upgrades/*.sql | util/phptemplateprojectdatabase-psql -q
+upgrade-database: resources
+	vendor/bin/upgrade-database -upgrade-table 'phptemplateprojectdatabasenamespace.schemaupgrade'
 
 run-unit-tests: runtime-resources
 	vendor/bin/phpunit --bootstrap init-environment.php test
@@ -105,6 +103,6 @@ everything: \
 	config/dbc.json \
 	drop-database \
 	create-database \
-	rebuild-database \
+	upgrade-database \
 	run-tests \
 	run-web-server
