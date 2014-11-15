@@ -1,10 +1,12 @@
 import everything from 'http://ns.nuke24.net/Schema/'
 import everything from 'http://ns.nuke24.net/Schema/DataTypeTranslation/'
 import everything from 'http://ns.nuke24.net/Schema/Application/'
+import 'http://ns.nuke24.net/Schema/RDB/Schema'
 import 'http://ns.nuke24.net/Schema/RDB/Sequence'
 import 'http://ns.nuke24.net/Schema/RDB/initialValue'
 import 'http://ns.nuke24.net/Schema/RDB/defaultValueSequence'
 import 'http://ns.nuke24.net/Schema/RDB/isAutoIncremented'
+import 'http://ns.nuke24.net/Schema/RDB/isInNamespace'
 import 'http://ns.nuke24.net/Schema/RDB/isSelfKeyed'
 import 'http://www.w3.org/2000/01/rdf-schema#isSubclassOf' as 'extends'
 
@@ -29,12 +31,14 @@ class 'URI' : extends(string)
 class 'time' : extends(string) : SQL type @ "TIMESTAMP"
 class 'date' : extends(string) : SQL type @ "DATE"
 
-sequence 'new entity ID' : initial value @ 1001
+schema 'phptemplateprojectdatabasenamespace'
+
+sequence 'new entity ID' : initial value @ 1001 : is in namespace @ 'phptemplateprojectdatabasenamespace'
 
 field modifier 'AIPK' = normal ID : is auto-incremented : key(primary)
 field modifier 'EIPK' = entity ID : default value sequence @ new entity ID : key(primary)
 # SRC = 'standard resource class'
-field modifier 'SRC' = has a database table : has a REST service
+field modifier 'SRC' = has a database table : has a REST service : is in namespace @ 'phptemplateprojectdatabasenamespace'
 
 class 'user' : SRC : members are public {
 	ID : EIPK

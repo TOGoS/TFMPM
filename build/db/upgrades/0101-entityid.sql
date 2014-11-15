@@ -1,1 +1,1 @@
-CREATE SEQUENCE "newentityid" START 1001;
+CREATE SEQUENCE "phptemplateprojectdatabasenamespace"."newentityid" START 1001;
