@@ -1,0 +1,10 @@
+{
+	"databaseNamespace": {
+		"title": "Database namespace",
+		"notes": [
+			"'Database namespace' is the name of postgres schema",
+			"within which all your tables will be placed.",
+			"Use 'public' if you don't want to deal with an explicit scheme."
+		]
+	}
+}
