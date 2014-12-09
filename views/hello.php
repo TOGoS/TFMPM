@@ -1,4 +1,4 @@
-<?php $PU->emitHtmlBoilerplate("Welcome! - PHP Template Project"); ?>
+<?php $PU->emitHtmlBoilerplate("Welcome!"); ?>
 
 <h1>Welcome to PHP Template Project!</h1>
 
