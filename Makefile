@@ -47,14 +47,14 @@ vendor: composer.lock
 	composer install
 	touch "$@"
 
-config/%.json: config/%.json.example
-	if [ ! -e "$@" ] ; then cp "$<" "$@" ; fi
+%: | %.example
+	cp "$|" "$@"
 
 # If composer.lock doesn't exist at all,
 # this will 'composer install' for the first time.
 # After that, it's up to you to 'composer update' to get any
 # package updates or apply changes to composer.json.
-composer.lock:
+composer.lock: | composer.json
 	composer install
 
 util/phptemplateprojectdatabase-psql: config/dbc.json
@@ -91,7 +91,7 @@ create-database drop-database: %: build/db/%.sql
 upgrade-database: resources
 	vendor/bin/upgrade-database -upgrade-table 'phptemplateprojectdatabasenamespace.schemaupgrade'
 
-run-unit-tests: runtime-resources
+run-unit-tests: runtime-resources upgrade-database
 	vendor/bin/phpunit --bootstrap init-environment.php test
 
 run-tests: run-unit-tests
