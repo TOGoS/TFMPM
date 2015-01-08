@@ -10,22 +10,18 @@ while( ob_get_level() ) ob_end_clean();
 ini_set('display_errors','on');
 ini_set('error_reporting', E_ALL|E_STRICT);
 
-require '../init-www-error-handling.php';
+require_once __DIR__.'/../init-www-error-handling.php';
+require_once __DIR__.'/../init-environment.php';
 
-$registry = require '../init-environment.php';
-$dispatcher = $registry->getComponent('PHPTemplateProjectNS_Dispatcher');
+$dispatcher = $PHPTemplateProjectNS_Registry->getComponent('PHPTemplateProjectNS_Dispatcher');
 
-if( isset($_SERVER['PATH_INFO']) ) {
-	// bootstrap.php/yaddah-yaddah
-	$path = $_SERVER['PATH_INFO'];
-	$bubble404s = false;
-} else {
-	// php -S ... bootstrap.php
-	$path = $_SERVER['REQUEST_URI'];
-	$bubble404s = true;
-}
+$path = isset($_SERVER['PATH_INFO']) ?
+	$_SERVER['PATH_INFO'] :
+	$_SERVER['REQUEST_URI'];
 
 $response = $dispatcher->handleImplicitRequest( $path );
+
+$bubble404s = preg_match('/^PHP.*Development Server$/', $_SERVER['SERVER_SOFTWARE']);
 
 // If we're being called by PHP's built-in web server and we
 // don't know about some resource, return false to indicate
