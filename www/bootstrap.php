@@ -15,9 +15,12 @@ require_once __DIR__.'/../init-environment.php';
 
 $dispatcher = $PHPTemplateProjectNS_Registry->getComponent('PHPTemplateProjectNS_Dispatcher');
 
-$path = isset($_SERVER['PATH_INFO']) ?
-	$_SERVER['PATH_INFO'] :
-	$_SERVER['REQUEST_URI'];
+if( isset($_SERVER['PATH_INFO']) ) {
+	$path = $_SERVER['PATH_INFO'];
+} else {
+	preg_match('/^([^?]*)/',$_SERVER['REQUEST_URI'],$bif);
+	$path = $bif[1];
+}
 
 $response = $dispatcher->handleImplicitRequest( $path );
 
