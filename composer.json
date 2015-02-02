@@ -7,14 +7,15 @@
 	},
 	"require": {
 		"php": "~5.2",
-		"ryprop/nife": "~0.2",
+		"doctrine/dbal": "~2.4",
 		"earthit/php-common": "~0.0.8",
 		"earthit/dbc": "~0.0.6",
 		"earthit/schema": "~0.1",
 		"earthit/cmip-rest": "~0.0.84",
 		"earthit/php-project-utils": "~0.0.9",
-		"togos/tpfetcher": "~0.0.5",
-		"doctrine/dbal": "~2.4"
+		"ryprop/nife": "~0.2",
+		"togos/php-n2r": "^0.0.5",
+		"togos/tpfetcher": "~0.0.5"
 	},
 	"autoload": {
 		"psr-0": {

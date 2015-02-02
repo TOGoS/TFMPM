@@ -18,8 +18,11 @@ $dispatcher = $PHPTemplateProjectNS_Registry->dispatcher;
 if( isset($_SERVER['PATH_INFO']) ) {
 	$path = $_SERVER['PATH_INFO'];
 } else {
-	preg_match('/^([^?]*)/',$_SERVER['REQUEST_URI'],$bif);
+	preg_match('/^([^?]*)(?:\?(.*))?$/',$_SERVER['REQUEST_URI'],$bif);
 	$path = $bif[1];
+	if(!isset($_SERVER['QUERY_STRING'])) {
+		$_SERVER['QUERY_STRING'] = isset($bif[2]) ? $bif[2] : '';
+	}
 }
 
 $response = $dispatcher->handleImplicitRequest( $path );

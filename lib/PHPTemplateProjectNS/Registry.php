@@ -61,6 +61,37 @@ class PHPTemplateProjectNS_Registry
 		));
 	}	
 	
+	protected function readLstFile( $f ) {
+		$data = file_get_contents($f);
+		$rez = array();
+		foreach( explode("\n",$data) as $l ) {
+			$l = trim($l);
+			if( $l == '' ) continue;
+			if( $l[0] == '#' ) continue;
+			$rez[] = $l;
+		}
+		return $rez;
+	}
+	
+	protected function getBlobRepositoryDirs() {
+		$repoListFile = "{$this->configDir}/local-ccouch-repos.lst";
+		if( file_exists($repoListFile) ) {
+			$repos = $this->readLstFile($repoListFile);
+		} else {
+			$repos = [];
+		}
+		$repos[] = PHPTemplateProjectNS_ROOT_DIR.'/blobstore';
+		return $repos;
+	}
+	
+	protected function loadN2rServer() {
+		$repos = array();
+		foreach( $this->getBlobRepositoryDirs() as $rd ) {
+			$repos[] = new TOGoS_PHPN2R_FSSHA1Repository($rd);
+		}
+		return new TOGoS_PHPN2R_Server($repos);
+	}
+	
 	/**
 	 * Magic __get and __isset are slightly deficient due to inability
 	 * to automatically glean whether abcXyz should be cased as AbcXyz,
