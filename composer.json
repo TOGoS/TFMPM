@@ -12,7 +12,7 @@
 		"earthit/dbc": "~0.0.6",
 		"earthit/schema": "~0.1",
 		"earthit/cmip-rest": "~0.0.84",
-		"earthit/php-project-utils": "~0.0.4",
+		"earthit/php-project-utils": "~0.0.9",
 		"togos/tpfetcher": "~0.0.5",
 		"doctrine/dbal": "~2.4"
 	},

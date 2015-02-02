@@ -5,9 +5,8 @@ class PHPTemplateProjectNS_PageAction_ShowHello extends PHPTemplateProjectNS_Pag
 	public function __invoke() {
 		$helloUri = "hello/".rawurlencode("PHP Template Project");
 		
-		$schema = $this->registry->getSchema();
 		$classLinks = array();
-		foreach( $schema->getResourceClasses() as $rc ) {
+		foreach( $this->schema->getResourceClasses() as $rc ) {
 			if( !$rc->hasRestService() ) continue;
 			$collectionName = ucfirst(EarthIT_Schema_WordUtil::pluralize($rc->getName()));
 			$dashName = str_replace(' ','-',strtolower($collectionName));

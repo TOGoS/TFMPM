@@ -1,6 +1,6 @@
 <?php
 
-class PHPTemplateProjectNS_PageUtil extends EarthIT_Component
+class PHPTemplateProjectNS_PageUtil extends PHPTemplateProjectNS_Component
 {
 	public function emitHtmlBoilerplate($title) {
 		$this->emitView('html-boilerplate', array('title'=>$title));

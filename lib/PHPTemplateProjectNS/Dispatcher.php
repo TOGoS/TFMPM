@@ -1,6 +1,6 @@
 <?php
 
-class PHPTemplateProjectNS_Dispatcher extends EarthIT_Component
+class PHPTemplateProjectNS_Dispatcher extends PHPTemplateProjectNS_Component
 {
 	/**
 	 * Return the object encoded by the request IFF
@@ -35,7 +35,7 @@ class PHPTemplateProjectNS_Dispatcher extends EarthIT_Component
 	public function handleApiRequest( $method, $path, array $params=array(), $contentObject=null ) {
 		if( ($crReq = EarthIT_CMIPREST_CMIPRESTRequest::parse( $method, $path, $params, $contentObject )) !== null ) {
 			$crReq->userId = $this->getCurrentUserId();
-			return $this->registry->getRester()->handle($crReq);
+			return $this->rester->handle($crReq);
 		} else {
 			return null;
 		}
@@ -68,6 +68,8 @@ class PHPTemplateProjectNS_Dispatcher extends EarthIT_Component
 		// Some demonstration routes; remove and replace with your own
 		if( $path == '/' ) {
 			return $this->doPageAction('ShowHello');
+		} else if( preg_match('<^/uri-res(/.*)>', $path, $bif) ) {
+			return $this->n2rServer->handleRequest($bif[1]);
 		} else if( preg_match('<^/hello/(.*)$>', $path, $matchData) ) {
 			return Nife_Util::httpResponse( 200, "Hello, ".rawurldecode($matchData[1]).'!' );
 		} else if( $path == '/error' ) {

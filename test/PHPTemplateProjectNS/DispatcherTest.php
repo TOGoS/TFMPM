@@ -1,13 +1,7 @@
 <?php
 
-class PHPTemplateProjectNS_DispatcherTest extends PHPUnit_Framework_TestCase
+class PHPTemplateProjectNS_DispatcherTest extends PHPTemplateProjectNS_TestCase
 {
-	protected $dispatcher;
-	public function setUp() {
-		global $PHPTemplateProjectNS_Registry;
-		$this->dispatcher = $PHPTemplateProjectNS_Registry->getComponent('PHPTemplateProjectNS_Dispatcher');
-	}
-	
 	public function testCompoundAction() {
 		$rez = $this->dispatcher->handleRequest( 'POST', '/api;compound', array(), array(
 			'actions' => array(
