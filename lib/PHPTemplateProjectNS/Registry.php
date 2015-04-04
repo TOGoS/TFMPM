@@ -111,6 +111,13 @@ class PHPTemplateProjectNS_Registry
 		}
 	}
 	
+	/*
+	 * List names of any component classes that where the casing of their ClassName
+	 * differes from that of their attributeName by more than the first letter.
+	 * e.g. classes whose names contain acronyms.
+	 */
+	protected static $funnilyCasedComponentNames = ['ABC decoder'];
+	
 	public function __get($attrName) {
 		$ucfAttrName = ucfirst($attrName);
 		$getterMethodName = "get{$ucfAttrName}";
@@ -128,6 +135,12 @@ class PHPTemplateProjectNS_Registry
 		}
 		
 		$className = "PHPTemplateProjectNS_{$ucfAttrName}";
+		foreach( self::$funnilyCasedComponentNames as $fccn ) {
+			if( EarthIT_Schema_WordUtil::toCamelCase($fccn) == $attrName ) {
+				$className = "PHPTemplateProjectNS_".EarthIT_Schema_WordUtil::toPascalCase($fccn);
+			}
+		}
+		
 		if( class_exists($className) ) {
 			return $this->components[$attrName] = new $className($this);
 		}

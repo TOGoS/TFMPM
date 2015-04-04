@@ -13,6 +13,11 @@ class PHPTemplateProjectNS_PageAction_ShowHello extends PHPTemplateProjectNS_Pag
 			$classLinks[] = "<li><a href=\"api/".htmlspecialchars($dashName)."\">".htmlspecialchars($collectionName)."</a></li>";
 		}
 		
-		return $this->makeTemplateResponse(200, 'hello', array('classLinks'=>$classLinks, 'helloUri'=>$helloUri));
+		$otherStuff = [
+			'Number of users' => $this->queryValue("SELECT COUNT(*) FROM phptemplateprojectdatabasenamespace.user"),
+			'Something from the ABC decoder' => $this->abcDecoder->getAbc()
+		];
+		
+		return $this->makeTemplateResponse(200, 'hello', array('classLinks'=>$classLinks, 'helloUri'=>$helloUri, 'otherStuff'=>$otherStuff));
 	}
 }

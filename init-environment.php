@@ -9,6 +9,10 @@ require __DIR__.'/vendor/autoload.php';
 
 define('PHPTemplateProjectNS_ROOT_DIR', __DIR__);
 
+function eht( $text ) {
+	echo htmlspecialchars($text);
+}
+
 function coalesce( &$v, $default=null ) {
 	return isset( $v ) ? $v : $default;
 }
