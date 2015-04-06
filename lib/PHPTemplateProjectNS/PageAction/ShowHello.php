@@ -14,7 +14,7 @@ class PHPTemplateProjectNS_PageAction_ShowHello extends PHPTemplateProjectNS_Pag
 		}
 		
 		$otherStuff = [
-			'Number of users' => $this->queryValue("SELECT COUNT(*) FROM phptemplateprojectdatabasenamespace.user"),
+			'Number of users' => $this->storageHelper->queryValue("SELECT COUNT(*) FROM phptemplateprojectdatabasenamespace.user"),
 			'Something from the ABC decoder' => $this->abcDecoder->getAbc()
 		];
 		

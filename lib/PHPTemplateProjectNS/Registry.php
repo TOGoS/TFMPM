@@ -35,7 +35,7 @@ class PHPTemplateProjectNS_Registry
 	public function loadDbAdapter() {
 		return Doctrine_DBAL_DriverManager::getConnection( $this->getConfig('dbc') );
 	}
-
+	
 	public function loadDbNamer() {
 		return new EarthIT_DBC_PostgresNamer();
 	}
@@ -46,6 +46,11 @@ class PHPTemplateProjectNS_Registry
 
 	public function loadSqlRunner() {
 		return new EarthIT_DBC_DoctrineSQLRunner($this->dbAdapter);
+	}
+
+	public function loadStorageHelper() {
+		return new PHPTemplateProjectNS_NormalStorageHelper(
+			$this->sqlRunner, $this->schema, $this->dbNamer);
 	}
 	
 	protected function loadStorage() {
