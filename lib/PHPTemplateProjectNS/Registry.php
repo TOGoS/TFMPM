@@ -115,6 +115,8 @@ class PHPTemplateProjectNS_Registry
 	 * List names of any component classes that where the casing of their ClassName
 	 * differes from that of their attributeName by more than the first letter.
 	 * e.g. classes whose names contain acronyms.
+	 *
+	 * If you've defined a loadXyz function, then this is unnecessary.
 	 */
 	protected static $funnilyCasedComponentNames = ['ABC decoder'];
 	
