@@ -32,7 +32,7 @@ Set up a new postgres database by logging in as root
 (```sudo -u postgres psql``` often does the trick)
 and running:
 
-``sql
+```sql
 CREATE DATABASE phptemplateprojectdatabase;
 CREATE USER phptemplateprojectdatabaseuser WITH PASSWORD 'phptemplateprojectdatabasepassword';
 GRANT ALL PRIVILEGES ON DATABASE phptemplateprojectdatabase TO phptemplateprojectdatabaseuser;
