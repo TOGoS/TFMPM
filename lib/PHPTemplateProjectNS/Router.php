@@ -91,6 +91,7 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 	}
 	
 	public function handleRequest( PHPTemplateProjectNS_RequestContext $ctx ) {
+		// TODO: authentication!  authorization!  validation!  error handling?
 		$action = $this->requestToAction($ctx);
 		return $this->doAction($action);
 	}
