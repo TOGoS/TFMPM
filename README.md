@@ -45,5 +45,5 @@ SQL.
 ### Initialize the database
 
 Once a database exists and permissions are set up for our user, you
-should be able to ```make rebuild-database``` empty the database and
-rebuild it from the upgrade scripts.
+should be able to run ```make rebuild-database```, which will empty
+the database and rebuild it from the upgrade scripts.
