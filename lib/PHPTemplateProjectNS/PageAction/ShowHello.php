@@ -1,8 +1,9 @@
 <?php
 
-class PHPTemplateProjectNS_PageAction_ShowHello extends PHPTemplateProjectNS_PageAction
+class PHPTemplateProjectNS_PageAction_ShowHello extends PHPTemplateProjectNS_PageAction_TemplatePageAction
 {
-	public function __invoke() {
+	public function getTemplateName() { return 'hello'; }
+	public function getTemplateParameters() {
 		$helloUri = "hello/".rawurlencode("PHP Template Project");
 		
 		$classLinks = array();
@@ -18,6 +19,6 @@ class PHPTemplateProjectNS_PageAction_ShowHello extends PHPTemplateProjectNS_Pag
 			'Something from the ABC decoder' => $this->abcDecoder->getAbc()
 		];
 		
-		return $this->makeTemplateResponse(200, 'hello', array('classLinks'=>$classLinks, 'helloUri'=>$helloUri, 'otherStuff'=>$otherStuff));
+		return ['classLinks'=>$classLinks, 'helloUri'=>$helloUri, 'otherStuff'=>$otherStuff];
 	}
 }

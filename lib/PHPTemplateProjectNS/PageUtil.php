@@ -5,6 +5,9 @@ class PHPTemplateProjectNS_PageUtil extends PHPTemplateProjectNS_Component
 	public function emitHtmlBoilerplate($title) {
 		$this->emitView('html-boilerplate', array('title'=>$title));
 	}
+	public function emitHtmlFooter() {
+		$this->emitView('html-footer');
+	}
 	
 	public function fortifyViewParams(array $params) {
 		$params['PU'] = $this;

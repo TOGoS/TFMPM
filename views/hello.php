@@ -37,4 +37,4 @@ dl.tabby dd {
 <?php endforeach; ?>
 </dl>
 
-</body></html>
+<?php $PU->emitHtmlFooter(); ?>

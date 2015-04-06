@@ -50,17 +50,16 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		return $rc->newInstanceArgs($args);
 	}
 	
-	protected function doPageAction( $actionName /* followed by action-specific arguments */ ) {
-		return call_user_func( call_user_func_array(array($this,'createPageAction'), func_get_args()) );
-	}
-	
 	public function requestToAction( PHPTemplateProjectNS_RequestContext $ctx ) {
-		return function() use ($ctx) {
-			$path = $ctx->getPathInfo();
+		$path = $ctx->getPathInfo();
+		if( $path == '/' ) {
+			return $this->createPageAction('ShowHello');
+		} else if( preg_match('<^/hello/(.*)$>', $path, $bif) ) {
+			return $this->createPageAction('SayHelloTo',$bif[1]);
+		}
+		return function() use ($ctx, $path) {
 			// Some demonstration routes; remove and replace with your own
-			if( $path == '/' ) {
-				return $this->doPageAction('ShowHello');
-			} else if( preg_match('<^/uri-res(/.*)>', $path, $bif) ) {
+			if( preg_match('<^/uri-res(/.*)>', $path, $bif) ) {
 				return $this->n2rServer->handleRequest($bif[1]);
 			} else if( preg_match('<^/hello/(.*)$>', $path, $matchData) ) {
 				return Nife_Util::httpResponse( 200, "Hello, ".rawurldecode($matchData[1]).'!' );
@@ -87,7 +86,7 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		if( is_callable($action) ) {
 			return call_user_func($action, ['this is the context']);
 		} else {
-			throw new Exception("I don't know how to do ".gettype($act)." as an action");
+			throw new Exception("I don't know how to do ".gettype($action)." as an action");
 		}
 	}
 	
