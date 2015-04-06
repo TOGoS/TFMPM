@@ -6,16 +6,16 @@
 		"phpunit/phpunit": "~3.7"
 	},
 	"require": {
-		"php": "~5.2",
-		"doctrine/dbal": "~2.4",
-		"earthit/php-common": "~0.0.8",
-		"earthit/dbc": "~0.0.6",
-		"earthit/schema": "~0.1",
-		"earthit/cmip-rest": "~0.0.84",
-		"earthit/php-project-utils": "~0.0.9",
-		"ryprop/nife": "~0.2",
-		"togos/php-n2r": "^0.0.5",
-		"togos/tpfetcher": "~0.0.5"
+		"php": "^5.2",
+		"doctrine/dbal": "^2.4",
+		"earthit/php-common": "^0.0.14",
+		"earthit/dbc": "^0.0.13",
+		"earthit/schema": "^0.1.5",
+		"earthit/cmip-rest": "^0.0.102",
+		"earthit/php-project-utils": "^0.0.10",
+		"ryprop/nife": "^0.2.4",
+		"togos/php-n2r": "^0.0.6",
+		"togos/tpfetcher": "^0.0.7"
 	},
 	"autoload": {
 		"psr-0": {
