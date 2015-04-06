@@ -2,6 +2,11 @@
 
 class PHPTemplateProjectNS_PageUtil extends PHPTemplateProjectNS_Component
 {
+	public static function jsonResponse($status, $data, $headers=[]) {
+		$headers += ['content-type'=>'application/json'];
+		return Nife_Util::httpResponse($status, new EarthIT_JSON_PrettyPrintedJSONBlob($data), $headers);
+	}
+	
 	public function emitHtmlBoilerplate($title) {
 		$this->emitView('html-boilerplate', array('title'=>$title));
 	}
@@ -30,9 +35,5 @@ class PHPTemplateProjectNS_PageUtil extends PHPTemplateProjectNS_Component
 				($selectedValue == $k ? ' selected' : ''), ">",
 				htmlspecialchars($v), "</option>\n";
 		}
-	}
-	
-	public function describeExpression( $expression ) {
-		return "<code>".htmlspecialchars($expression)."</code>";
 	}
 }

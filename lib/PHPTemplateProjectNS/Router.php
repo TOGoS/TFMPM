@@ -3,39 +3,12 @@
 class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 {
 	/**
-	 * Return the object encoded by the request IFF
-	 * It is JSON-encoded.  Otherwise returns null.
+	 * If the indicated request can be interpreted as a CMIPREST_UserAction, parse and return said action.
+	 * Otherwise return null.
 	 */
-	protected static function getRequestContentObject() {
-		static $requestRead;
-		static $requestContentObject;
-		if( !$requestRead ) {
-			switch( $_SERVER['REQUEST_METHOD'] ) {
-			case 'GET': case 'HEAD':
-				$requestContentObject = null;
-				break;
-			default:
-				// TODO: Check headers rather than assuming JSON
-				$requestContent = eit_get_request_content();
-				$requestContentObject = $requestContent == '' ? null : EarthIT_JSON::decode($requestContent);
-			}
-			$requestRead = true;
-		}
-		return $requestContentObject;
-	}
-	
-	protected function getCurrentUserId() {
-		return null;
-	}
-	
-	/**
-	 * Handle the request, returning a response if path seems to name some REST resource.
-	 * Otherwise returns null.
-	 */
-	public function handleApiRequest( $method, $path, array $params=array(), $contentObject=null ) {
+	public function apiRequestToAction( $method, $path, array $params=array(), $contentObject=null ) {
 		if( ($crReq = EarthIT_CMIPREST_CMIPRESTRequest::parse( $method, $path, $params, $contentObject )) !== null ) {
-			$crReq->userId = $this->getCurrentUserId();
-			return $this->rester->handle($crReq);
+			return $this->rester->cmipRequestToUserAction($crReq);
 		} else {
 			return null;
 		}
@@ -56,7 +29,17 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 			return $this->createPageAction('ShowHello');
 		} else if( preg_match('<^/hello/(.*)$>', $path, $bif) ) {
 			return $this->createPageAction('SayHelloTo',$bif[1]);
+		} else if(
+			preg_match('#^/api([;/].*)#',$path,$bif) and
+			($cmipUserAction = $this->apiRequestToAction(
+				$ctx->getRequestMethod(),
+				$bif[1], $ctx->getParams(),
+				$ctx->getRequestContentObject())
+			 ) !== null
+		) {
+			return $cmipUserAction;
 		}
+		
 		return function() use ($ctx, $path) {
 			// Some demonstration routes; remove and replace with your own
 			if( preg_match('<^/uri-res(/.*)>', $path, $bif) ) {
@@ -67,15 +50,6 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 				trigger_error( "An error occurred for demonstrative porpoises.", E_USER_ERROR );
 			} else if( $path == '/exception' ) {
 				throw new Exception( "You asked for an exception and this is it." );
-			} else if(
-				preg_match('#^/api([;/].*)#',$path,$bif) and
-				($response = $this->handleApiRequest(
-					$ctx->getRequestMethod(),
-					$bif[1], $ctx->getParams(),
-					$ctx->getRequestContentObject())
-				) !== null
-			) {
-				return $response;
 			} else {
 				return Nife_Util::httpResponse( 404, "I don't know about $path!" );
 			}
@@ -85,8 +59,12 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 	public function doAction($action) {
 		if( is_callable($action) ) {
 			return call_user_func($action, ['this is the context']);
+		} else if( $action instanceof EarthIT_CMIPREST_UserAction ) {
+			$rez = $this->rester->doAction($action);
+			if( $rez instanceof Nife_HTTP_Response ) return $rez;
+			return PHPTemplateProjectNS_PageUtil::jsonResponse(200, $rez);
 		} else {
-			throw new Exception("I don't know how to do ".gettype($action)." as an action");
+			throw new Exception("I don't know how to run ".PHPTemplateProjectNS_Debug::describe($action)." as an action");
 		}
 	}
 	
