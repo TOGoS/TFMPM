@@ -24,7 +24,7 @@ class PHPTemplateProjectNS_RouterTest extends PHPTemplateProjectNS_TestCase
 		]);			
 		$rez = $this->router->handleRequest($ctx);
 		$this->assertEquals( 200, $rez->getStatusCode() );
-		$rezCO = json_decode((string)$rez->getContent(), true);
+		$rezCO = EarthIT_JSON::decode($rez->getContent());
 		$this->assertTrue( is_array($rezCO) );
 		
 		$this->assertEquals(1001, $rezCO['getUser1001']['id']);
