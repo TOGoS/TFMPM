@@ -17,8 +17,9 @@ class PHPTemplateProjectNS_RequestContext
 	
 	protected $superGlobals;
 	
-	public function __construct(array $superGlobals) {
+	public function __construct(array $superGlobals, array $otherStuff=[]) {
 		$this->superGlobals = $superGlobals;
+		$this->set($otherStuff);
 	}
 	
 	protected function getBasicAuth() {
@@ -57,6 +58,7 @@ class PHPTemplateProjectNS_RequestContext
 		}
 	}
 	
+	protected $requestMethod = null;
 	protected $pathInfo = null;
 	protected $userId = null;
 	protected $requestContentFuture = null;
@@ -150,9 +152,13 @@ class PHPTemplateProjectNS_RequestContext
 	}
 	
 	public function getRequestMethod() {
-		return isset($this->SERVER['HTTP_X_HTTP_METHOD_OVERRIDE']) ?
-			$this->SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] :
-			$this->SERVER['REQUEST_METHOD'];
+		if( isset($this->requestMethod) ) {
+			return $this->requestMethod;
+		} else if( isset($this->SERVER['HTTP_X_HTTP_METHOD_OVERRIDE']) ) {
+			return $this->SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'];
+		} else {
+			return $this->SERVER['REQUEST_METHOD'];
+		}
 	}
 	
 	public function getParams() {

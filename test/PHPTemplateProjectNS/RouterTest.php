@@ -3,18 +3,26 @@
 class PHPTemplateProjectNS_RouterTest extends PHPTemplateProjectNS_TestCase
 {
 	public function testCompoundAction() {
-		$rez = $this->router->handleRequest( 'POST', '/api;compound', array(), array(
-			'actions' => array(
-				'getUser1001' => array(
-					'method' => 'GET',
-					'path' => '/users/1001',
-				),
-				'getOrg1003' => array(
-					'method' => 'GET',
-					'path' => '/organizations/1003',
-				)
-			)
-		));
+		$ctx = new PHPTemplateProjectNS_RequestContext([
+			'GET' => [],
+			'POST' => [],
+		], [
+			'requestMethod' => 'POST',
+			'pathInfo' => '/api;compound',
+			'requestContentObject' => [
+				'actions' => [
+					'getUser1001' => [
+						'method' => 'GET',
+						'path' => '/users/1001',
+					],
+					'getOrg1003' => [
+						'method' => 'GET',
+						'path' => '/organizations/1003',
+					]
+				]
+			]
+		]);			
+		$rez = $this->router->handleRequest($ctx);
 		$this->assertEquals( 200, $rez->getStatusCode() );
 		$rezCO = json_decode((string)$rez->getContent(), true);
 		$this->assertTrue( is_array($rezCO) );
