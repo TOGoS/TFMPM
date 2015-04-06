@@ -15,6 +15,13 @@ require_once __DIR__.'/../init-environment.php';
 
 $dispatcher = $PHPTemplateProjectNS_Registry->dispatcher;
 
+// Depending how this was invoked (mod_php, cgi, PHP's built-in
+// server, etc) PATH_INFO may be set in various ways.  This code
+// attempts to catch some of them.
+// 
+// For environments that are more wildly different, you might want
+// to just have separate bootstrap scripts.
+
 if( isset($_SERVER['PATH_INFO']) ) {
 	$path = $_SERVER['PATH_INFO'];
 } else {

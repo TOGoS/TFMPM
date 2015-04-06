@@ -9,6 +9,7 @@ require __DIR__.'/vendor/autoload.php';
 
 define('PHPTemplateProjectNS_ROOT_DIR', __DIR__);
 
+/** 'Emit HTML text' */
 function eht( $text ) {
 	echo htmlspecialchars($text);
 }
