@@ -54,17 +54,8 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		return call_user_func( call_user_func_array(array($this,'createPageAction'), func_get_args()) );
 	}
 	
-	/**
-	 * Handles the request that's implied by various global variables.
-	 */
-	public function handleImplicitRequest( $path ) {
-		$method = isset($_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE']) ? $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] : $_SERVER['REQUEST_METHOD'];
-		$params = $_REQUEST;
-		$contentObject = self::getRequestContentObject();
-		return $this->handleRequest( $method, $path, $params, $contentObject );
-	}
-	
-	public function handleRequest( $method, $path, array $params=array(), $contentObject=null ) {
+	public function handleRequest( PHPTemplateProjectNS_RequestContext $ctx ) {
+		$path = $ctx->getPathInfo();
 		// Some demonstration routes; remove and replace with your own
 		if( $path == '/' ) {
 			return $this->doPageAction('ShowHello');
@@ -78,7 +69,11 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 			throw new Exception( "You asked for an exception and this is it." );
 		} else if(
 			preg_match('#^/api([;/].*)#',$path,$bif) and
-			($response = $this->handleApiRequest($method, $bif[1], $params, $contentObject)) !== null
+			($response = $this->handleApiRequest(
+				$ctx->getRequestMethod(),
+				$bif[1], $ctx->getParams(),
+				$ctx->getRequestContentObject())
+			) !== null
 		) {
 			return $response;
 		} else {
