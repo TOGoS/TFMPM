@@ -1,6 +1,6 @@
 <?php
 
-class PHPTemplateProjectNS_Dispatcher extends PHPTemplateProjectNS_Component
+class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 {
 	/**
 	 * Return the object encoded by the request IFF

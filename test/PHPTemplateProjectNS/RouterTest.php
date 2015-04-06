@@ -1,9 +1,9 @@
 <?php
 
-class PHPTemplateProjectNS_DispatcherTest extends PHPTemplateProjectNS_TestCase
+class PHPTemplateProjectNS_RouterTest extends PHPTemplateProjectNS_TestCase
 {
 	public function testCompoundAction() {
-		$rez = $this->dispatcher->handleRequest( 'POST', '/api;compound', array(), array(
+		$rez = $this->router->handleRequest( 'POST', '/api;compound', array(), array(
 			'actions' => array(
 				'getUser1001' => array(
 					'method' => 'GET',

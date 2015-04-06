@@ -13,7 +13,7 @@ ini_set('error_reporting', E_ALL|E_STRICT);
 require_once __DIR__.'/../init-www-error-handling.php';
 require_once __DIR__.'/../init-environment.php';
 
-$dispatcher = $PHPTemplateProjectNS_Registry->dispatcher;
+$router = $PHPTemplateProjectNS_Registry->router;
 
 // Depending how this was invoked (mod_php, cgi, PHP's built-in
 // server, etc) PATH_INFO may be set in various ways.  This code
@@ -32,7 +32,7 @@ if( isset($_SERVER['PATH_INFO']) ) {
 	}
 }
 
-$response = $dispatcher->handleImplicitRequest( $path );
+$response = $router->handleImplicitRequest( $path );
 
 $bubble404s = preg_match('/^PHP.*Development Server$/', $_SERVER['SERVER_SOFTWARE']);
 
