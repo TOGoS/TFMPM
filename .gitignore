@@ -1,7 +1,6 @@
+build/db/all-tables.sql
 build/db/create-database.sql
 build/db/drop-database.sql
-build/db/upgrades/0097-drop-tables.sql
-build/db/upgrades/0110-create-tables.sql
 composer.lock
 config/dbc.json
 schema/schema.php

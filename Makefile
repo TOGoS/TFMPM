@@ -1,26 +1,22 @@
-dev_resources = \
+dev_resources := \
+	build/db/all-tables.sql \
 	build/db/create-database.sql \
 	build/db/drop-database.sql \
-	build/db/upgrades/0110-create-tables.sql \
 	util/phptemplateprojectdatabase-psql \
 	util/phptemplateprojectdatabase-pg_dump \
 	util/SchemaSchemaDemo.jar \
 	schema/schema.php \
 	vendor
-runtime_resources = \
+runtime_resources := \
 	schema/schema.php \
 	vendor \
 	www/images/head.png
 
-resources = ${dev_resources} ${runtime_resources}
+resources := ${dev_resources} ${runtime_resources}
 
-run_schema_processor = \
-	java -jar util/SchemaSchemaDemo.jar \
-	-o-create-tables-script build/db/upgrades/0110-create-tables.sql \
-	-o-schema-php schema/schema.php -php-schema-class-namespace EarthIT_Schema \
-	schema/schema.txt
+schemaschemademo := java -jar util/SchemaSchemaDemo.jar schema/schema.txt
 
-fetch = vendor/bin/fetch -repo @config/ccouch-repos.lst
+fetch := vendor/bin/fetch -repo @config/ccouch-repos.lst
 
 default: resources run-tests
 
@@ -73,14 +69,11 @@ util/phptemplateprojectdatabase-pg_dump: config/dbc.json
 	cp -n config/ccouch-repos.lst.example config/ccouch-repos.lst
 	${fetch} -o "$@" `cat "$<"`
 
-build/db/upgrades/0110-create-tables.sql: schema/schema.txt util/SchemaSchemaDemo.jar
-	${run_schema_processor}
-
-build/db/upgrades/0097-drop-tables.sql: schema/schema.txt util/SchemaSchemaDemo.jar
-	${run_schema_processor}
+build/db/all-tables.sql: schema/schema.txt util/SchemaSchemaDemo.jar
+	${schemaschemademo} -o-create-tables-script "$@"
 
 schema/schema.php: schema/schema.txt util/SchemaSchemaDemo.jar
-	${run_schema_processor}
+	${schemaschemademo} -o-schema-php "$@" -php-schema-class-namespace EarthIT_Schema
 
 build/db/create-database.sql: config/dbc.json vendor
 	vendor/bin/generate-create-database-sql "$<" >"$@"
