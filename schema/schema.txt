@@ -19,7 +19,7 @@ class 'boolean' :
         SQL type @ "BOOLEAN" :
         PHP type @ "bool" : JSON type @ "boolean"
 class 'string' :
-        SQL type @ "VARCHAR(127)" :
+        SQL type @ "VARCHAR(126)" :
         PHP type @ "string" : JSON type @ "string"
 class 'normal ID' : extends(unsigned integer)
 class 'entity ID' : extends(unsigned integer) : SQL type @ "BIGINT"

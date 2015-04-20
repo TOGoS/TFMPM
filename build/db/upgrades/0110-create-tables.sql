@@ -1,13 +1,13 @@
 CREATE TABLE "phptemplateprojectdatabasenamespace"."user" (
 	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
-	"username" VARCHAR(127) NOT NULL,
-	"passhash" VARCHAR(127),
-	"emailaddress" VARCHAR(127),
+	"username" VARCHAR(126) NOT NULL,
+	"passhash" VARCHAR(126),
+	"emailaddress" VARCHAR(126),
 	PRIMARY KEY ("id")
 );
 CREATE TABLE "phptemplateprojectdatabasenamespace"."organization" (
 	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
-	"name" VARCHAR(127) NOT NULL,
+	"name" VARCHAR(126) NOT NULL,
 	PRIMARY KEY ("id")
 );
 CREATE TABLE "phptemplateprojectdatabasenamespace"."userorganizationattachment" (
