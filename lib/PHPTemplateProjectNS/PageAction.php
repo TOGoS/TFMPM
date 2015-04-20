@@ -1,6 +1,6 @@
 <?php
 
-class PHPTemplateProjectNS_PageAction extends PHPTemplateProjectNS_Component
+class PHPTemplateProjectNS_PageAction extends PHPTemplateProjectNS_Component implements TOGoS_Action
 {
 	protected function makeTemplateResponse( $statusCode=200, $viewName, $vars=array(), $typeOrHeaders='text/html' ) {
 		$vars = $this->pageUtil->fortifyViewParams($vars);

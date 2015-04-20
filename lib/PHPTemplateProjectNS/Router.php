@@ -29,6 +29,14 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 			return $this->createPageAction('ShowHello');
 		} else if( preg_match('<^/hello/(.*)$>', $path, $bif) ) {
 			return $this->createPageAction('SayHelloTo',$bif[1]);
+		} else if( $path == '/computations' ) {
+			switch( $ctx->getRequestMethod() ) {
+			case 'GET':
+				return $this->createPageAction('ShowComputations');
+			case 'POST':
+				$input = (float)$ctx->getParam('square');
+				return $this->createPageAction('EnqueueComputation', "sqrt($input)");
+			}
 		} else if(
 			preg_match('#^/api([;/].*)#',$path,$bif) and
 			($cmipUserAction = $this->apiRequestToAction(

@@ -14,6 +14,7 @@
 		"earthit/cmip-rest": "^0.0.102",
 		"earthit/php-project-utils": "^0.0.10",
 		"ryprop/nife": "^0.2.4",
+		"togos/action": "^1.0.0",
 		"togos/base32": "^1.0.1",
 		"togos/php-n2r": "^0.0.6",
 		"togos/tpfetcher": "^0.0.7"

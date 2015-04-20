@@ -17,3 +17,14 @@ CREATE TABLE "phptemplateprojectdatabasenamespace"."userorganizationattachment" 
 	FOREIGN KEY ("userid") REFERENCES "phptemplateprojectdatabasenamespace"."user" ("id"),
 	FOREIGN KEY ("organizationid") REFERENCES "phptemplateprojectdatabasenamespace"."organization" ("id")
 );
+CREATE TABLE "phptemplateprojectdatabasenamespace"."computationstatus" (
+	"statuscode" VARCHAR(126) NOT NULL,
+	PRIMARY KEY ("statuscode")
+);
+CREATE TABLE "phptemplateprojectdatabasenamespace"."computation" (
+	"expression" VARCHAR(126) NOT NULL,
+	"statuscode" VARCHAR(126) NOT NULL,
+	"result" VARCHAR(126),
+	PRIMARY KEY ("expression"),
+	FOREIGN KEY ("statuscode") REFERENCES "phptemplateprojectdatabasenamespace"."computationstatus" ("statuscode")
+);

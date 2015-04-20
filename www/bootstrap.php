@@ -46,3 +46,5 @@ $bubble404s = preg_match('/^PHP.*Development Server$/', $_SERVER['SERVER_SOFTWAR
 if( $bubble404s and $response->getStatusCode() == 404 ) return false;
 
 Nife_Util::outputResponse( $response );
+
+PHPTemplateProjectNS_PostResponseJobs::run();

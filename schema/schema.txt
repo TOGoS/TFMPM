@@ -60,3 +60,15 @@ class 'user organization attachment' : SRC : members are public : self-keyed {
 		ID = organization ID
 	}
 }
+
+# Actual enums are hard.
+# Best practice according to Dan is avoid defining enum types and just always use a table.
+class 'computation status' : SRC : members are public {
+	status code : string : key(primary)
+}
+
+class 'computation' : SRC : members are public {
+	expression : string : key(primary)
+	status : reference(computation status) = status code
+	result : string : nullable
+}

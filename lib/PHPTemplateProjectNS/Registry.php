@@ -2,6 +2,8 @@
 
 class PHPTemplateProjectNS_Registry
 {
+	protected $postResponseJobs = [];
+	
 	protected $configDir;
 	public function __construct( $configDir ) {
 		$this->configDir = $configDir;
