@@ -20,10 +20,12 @@ td.status-complete { color: green; }
 
 <h2>Computations!</h2>
 
-<p>I will calculate square roots for you really really slowly!</p>
+<p>I will calculate square roots for you really really slowly to
+demonstrate usage of PostResponseJobs.</p>
 
 <form method="POST">
 <input type="text" name="square"/>
+<input type="submit" value="√"/>
 </form>
 
 <?php if(count($computations) > 0): ?>
