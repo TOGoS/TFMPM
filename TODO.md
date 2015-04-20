@@ -1,3 +1,4 @@
+- Que for jobs to be executed after the response has been written/closed
 - Separate ComponentGears out of Component class
 - Rename Dispatcher to Router
 - Refactor Dispatcher/Router to create/invoke actions as separate steps
