@@ -27,7 +27,12 @@ default: resources run-tests
 .DELETE_ON_ERROR:
 
 .PHONY: \
+	create-database \
 	default \
+	drop-database \
+	everything \
+	empty-database \
+	rebuild-database \
 	resources \
 	run-tests \
 	run-unit-tests \
@@ -88,8 +93,13 @@ www/images/head.png:
 create-database drop-database: %: build/db/%.sql
 	sudo su postgres -c "cat '$<' | psql"
 
+empty-database: build/db/empty-database.sql util/phptemplateprojectdatabase-psql
+	cat "$<" | util/phptemplateprojectdatabase-psql
+
 upgrade-database: resources
 	vendor/bin/upgrade-database -upgrade-table 'phptemplateprojectdatabasenamespace.schemaupgrade'
+
+rebuild-database: empty-database upgrade-database
 
 run-unit-tests: runtime-resources upgrade-database
 	vendor/bin/phpunit --bootstrap init-environment.php test
