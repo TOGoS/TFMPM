@@ -1,4 +1,8 @@
-dev_resources := \
+config_files := \
+	config/ccouch-repos.lst \
+	config/dbc.json
+
+generated_resources := \
 	build/db/all-tables.sql \
 	build/db/create-database.sql \
 	build/db/drop-database.sql \
@@ -7,12 +11,15 @@ dev_resources := \
 	util/SchemaSchemaDemo.jar \
 	schema/schema.php \
 	vendor
+
+build_resources := ${generated_resources} ${config_files}
+
 runtime_resources := \
 	schema/schema.php \
 	vendor \
 	www/images/head.png
 
-resources := ${dev_resources} ${runtime_resources}
+resources := ${build_resources} ${runtime_resources}
 
 schemaschemademo := java -jar util/SchemaSchemaDemo.jar schema/schema.txt
 
@@ -37,18 +44,18 @@ default: resources run-tests
 	clean \
 	everything
 
-dev-resources: ${dev_resources}
+build-resources: ${build_resources}
 runtime-resources: ${runtime_resources}
 resources: ${resources}
 
 clean:
-	rm -rf ${resources}
+	rm -rf ${generated_resources}
 
 vendor: composer.lock
 	composer install
 	touch "$@"
 
-%: | %.example
+${config_files}: %: | %.example
 	cp "$|" "$@"
 
 # If composer.lock doesn't exist at all,
@@ -65,8 +72,8 @@ util/phptemplateprojectdatabase-pg_dump: config/dbc.json
 	vendor/bin/generate-psql-script -psql-exe pg_dump "$<" >"$@"
 	chmod +x "$@"
 
-%: %.urn vendor
-	cp -n config/ccouch-repos.lst.example config/ccouch-repos.lst
+util/SchemaSchemaDemo.jar: \
+%: %.urn | vendor config/ccouch-repos.lst
 	${fetch} -o "$@" `cat "$<"`
 
 build/db/all-tables.sql: schema/schema.txt util/SchemaSchemaDemo.jar
