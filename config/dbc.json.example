@@ -3,5 +3,6 @@
     "host": "phptemplateprojectdatabasehost",
     "user": "phptemplateprojectdatabaseuser",
     "password": "phptemplateprojectdatabasepassword",
-    "driver": "pdo_pgsql"
+    "driver": "pdo_pgsql",
+    "charset": "UTF-8"
 }
