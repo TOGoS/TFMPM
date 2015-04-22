@@ -16,9 +16,13 @@ class PHPTemplateProjectNS_PageAction_ShowHello extends PHPTemplateProjectNS_Pag
 		
 		$otherStuff = [
 			'Number of users' => $this->storageHelper->queryValue("SELECT COUNT(*) FROM phptemplateprojectdatabasenamespace.user"),
-			'Something from the ABC decoder' => $this->abcDecoder->getAbc()
+			'Something from the ABC decoder' => $this->abcDecoder->getAbc(),
 		];
 		
-		return ['classLinks'=>$classLinks, 'helloUri'=>$helloUri, 'otherStuff'=>$otherStuff];
+		$otherLinks = [
+			'Do square roots really slowly' => 'computations'
+		];
+		
+		return ['classLinks'=>$classLinks, 'helloUri'=>$helloUri, 'otherStuff'=>$otherStuff, 'otherLinks'=>$otherLinks];
 	}
 }

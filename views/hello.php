@@ -37,4 +37,10 @@ dl.tabby dd {
 <?php endforeach; ?>
 </dl>
 
+<ul>
+<?php foreach($otherLinks as $title=>$href): ?>
+<li><a href="<?php eht($href); ?>"><?php eht($title); ?></a></li>
+<?php endforeach; ?>
+</ul>
+
 <?php $PU->emitHtmlFooter(); ?>
