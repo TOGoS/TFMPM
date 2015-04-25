@@ -39,7 +39,7 @@ class PHPTemplateProjectNS_Registry
 	}
 	
 	public function loadDbNamer() {
-		return new EarthIT_DBC_PostgresNamer();
+		return new EarthIT_DBC_OverridableNamer(new EarthIT_DBC_PostgresNamer());
 	}
 		
 	public function loadSchema() {
