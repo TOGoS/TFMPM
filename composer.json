@@ -8,10 +8,10 @@
 	"require": {
 		"php": "^5.2",
 		"doctrine/dbal": "^2.4",
-		"earthit/php-common": "^0.0.14",
+		"earthit/php-common": "^1.0.0",
 		"earthit/dbc": "^0.0.16",
-		"earthit/schema": "^0.1.8",
-		"earthit/cmip-rest": "^0.0.102",
+		"earthit/schema": "^1.0.0",
+		"earthit/cmip-rest": "^0.1.5",
 		"earthit/php-project-utils": "^0.0.12",
 		"ryprop/nife": "^0.2.4",
 		"togos/action": "^1.0.0",
