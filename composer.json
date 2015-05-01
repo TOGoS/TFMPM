@@ -9,7 +9,7 @@
 		"php": "^5.2",
 		"doctrine/dbal": "^2.4",
 		"earthit/php-common": "^1.0.0",
-		"earthit/dbc": "^0.0.16",
+		"earthit/dbc": "^1.0.0",
 		"earthit/schema": "^1.0.0",
 		"earthit/cmip-rest": "^0.1.5",
 		"earthit/php-project-utils": "^0.0.12",
