@@ -1,6 +1,7 @@
 config_files := \
 	config/ccouch-repos.lst \
-	config/dbc.json
+	config/dbc.json \
+	config/email-transport.json
 
 generated_resources := \
 	build/db/all-tables.sql \

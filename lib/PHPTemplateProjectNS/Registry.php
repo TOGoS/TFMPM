@@ -66,7 +66,24 @@ class PHPTemplateProjectNS_Registry
 			'schema' => $this->schema,
 			'keyByIds' => true
 		));
-	}	
+	}
+	
+	public function loadMailer() {
+		$transportConfig = $this->getConfig('email-transport');
+		
+		$encryptionMethod = coalesce($transportConfig['encryption']); // 'SSL' and 'TLS' are supported
+
+		$transport = Swift_SmtpTransport::newInstance($transportConfig['host'], coalesce($transportConfig['port'],25));
+		$transport->setUsername($transportConfig['username']);
+		$transport->setPassword($transportConfig['password']);
+		if( $encryptionMethod) $transport->setEncryption(strtolower($encryptionMethod));
+		
+		if( $recipientOverride = coalesce($transportConfig['recipient-override']) ) {
+			$transport = new PHPTemplateProjectNS_Email_RecipientOverrideTransport($transport, $recipientOverride);
+		}
+		
+		return Swift_Mailer::newInstance($transport);
+	}
 	
 	protected function readLstFile( $f ) {
 		$data = file_get_contents($f);

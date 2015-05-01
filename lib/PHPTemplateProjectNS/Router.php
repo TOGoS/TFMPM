@@ -29,6 +29,13 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 			return $this->createPageAction('ShowHello');
 		} else if( preg_match('<^/hello/(.*)$>', $path, $bif) ) {
 			return $this->createPageAction('SayHelloTo',$bif[1]);
+		} else if( $path == '/register' ) {
+			switch( $ctx->getRequestMethod() ) {
+			case 'GET':
+				return $this->createPageAction('ShowRegistrationForm');
+			case 'POST':
+				return $this->createPageAction('RegisterEmailAddress', $ctx->getParam('e-mail-address'));
+			}
 		} else if( $path == '/computations' ) {
 			switch( $ctx->getRequestMethod() ) {
 			case 'GET':

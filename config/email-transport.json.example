@@ -1,0 +1,9 @@
+{
+   "type": "SMTP",
+   "username": "YOUR USERNAME GOES HERE",
+   "password": "PASSWROD GOES HERE",
+   "host": "smtp.sendgrid.net",
+   "port": 587,
+   "encryption": "TLS",
+   "recipient-override": "your-email-here@example.com"
+}

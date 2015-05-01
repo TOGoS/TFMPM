@@ -20,7 +20,8 @@ class PHPTemplateProjectNS_PageAction_ShowHello extends PHPTemplateProjectNS_Pag
 		];
 		
 		$otherLinks = [
-			'Do square roots really slowly' => 'computations'
+			'Do square roots really slowly' => 'computations',
+			'Register awn are sight!' => 'register'
 		];
 		
 		return ['classLinks'=>$classLinks, 'helloUri'=>$helloUri, 'otherStuff'=>$otherStuff, 'otherLinks'=>$otherLinks];

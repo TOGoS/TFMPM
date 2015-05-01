@@ -3,6 +3,7 @@ build/db/create-database.sql
 build/db/drop-database.sql
 composer.lock
 config/dbc.json
+config/email-transport.json
 schema/schema.php
 util/phptemplateprojectdatabase-pg_dump
 util/phptemplateprojectdatabase-psql
