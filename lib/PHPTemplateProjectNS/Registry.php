@@ -51,8 +51,7 @@ class PHPTemplateProjectNS_Registry
 	}
 
 	public function loadStorageHelper() {
-		return new PHPTemplateProjectNS_NormalStorageHelper(
-			$this->sqlRunner, $this->schema, $this->dbNamer);
+		return new PHPTemplateProjectNS_NormalStorageHelper($this);
 	}
 	
 	protected function loadStorage() {

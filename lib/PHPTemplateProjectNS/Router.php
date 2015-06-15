@@ -23,39 +23,49 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		return $rc->newInstanceArgs($args);
 	}
 	
-	public function requestToAction( PHPTemplateProjectNS_RequestContext $ctx ) {
-		$path = $ctx->getPathInfo();
+	public function requestToAction( PHPTemplateProjectNS_Request $req ) {
+		$path = $req->getPathInfo();
 		if( $path == '/' ) {
 			return $this->createPageAction('ShowHello');
+		} else if( $path == '/login' ) {
+			switch( $req->requestMethod ) {
+			case 'GET' : return $this->createPageAction('ShowLoginForm', $req->getParam('error-message-id'));
+			case 'POST': return $this->createPageAction('LogIn', $req->getParam('username'), $req->getParam('password'));
+			}
+		} else if( $path == '/logout' ) {
+			return function(PHPTemplateProjectNS_ActionContext $actx) {
+				if( $actx->sessionExists() ) $actx->destroySession();
+				return Nife_Util::httpResponse(303, 'Log you out!', ['location'=>'./']);
+			};
 		} else if( preg_match('<^/hello/(.*)$>', $path, $bif) ) {
 			return $this->createPageAction('SayHelloTo',$bif[1]);
 		} else if( $path == '/register' ) {
-			switch( $ctx->getRequestMethod() ) {
+			switch( $req->getRequestMethod() ) {
 			case 'GET':
-				return $this->createPageAction('ShowRegistrationForm');
+				return $this->createPageAction('ShowRegistrationForm', $req->getParam('error-message-id'));
 			case 'POST':
-				return $this->createPageAction('RegisterEmailAddress', $ctx->getParam('e-mail-address'));
+				return $this->createPageAction('Register', $req->getParams());
 			}
 		} else if( $path == '/computations' ) {
-			switch( $ctx->getRequestMethod() ) {
+			switch( $req->getRequestMethod() ) {
 			case 'GET':
 				return $this->createPageAction('ShowComputations');
 			case 'POST':
-				$input = (float)$ctx->getParam('square');
+				$input = (float)$req->getParam('square');
 				return $this->createPageAction('EnqueueComputation', "sqrt($input)");
 			}
 		} else if(
 			preg_match('#^/api([;/].*)#',$path,$bif) and
 			($cmipUserAction = $this->apiRequestToAction(
-				$ctx->getRequestMethod(),
-				$bif[1], $ctx->getParams(),
-				$ctx->getRequestContentObject())
+				$req->getRequestMethod(),
+				$bif[1], $req->getParams(),
+				$req->getRequestContentObject())
 			 ) !== null
 		) {
 			return $cmipUserAction;
 		}
 		
-		return function() use ($ctx, $path) {
+		return function(PHPTemplateProjectNS_ActionContext $actx) use ($req, $path) {
 			// Some demonstration routes; remove and replace with your own
 			if( preg_match('<^/uri-res(/.*)>', $path, $bif) ) {
 				return $this->n2rServer->handleRequest($bif[1]);
@@ -71,11 +81,11 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		};
 	}
 	
-	public function doAction($action) {
+	public function doAction($action, PHPTemplateProjectNS_ActionContext $actx) {
 		if( is_callable($action) ) {
-			return call_user_func($action, ['this is the context']);
+			return call_user_func($action, $actx);
 		} else if( $action instanceof EarthIT_CMIPREST_UserAction ) {
-			$rez = $this->rester->doAction($action);
+			$rez = $this->rester->doAction($action, $actx);
 			if( $rez instanceof Nife_HTTP_Response ) return $rez;
 			return PHPTemplateProjectNS_PageUtil::jsonResponse(200, $rez);
 		} else {
@@ -83,9 +93,9 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		}
 	}
 	
-	public function handleRequest( PHPTemplateProjectNS_RequestContext $ctx ) {
-		// TODO: authentication!  authorization!  validation!  error handling?
-		$action = $this->requestToAction($ctx);
-		return $this->doAction($action);
+	public function handleRequest( PHPTemplateProjectNS_Request $req, PHPTemplateProjectNS_ActionContext $actx ) {
+		// TODO: Any per-request authentication (basic, etc)
+		$action = $this->requestToAction($req);
+		return $this->doAction($action, $actx);
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 
-class PHPTemplateProjectNS_RequestContext
+class PHPTemplateProjectNS_Request
 {
 	public static function fromEnvironment($otherSettings=[]) {
 		$superGlobals = [];
@@ -11,7 +11,7 @@ class PHPTemplateProjectNS_RequestContext
 				$superGlobals[substr($k,1)] = $v;
 			}
 		}
-		$ctx = new PHPTemplateProjectNS_RequestContext($superGlobals);
+		$ctx = new PHPTemplateProjectNS_Request($superGlobals);
 		return $ctx->with($otherSettings);
 	}
 	
@@ -188,7 +188,7 @@ class PHPTemplateProjectNS_RequestContext
 	}
 	
 	//// Session stuff!
-	// Always use these instead of referencing $_SESSION or $ctx->SESSION directly.
+	// If you need to ~set~ session variables, use your ActionContext.
 	
 	protected function openSession() {
 		if( session_status() == PHP_SESSION_NONE ) session_start();
@@ -201,27 +201,6 @@ class PHPTemplateProjectNS_RequestContext
 	public function getSessionVariable($key) {
 		$this->openSessionIfExists();
 		return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
-	}
-	
-	public function setSessionVariable($key, $value) {
-		if( $value === null ) {
-			$this->unsetSessionVariable($key);
-			return;
-		}
-		
-		$this->openSession();
-		$_SESSION[$key] = $value;
-	}
-	
-	public function unsetSessionVariable($key) {
-		$this->openSessionIfExists();
-		unset($_SESSION[$key]);
-	}
-	
-	public function destroySession() {
-		$params = session_get_cookie_params();
-		setcookie(session_name(), '', time()-42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
-		session_destroy();
 	}
 	
 	// Sometimes you want to show an error message on a page.  But you

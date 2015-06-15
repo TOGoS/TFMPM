@@ -3,7 +3,7 @@
 class PHPTemplateProjectNS_RouterTest extends PHPTemplateProjectNS_TestCase
 {
 	public function testCompoundAction() {
-		$ctx = new PHPTemplateProjectNS_RequestContext([
+		$req = new PHPTemplateProjectNS_Request([
 			'GET' => [],
 			'POST' => [],
 		], [
@@ -21,8 +21,10 @@ class PHPTemplateProjectNS_RouterTest extends PHPTemplateProjectNS_TestCase
 					]
 				]
 			]
-		]);			
-		$rez = $this->router->handleRequest($ctx);
+		]);
+		// TODO: Use some fake action context
+		$actx = new PHPTemplateProjectNS_NormalActionContext();
+		$rez = $this->router->handleRequest($req, $actx);
 		$this->assertEquals( 200, $rez->getStatusCode() );
 		$rezCO = EarthIT_JSON::decode($rez->getContent());
 		$this->assertTrue( is_array($rezCO) );

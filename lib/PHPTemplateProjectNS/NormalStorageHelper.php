@@ -1,23 +1,9 @@
 <?php
 
-class PHPTemplateProjectNS_NormalStorageHelper implements PHPTemplateProjectNS_StorageHelper
+class PHPTemplateProjectNS_NormalStorageHelper
+extends PHPTemplateProjectNS_Component
+implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 {
-	protected $sqlRunner;
-	protected $schema;
-	protected $dbObjectNamer;
-	
-	public function __construct(
-		EarthIT_DBC_SQLRunner $sqlRunner,
-		EarthIT_Schema $schema,
-		EarthIT_DBC_Namer $dbObjectNamer
-	) {
-		$this->sqlRunner = $sqlRunner;
-		$this->schema = $schema;
-		$this->dbObjectNamer = $dbObjectNamer;
-	}
-	
-	////
-										  
 	public function doQuery($sql, $params=[]) {
 		list($sql,$params) = EarthIT_DBC_SQLExpressionUtil::templateAndParamValues($sql, $params);
 		$this->sqlRunner->doQuery($sql, $params);
@@ -54,6 +40,71 @@ class PHPTemplateProjectNS_NormalStorageHelper implements PHPTemplateProjectNS_S
 		}
 		return $set;
 	}
+	
+	public function beginTransaction() {
+		$this->sqlRunner->doRawQuery("START TRANSACTION");
+	}
+	public function endTransaction($success) {
+		if( $success ) {
+			$this->sqlRunner->doRawQuery("COMMIT TRANSACTION");
+		} else {
+			$this->sqlRunner->doRawQuery("ROLLBACK TRANSACTION");
+		}
+	}
+	
+	//// DB <-> internal form transforms
+	// TODO: Maybe make these a public part of the Storage API
+	
+	protected static function dbToPhpValue( EarthIT_Schema_DataType $t, $value ) {
+		// Various special rules may end up here
+		return EarthIT_CMIPREST_Util::cast( $value, $t->getPhpTypeName() );
+	}
+	
+	protected function dbObjectToInternal( EarthIT_Schema_ResourceClass $rc, array $obj ) {
+		$fieldValues = array();
+		foreach( EarthIT_CMIPREST_Util::storableFields($rc) as $f ) {
+			$fieldName = $f->getName();
+			$columnName = $this->dbNamer->getColumnName($rc, $f);
+			if( isset($obj[$columnName]) ) {
+				$fieldValues[$f->getName()] = self::dbToPhpValue($f->getType(), $obj[$columnName]);
+			}
+		}
+		return $fieldValues;
+	}
+	
+	//// Parameter parsing/translation to CMIPREST classes
+
+	protected function orderBys( array $orderBySpecs ) {
+		if( count($orderBySpecs) == 0 ) return [];
+		throw new Exception("Order-by parsing not yet implemented.");
+	}
+	
+	protected function fieldMatchers( EarthIT_Schema_ResourceClass $rc, array $fieldValues ) {
+		$fieldsByName = $rc->getFields();
+		$matchers = array();
+		foreach( $fieldValues as $k => $value ) {
+			if( isset($fieldsByName[$k]) ) {
+				$fn = $k;
+			} else if( isset($fieldsByName[$k]) ) {
+				$fn = $fieldsByName[$k]->getName();
+			} else {
+				throw new Exception("'".ucfirst($rc->getName())."' has no such field as '$k'.");
+			}
+			
+			if( $value instanceof EarthIT_CMIPREST_FieldMatcher ) {
+				$matchers[$fn] = $value;
+			} else if( is_array($value) ) {
+				$matchers[$fn] = new EarthIT_CMIPREST_FieldMatcher_In($value);
+			} else if( is_scalar($value) ) {
+				$matchers[$fn] = new EarthIT_CMIPREST_FieldMatcher_Equal($value);
+			} else {
+				throw new Exception("Don't know how to make field matcher from ".var_export($value,true));
+			}
+		}
+		return $matchers;
+	}
+	
+	//
 
 	/**
 	 * Insert new items.
@@ -62,19 +113,36 @@ class PHPTemplateProjectNS_NormalStorageHelper implements PHPTemplateProjectNS_S
 	 * Returns nothing.
 	 */
 	public function insertNewItems($rc, array $itemData) {
-		throw new Exception(get_class($this).'#'.__FUNCTION__." not yet implemented!");
+		// TODO: Better.
+		$this->storage->postItem($this->rc($rc), $itemData);
 	}
 	/**
 	 * Insert a single new item.  Suggested implementation is just to call insertNewItems($rc, [$itemData]);
 	 */
 	public function insertNewItem($rc, array $itemData) {
-		throw new Exception(get_class($this).'#'.__FUNCTION__." not yet implemented!");
+		$this->insertNewItems($rc, [$itemData]);
 	}
 	/**
 	 * Insert a new item or update it if it doesn't already exist.
 	 */
 	public function upsertItem($rc, array $itemData) {
 		throw new Exception(get_class($this).'#'.__FUNCTION__." not yet implemented!");
+	}
+
+	/**
+	 * Fetch a bunch of items from a query.
+	 * Any transformations that need to be done on the query must be included in the SQL.
+	 * (e.g. geometry to GeoJSON)
+	 * Queried columns should otherwise be database-form (e.g. SELECT * FROM foo).
+	 */
+	public function queryItems($rc, $sql, array $params=[]) {
+		$rc = $this->rc($rc);
+		$rows = $this->queryRows($sql, $params);
+		$items = [];
+		foreach( $rows as $row ) {
+			$items[] = $this->dbObjectToInternal($rc, $row);
+		}
+		return $items;
 	}
 	/**
 	 * Fetch a list of items matching the given filters.
@@ -83,13 +151,21 @@ class PHPTemplateProjectNS_NormalStorageHelper implements PHPTemplateProjectNS_S
 	 * @param array $orderBy list of fields to order by, optionally prefixed with '+' or '-'
 	 */
 	public function getItems($rc, array $filters=[], array $orderBy=[]) {
-		throw new Exception(get_class($this).'#'.__FUNCTION__." not yet implemented!");
+		$rc = $this->rc($rc);
+		$orderBy = $this->orderBys($orderBy);
+		$sp = new EarthIT_CMIPREST_SearchParameters(
+			$this->fieldMatchers($rc, $filters),
+			$orderBy, 0, null
+		);
+		$searchRes = $this->storage->search($rc, $sp, []);
+		return $searchRes['root'];
 	}
 	/**
 	 * Return the first item returned by getItems($rc, $filters, $orderBy);
 	 */
 	public function getItem($rc, array $filters=[], array $orderBy=[]) {
-		throw new Exception(get_class($this).'#'.__FUNCTION__." not yet implemented!");
+		foreach( $this->getItems($rc, $filters, $orderBy) as $item ) return $item;
+		return null;
 	}
 	/**
 	 * Delete all items from the given class matching the given filters.

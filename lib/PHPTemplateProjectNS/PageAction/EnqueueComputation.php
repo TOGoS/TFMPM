@@ -17,7 +17,7 @@ class PHPTemplateProjectNS_PageAction_EnqueueComputation extends PHPTemplateProj
 		);
 	}
 	
-	public function __invoke() {
+	public function __invoke( PHPTemplateProjectNS_ActionContext $actx ) {
 		$expression = $this->expression;
 		PHPTemplateProjectNS_PostResponseJobs::enqueue(function() use ($expression) {
 			// Simulate slowness

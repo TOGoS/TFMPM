@@ -32,11 +32,12 @@ if( isset($_SERVER['PATH_INFO']) ) {
 	}
 }
 
-$requestContext = PHPTemplateProjectNS_RequestContext::fromEnvironment([
+$request = PHPTemplateProjectNS_Request::fromEnvironment([
 	'pathInfo'=>$path,
 	'requestContentFuture'=>'eit_get_request_content'
 ]);
-$response = $router->handleRequest($requestContext);
+$actx = new PHPTemplateProjectNS_NormalActionContext();
+$response = $router->handleRequest($request, $actx);
 
 $bubble404s = preg_match('/^PHP.*Development Server$/', $_SERVER['SERVER_SOFTWARE']);
 

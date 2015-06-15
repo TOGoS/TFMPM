@@ -7,11 +7,28 @@ abstract class PHPTemplateProjectNS_PageAction_TemplatePageAction extends PHPTem
 	protected abstract function getTemplateName();
 	protected abstract function getTemplateParameters();
 	
-	public function __invoke() {
+	protected $errorMessageId; // Set in constructor if your pageaction has error messages
+	
+	public function __construct( PHPTemplateProjectNS_Registry $reg, $errorMessageId=null ) {
+		parent::__construct($reg);
+		$this->errorMessageId = $errorMessageId;
+	}
+	
+	/** 
+	 * Get standard template variables from the action context (logged in user, etc)
+	 */
+	protected function contextTemplateVars( PHPTemplateProjectNS_ActionContext $actx, array $into=array() ) {
+		$userId = $actx->getLoggedInUserId();
+		$into['loggedInUser'] = $userId === null ? null : $this->storageHelper->getItem('user', array('ID'=>$userId));
+		$into['errorMessage'] = $this->getErrorMessage($this->errorMessageId, $actx);
+		return $into;
+	}
+	
+	public function __invoke( PHPTemplateProjectNS_ActionContext $actx ) {
 		return $this->makeTemplateResponse(
 			$this->getStatusCode(),
 			$this->getTemplateName(),
-			$this->getTemplateParameters(),
+			$this->getTemplateParameters() + $this->contextTemplateVars($actx),
 			$this->getHeaders()
 		);
 	}

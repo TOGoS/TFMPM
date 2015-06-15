@@ -7,11 +7,14 @@ class PHPTemplateProjectNS_PageUtil extends PHPTemplateProjectNS_Component
 		return Nife_Util::httpResponse($status, new EarthIT_JSON_PrettyPrintedJSONBlob($data), $headers);
 	}
 	
-	public function emitHtmlBoilerplate($title) {
-		$this->emitView('html-boilerplate', array('title'=>$title));
+	public function emitHtmlBoilerplate($title, array $params=array()) {
+		$this->emitView('html-boilerplate', array('title'=>$title) + $params);
 	}
-	public function emitHtmlFooter() {
-		$this->emitView('html-footer');
+	public function emitHtmlFooter( array $params=array() ) {
+		$this->emitView('html-footer', $params);
+	}
+	public function emitErrorMessageBlock( array $params=array() ) {
+		$this->emitView('error-message-block', $params);
 	}
 	
 	public function fortifyViewParams(array $params) {
