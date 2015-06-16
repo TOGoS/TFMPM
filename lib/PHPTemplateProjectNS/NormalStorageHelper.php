@@ -114,7 +114,9 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 	 */
 	public function insertNewItems($rc, array $itemData) {
 		// TODO: Better.
-		$this->storage->postItem($this->rc($rc), $itemData);
+		foreach( $itemData as $itemDat ) {
+			$this->storage->postItem($this->rc($rc), $itemDat);
+		}
 	}
 	/**
 	 * Insert a single new item.  Suggested implementation is just to call insertNewItems($rc, [$itemData]);
