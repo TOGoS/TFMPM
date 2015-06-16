@@ -63,7 +63,8 @@ class PHPTemplateProjectNS_Registry
 		return new EarthIT_CMIPREST_RESTer( array(
 			'storage' => $this->storage,
 			'schema' => $this->schema,
-			'keyByIds' => true
+			'keyByIds' => true,
+			'authorizer' => $this->restActionAuthorizer
 		));
 	}
 	
@@ -141,7 +142,7 @@ class PHPTemplateProjectNS_Registry
 	 *
 	 * If you've defined a loadXyz function, then this is unnecessary.
 	 */
-	protected static $funnilyCasedComponentNames = ['ABC decoder'];
+	protected static $funnilyCasedComponentNames = ['ABC decoder', 'REST action authorizer'];
 	
 	public function __get($attrName) {
 		$ucfAttrName = ucfirst($attrName);
