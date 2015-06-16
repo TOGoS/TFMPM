@@ -17,8 +17,7 @@ build_resources := ${generated_resources} ${config_files}
 
 runtime_resources := \
 	schema/schema.php \
-	vendor \
-	www/images/head.png
+	vendor
 
 resources := ${build_resources} ${runtime_resources}
 
@@ -88,8 +87,8 @@ build/db/create-database.sql: config/dbc.json vendor
 build/db/drop-database.sql: config/dbc.json vendor
 	vendor/bin/generate-drop-database-sql "$<" >"$@"
 
-www/images/head.png:
-	${fetch} -o "$@" "urn:bitprint:HYWPXT25DHVRV4BXETMRZQY26E6AQCYW.33QDQ443KBXZB5F5UGYODRN2Y34DOZ4GILDI7ZA"
+#www/images/head.png:
+#	${fetch} -o "$@" "urn:bitprint:HYWPXT25DHVRV4BXETMRZQY26E6AQCYW.33QDQ443KBXZB5F5UGYODRN2Y34DOZ4GILDI7ZA"
 
 create-database drop-database: %: build/db/%.sql
 	sudo su postgres -c "cat '$<' | psql"

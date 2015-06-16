@@ -11,7 +11,6 @@ You probably want to make some modifications.</p>
 <ul>
 <?php echo implode("\n",$classLinks) ?>
 </ul>
-<div style="position:fixed; bottom:0; right:0">Woo! <img src="images/head.png" width="96" height="128" align="middle"/></div>
 
 <style>
 dl.tabby { display: table; }
