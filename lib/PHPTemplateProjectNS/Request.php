@@ -104,6 +104,9 @@ class PHPTemplateProjectNS_Request
 		}
 		return call_user_func($this->requestContentFuture);
 	}
+	public function getRequestContentBlob() {
+		return new Nife_StringBlob($this->getRequestContent());
+	}
 	
 	/**
 	 * Return the object encoded by the request IFF
@@ -177,8 +180,8 @@ class PHPTemplateProjectNS_Request
 	}
 	
 	public function __get($name) {
-		if( $name == 'requestMethod' ) return $this->getRequestMethod();
-		if( $name == 'requestContentObject' ) return $this->getRequestContentObject();
+		$getMeth = 'get'.ucfirst($name);
+		if( method_exists($this,$getMeth) ) return $this->$getMeth();
 		if( $name == 'REQUEST' ) return $this->GET + $this->POST;
 		return $this->superGlobals[$name];
 	}

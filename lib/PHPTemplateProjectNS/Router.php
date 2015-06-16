@@ -3,15 +3,22 @@
 class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 {
 	/**
-	 * If the indicated request can be interpreted as a CMIPREST_UserAction, parse and return said action.
+	 * If the indicated request can be interpreted as a CMIPREST_RESTAction, parse and return said action.
 	 * Otherwise return null.
 	 */
-	public function apiRequestToAction( $method, $path, array $params=array(), $contentObject=null ) {
-		if( ($crReq = EarthIT_CMIPREST_CMIPRESTRequest::parse( $method, $path, $params, $contentObject )) !== null ) {
-			return $this->rester->cmipRequestToUserAction($crReq);
-		} else {
-			return null;
+	public function apiRequestToAction( $method, $path, $queryString, Nife_Blob $content=null ) {
+		$requestParser = new EarthIT_CMIPREST_RequestParser_FancyRequestParser(
+			EarthIT_CMIPREST_RequestParser_FancyRequestParser::buildStandardParsers(
+				$this->schema, function($name, $plural=false) {
+					if($plural) $name = EarthIT_Schema_WordUtil::pluralize($name);
+					return EarthIT_Schema_WordUtil::toCamelCase($name);
+				}, 'cmip'));
+		
+		if( ($request = $requestParser->parse( $method, $path, $queryString, $content )) !== null ) {
+			return $requestParser->toAction($request);
 		}
+		
+		return null;
 	}
 	
 	protected function createPageAction( $actionName /* followed by action-specific arguments */ ) {
@@ -58,8 +65,8 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 			preg_match('#^/api([;/].*)#',$path,$bif) and
 			($cmipUserAction = $this->apiRequestToAction(
 				$req->getRequestMethod(),
-				$bif[1], $req->getParams(),
-				$req->getRequestContentObject())
+				$bif[1], $req->queryString,
+				$req->getRequestContentBlob())
 			 ) !== null
 		) {
 			return $cmipUserAction;
@@ -84,7 +91,7 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 	public function doAction($action, PHPTemplateProjectNS_ActionContext $actx) {
 		if( is_callable($action) ) {
 			return call_user_func($action, $actx);
-		} else if( $action instanceof EarthIT_CMIPREST_UserAction ) {
+		} else if( $action instanceof EarthIT_CMIPREST_RESTAction ) {
 			$rez = $this->rester->doAction($action, $actx);
 			if( $rez instanceof Nife_HTTP_Response ) return $rez;
 			return PHPTemplateProjectNS_PageUtil::jsonResponse(200, $rez);
