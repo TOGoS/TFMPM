@@ -42,6 +42,9 @@ class PHPTemplateProjectNS_NormalActionContext implements PHPTemplateProjectNS_A
 	}
 	
 	public function destroySession() {
+		if( !$this->sessionExists() ) return; // Nothing to destroy!
+		
+		$this->openSession(); // We'll get an error if we try to destroy a non-open session.
 		$params = session_get_cookie_params();
 		setcookie(session_name(), '', time()-42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
 		session_destroy();

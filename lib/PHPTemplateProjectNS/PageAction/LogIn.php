@@ -19,21 +19,31 @@ class PHPTemplateProjectNS_PageAction_LogIn extends PHPTemplateProjectNS_PageAct
 			"WHERE username = {username} OR emailaddress = {username}\n",
 			['username'=>$this->username]);
 		
-		if( count($users) > 1 ) {
+		// TODO: Check based on username or e-mail, then if there is ambiguity, just e-mail
+		
+		$possibleUsers = [];
+		foreach( $users as $user ) {
+			if( $this->userModel->checkPassword($this->password, $user['passhash']) ) {
+				$possibleUsers[] = $user;
+			}
+		}
+
+		switch( count($possibleUsers) ) {
+		case 1:
+			foreach($possibleUsers as $user) {
+				$actx->setLoggedInUserId($user['ID']);
+				return $this->redirect(303, './');
+			}
+		case 0:
 			return $this->redirectWithErrorMessage(
 				'./login',
-				"More than one user matches those credentials.  Try using an e-mail address instead of username.",
+				"Invalid login credentials.",
+				$actx);
+		default:
+			return $this->redirectWithErrorMessage(
+				'./login',
+				"Ambiguous login!",
 				$actx);
 		}
-		
-		foreach( $users as $user ) {
-			$actx->setLoggedInUserId($user['ID']);
-			return $this->redirect(303, './');
-		}
-		
-		return $this->redirectWithErrorMessage(
-			'./login',
-			"Invalid login credentials.",
-			$actx);
 	}
 }
