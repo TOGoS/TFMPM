@@ -13,4 +13,6 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d [or]
 RewriteCond %{REQUEST_FILENAME} "/"
 # Otherwise, rewrite everything else to bootstrap.php/<whatever>
-RewriteRule .* bootstrap.php/$0 [PT]
+RewriteRule .* bootstrap.php/$0 [L,PT]
+# Depending on how Apache is set up, you may need to use this line, instead:
+# RewriteRule .* bootstrap.php [L]
