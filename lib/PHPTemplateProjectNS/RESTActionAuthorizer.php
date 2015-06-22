@@ -29,8 +29,8 @@ extends EarthIT_CMIPREST_RESTActionAuthorizer_DefaultRESTActionAuthorizer
 		$userIdFieldNames = [];
 		if( $rc->getName() === 'user' ) $userIdFieldNames[] = 'ID';
 		foreach( $rc->getReferences() as $ref ) {
-			if( $ref->getTargetResourceClassName() === 'user' ) {
-				$userIdFieldNames[] = $ref->getTargetFieldName();
+			if( $ref->getTargetClassName() === 'user' ) {
+				foreach( $ref->getOriginFieldNames() as $fn ) $userIdFieldNames[] = $fn;
 			}
 		}
 		
