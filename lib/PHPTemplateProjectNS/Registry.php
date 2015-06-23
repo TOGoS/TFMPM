@@ -104,7 +104,7 @@ class PHPTemplateProjectNS_Registry
 		} else {
 			$repos = [];
 		}
-		$repos[] = PHPTemplateProjectNS_ROOT_DIR.'/blobstore';
+		array_unshift($repos, PHPTemplateProjectNS_ROOT_DIR.'/datastore');
 		return $repos;
 	}
 	
@@ -114,6 +114,13 @@ class PHPTemplateProjectNS_Registry
 			$repos[] = new TOGoS_PHPN2R_FSSHA1Repository($rd);
 		}
 		return new TOGoS_PHPN2R_Server($repos);
+	}
+
+	protected function loadPrimaryBlobRepository() {
+		foreach( $this->getBlobRepositoryDirs() as $rd ) {
+			return new TOGoS_PHPN2R_FSSHA1Repository($rd);
+		}
+		throw new Exception("No local repositories configured.");
 	}
 	
 	/**

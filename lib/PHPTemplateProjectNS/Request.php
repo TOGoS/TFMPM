@@ -104,6 +104,9 @@ class PHPTemplateProjectNS_Request
 		}
 		return call_user_func($this->requestContentFuture);
 	}
+	public function getRequestContentType() {
+		return $this->SERVER['CONTENT_TYPE'];
+	}
 	public function getRequestContentBlob() {
 		return new Nife_StringBlob($this->getRequestContent());
 	}
@@ -119,7 +122,7 @@ class PHPTemplateProjectNS_Request
 			$requestContentObject = null;
 			break;
 		default:
-			$contentType = $this->SERVER['CONTENT_TYPE'];
+			$contentType = $this->requestContentType;
 			preg_match( '/^([^\s;]+)/', $contentType, $bif );
 			$baseContentType = $bif[1];
 			// Assuming charset=utf8, so not bothering to parse that out.

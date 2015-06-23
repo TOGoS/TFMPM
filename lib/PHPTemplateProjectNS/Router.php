@@ -34,6 +34,16 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		$path = $req->getPathInfo();
 		if( $path == '/' ) {
 			return $this->createPageAction('ShowHello');
+		} else if( preg_match('<^/uri-res(/.*)>', $path, $bif) ) {
+			switch($req->requestMethod) {
+			case 'PUT':
+				if( $bif[1] == '/N2R' and ($urn = $req->getQueryString()) ) {
+					return $this->createPageAction('N2RPut', $urn, $req);
+				}
+				break;
+			case 'GET': case 'HEAD':
+				return $this->createPageAction('N2RGet', $bif[1], $req);
+			}
 		} else if( $path == '/login' ) {
 			switch( $req->requestMethod ) {
 			case 'GET' : return $this->createPageAction('ShowLoginForm', $req->getParam('error-message-id'));
@@ -61,6 +71,8 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 				$input = (float)$req->getParam('square');
 				return $this->createPageAction('EnqueueComputation', "sqrt($input)");
 			}
+		} else if( $path === '/blobs' && $req->requestMethod === 'POST' ) {
+			return $this->createPageAction('FileUpload', $req);
 		} else if(
 			preg_match('#^/api([;/].*)#',$path,$bif) and
 			($cmipUserAction = $this->apiRequestToAction(
@@ -73,10 +85,10 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		}
 		
 		return function(PHPTemplateProjectNS_ActionContext $actx) use ($req, $path) {
-			// Some demonstration routes; remove and replace with your own
-			if( preg_match('<^/uri-res(/.*)>', $path, $bif) ) {
-				return $this->n2rServer->handleRequest($bif[1]);
-			} else if( preg_match('<^/hello/(.*)$>', $path, $matchData) ) {
+			// These are here because they haven't yetb been converted to
+			// the newer interpret-then-execute style, though it'd be
+			// easy to do.
+			if( preg_match('<^/hello/(.*)$>', $path, $matchData) ) {
 				return Nife_Util::httpResponse( 200, "Hello, ".rawurldecode($matchData[1]).'!' );
 			} else if( $path == '/error' ) {
 				trigger_error( "An error occurred for demonstrative porpoises.", E_USER_ERROR );

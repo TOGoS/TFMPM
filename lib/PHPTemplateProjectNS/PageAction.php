@@ -29,6 +29,25 @@ abstract class PHPTemplateProjectNS_PageAction extends PHPTemplateProjectNS_Comp
 		return $this->redirect(303, "{$location}?error-message-id={$messageHash}");
 	}
 	
+	public function isAllowed( PHPTemplateProjectNS_ActionContext $actx, &$status, array &$notes=[] ) {
+		return true;
+	}
+	
+	/**
+	 * Given a path relative to '/' (including the '/'), make a
+	 * relative URL from the current path (in $actx) to that location.
+	 */
+	protected function relativePath($to, PHPTemplateProjectNS_ActionContext $actx) {
+		// TODO: Fix when $actx->getPath() works
+		return substr($to,1);
+	}
+	
+	protected function blobUrl($ref, $filenameHint='?', PHPTemplateProjectNS_ActionContext $actx) {
+		list($urn,$blobId) = PHPTemplateProjectNS_BlobIDUtil::parseRef($ref);
+		$filename = str_replace('?',substr($blobId,0,12),$filenameHint);
+		return $this->relativePath("/uri-res/raw/$urn/$filename", $actx);
+	}
+	
 	/** Return a Nife_HTTP_Response */
 	public abstract function __invoke( PHPTemplateProjectNS_ActionContext $actx );
 }

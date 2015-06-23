@@ -29,7 +29,14 @@ dl.tabby dd {
 }
 </style>
 
-<h4>Other stuff:</h4>
+<h4>File upload</h4>
+
+<form action="blobs" method="POST" enctype="multipart/form-data">
+<input type="file" name="files[]" multiple="multiple">
+<input type="submit" name="Go!"/>
+</form>
+
+<h4>Other stuff</h4>
 <dl class="tabby">
 <?php foreach($otherStuff as $thing=>$stuff): ?>
 <div><dt><?php eht($thing); ?></dt><dd><?php eht($stuff); ?></dd></div>

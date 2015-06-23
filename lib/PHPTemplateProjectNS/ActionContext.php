@@ -8,4 +8,5 @@ interface PHPTemplateProjectNS_ActionContext
 	public function setSessionVariable($key, $value);
 	public function unsetSessionVariable($key);
 	public function destroySession();
+	public function getPath();
 }

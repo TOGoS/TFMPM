@@ -49,4 +49,9 @@ class PHPTemplateProjectNS_NormalActionContext implements PHPTemplateProjectNS_A
 		setcookie(session_name(), '', time()-42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
 		session_destroy();
 	}
+	
+	public function getPath() {
+		// TODO!
+		return null;
+	}
 }
