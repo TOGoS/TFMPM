@@ -3,13 +3,8 @@
 abstract class PHPTemplateProjectNS_PageAction extends PHPTemplateProjectNS_Component implements TOGoS_Action
 {
 	protected function makeTemplateResponse( $statusCode=200, $viewName, $vars=array(), $typeOrHeaders='text/html' ) {
-		$vars = $this->pageUtil->fortifyViewParams($vars);
-		$templateFile = PHPTemplateProjectNS_ROOT_DIR.'/views/'.$viewName.".php";
-		if( !file_exists($templateFile) ) {
-			throw new Exception("View template file '{$templateFile}' does not exist!");
-		}
-		$vars['params'] = $vars;
-		$blob = new EarthIT_FileTemplateBlob($templateFile, $vars);
+		$pageUtil = new PHPTemplateProjectNS_PageUtil($this->registry, $vars);
+		$blob = $pageUtil->viewBlob($viewName);
 		return Nife_Util::httpResponse( $statusCode, $blob, $typeOrHeaders );
 	}
 	

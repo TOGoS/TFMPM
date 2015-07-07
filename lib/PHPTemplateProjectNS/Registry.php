@@ -123,6 +123,10 @@ class PHPTemplateProjectNS_Registry
 		throw new Exception("No local repositories configured.");
 	}
 	
+	protected function getViewTemplateDirectory() {
+		return PHPTemplateProjectNS_ROOT_DIR.'/views';
+	}
+	
 	/**
 	 * Magic __get and __isset are slightly deficient due to inability
 	 * to automatically glean whether abcXyz should be cased as AbcXyz,
