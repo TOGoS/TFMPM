@@ -8,7 +8,11 @@ class PHPTemplateProjectNS_UserModel extends PHPTemplateProjectNS_Component
 	}
 	
 	public function checkPassword($password, $passhash) {
-		list($salt,$hash) = explode(':',$passhash,2);
+		$parts = explode(':',$passhash,2);
+		if( count($parts) != 2 ) {
+			return false;
+		}
+		list($salt,$hash) = $parts;
 		return hash_hmac('sha1', $password, $salt) === $hash;
 	}
 }
