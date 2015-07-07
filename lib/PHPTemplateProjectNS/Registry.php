@@ -133,7 +133,8 @@ class PHPTemplateProjectNS_Registry
 	 * AbcXYZ, ABCXyz, or ABCXYZ.  e.g. abcDecoder would not get
 	 * properly mapped to instantiating a
 	 * PHPTemplateProjectNS_ABCDecoder because of casing.  In cases
-	 * like those, define a loadAbcDecoder() method.
+	 * like those, define a loadAbcDecoder() method or add 'ABC
+	 * decoder' to $funnilyCasedComponentNames.
 	 */
 	protected $components = [];
 
