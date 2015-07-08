@@ -10,7 +10,7 @@ while( ob_get_level() ) ob_end_clean();
 ini_set('display_errors','on');
 ini_set('error_reporting', E_ALL|E_STRICT);
 
-require_once __DIR__.'/../init-www-error-handling.php';
+require_once __DIR__.'/../init-error-handling.php';
 require_once __DIR__.'/../init-environment.php';
 
 $router = $PHPTemplateProjectNS_Registry->router;
