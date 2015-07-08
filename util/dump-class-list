@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+
+// Demonstration utility script
+// that uses the application's resources
+
+require_once __DIR__.'/../init-error-handling.php';
+$reg = require_once __DIR__.'/../init-environment.php';
+$rcs = $reg->schema->getResourceClasses();
+foreach( $rcs as $rc ) {
+	echo $rc->getName(), "\n";
+}
