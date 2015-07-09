@@ -42,8 +42,8 @@ class PHPTemplateProjectNS_Registry
 		return new EarthIT_DBC_OverridableNamer(new EarthIT_DBC_PostgresNamer());
 	}
 		
-	public function loadSchema() {
-		return require PHPTemplateProjectNS_ROOT_DIR.'/schema/schema.php';
+	public function loadSchema($name='') {
+		return require PHPTemplateProjectNS_ROOT_DIR.'/schema/'.($name?$name.'.':'').'schema.php';
 	}
 
 	public function loadSqlRunner() {
@@ -128,16 +128,18 @@ class PHPTemplateProjectNS_Registry
 	}
 	
 	/**
-	 * Magic __get and __isset are slightly deficient due to inability
-	 * to automatically glean whether abcXyz should be cased as AbcXyz,
-	 * AbcXYZ, ABCXyz, or ABCXYZ.  e.g. abcDecoder would not get
-	 * properly mapped to instantiating a
-	 * PHPTemplateProjectNS_ABCDecoder because of casing.  In cases
-	 * like those, define a loadAbcDecoder() method or add 'ABC
-	 * decoder' to $funnilyCasedComponentNames.
+	 * Components that have been explicitly configured.  Will not be
+	 * wiped out by clean().
 	 */
 	protected $components = [];
 
+	/**
+	 * Components loaded lazily which will presumably be loaded the
+	 * same way again if the the cache is cleared.  Will be emptied by
+	 * clean().
+	 */
+	protected $cachedComponents = [];
+	
 	public function __isset($attrName) {
 		try {
 			return $this->$attrName !== null;
@@ -157,32 +159,77 @@ class PHPTemplateProjectNS_Registry
 	protected static $funnilyCasedComponentNames = ['ABC decoder', 'REST action authorizer'];
 	
 	public function __get($attrName) {
+		// If something's been explicitly overridden, return that.
+		if( isset($this->components[$attrName]) ) {
+			return $this->components[$attrName];
+		}
+		
+		// If there's a getter, call it and immediately return.
 		$ucfAttrName = ucfirst($attrName);
 		$getterMethodName = "get{$ucfAttrName}";
 		if( method_exists($this, $getterMethodName) ) { 
 			return $this->$getterMethodName();
 		}
-		
-		if( isset($this->components[$attrName]) ) {
-			return $this->components[$attrName];
+
+		// Check the cache.
+		if( isset($this->cachedComponents[$attrName]) ) {
+			return $this->cachedComponents[$attrName];
 		}
-		
+
+		// If there's a loadX method, use it and cache the result.
 		$creatorMethodName = "load{$ucfAttrName}";
 		if( method_exists($this, $creatorMethodName) ) { 
-			return $this->components[$attrName] = $this->$creatorMethodName();
+			return $this->cachedComponents[$attrName] = $this->$creatorMethodName();
 		}
 		
-		$className = "PHPTemplateProjectNS_{$ucfAttrName}";
-		foreach( self::$funnilyCasedComponentNames as $fccn ) {
-			if( EarthIT_Schema_WordUtil::toCamelCase($fccn) == $attrName ) {
-				$className = "PHPTemplateProjectNS_".EarthIT_Schema_WordUtil::toPascalCase($fccn);
+		foreach( self::$funnilyCasedComponentNames as $n) {
+			$n = trim($n);
+			if( EarthIT_Schema_WordUtil::toCamelCase($n) == $attrName ) {
+				// Ooh, this is what they want!
+				$ucfAttrName = EarthIT_Schema_WordUtil::toPascalCase($n);
+				break;
 			}
 		}
 		
-		if( class_exists($className) ) {
-			return $this->components[$attrName] = new $className($this);
+		// If there's a class with a matching name, instantiate it and cache the instance.
+		$className = "PHPTemplateProjectNS_{$ucfAttrName}";
+		if( class_exists($className,true) ) {
+			return $this->cachedComponents[$attrName] = new $className($this);
 		}
 		
 		throw new Exception("Undefined property: ".get_class($this)."#$attrName");
+	}
+	
+	/**
+	 * Use to explicitly override a component.
+	 * 
+	 * Don't use this directly.  Use with(...) instead to make a copy
+	 * of the registry with the specified things replaced.a
+	 */
+	public function __set($attrName, $value) {
+		$this->components[$attrName] = $value;
+	}
+	
+	protected function clean() {
+		$this->cachedComponents = [];
+	}
+	
+	public function cleanClone() {
+		$c = clone $this;
+		$c->clean();
+		return $c;
+	}
+	
+	public function with(array $stuff) {
+		$alt = $this->cleanClone();
+		foreach( $stuff as $k=>$v ) $alt->$k = $v;
+		return $alt;
+	}
+	
+	public function withSchema(EarthIT_Schema $schema) {
+		return $this->with(['schema'=>$schema]);
+	}
+	public function withNamedSchema($name) {
+		return $this->withSchema($this->loadSchema($name));
 	}
 }
