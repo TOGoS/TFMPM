@@ -9,6 +9,7 @@ class PHPTemplateProjectNS_RouterTest extends PHPTemplateProjectNS_TestCase
 		], [
 			'requestMethod' => 'POST',
 			'pathInfo' => '/api;compound',
+			'queryString' => '',
 			'requestContentObject' => [
 				'actions' => [
 					'getUser1001' => [

@@ -60,14 +60,20 @@ class PHPTemplateProjectNS_Request
 	
 	protected $requestMethod = null;
 	protected $pathInfo = null;
+	protected $queryString = null;
 	protected $userId = null;
 	protected $requestContentFuture = null;
 	
 	protected function set( array $updates ) {
 		foreach( $updates as $k => $v ) {
-			if( !property_exists($this, $k) )
+			$setterMethod = "set".ucfirst($k);
+			if( method_exists($this,$setterMethod) ) {
+				$this->$setterMethod($v);
+			} else if( property_exists($this, $k) ) {
+				$this->$k = $v;
+			} else {
 				throw new Exception("No such attribute as ".get_class($this).'#'.$k);
-			$this->$k = $v;
+			}
 		}
 	}
 	
@@ -99,10 +105,14 @@ class PHPTemplateProjectNS_Request
 		return $this->with('requestContentFuture', $rcf);
 	}
 	public function getRequestContent() {
-		if( $this->requestContentFuture === null ) {
-			throw new Exception("No request content future provided.");
+		if( $this->requestContentObject !== null ) {
+			// I guess JSON-encode it?  Usually things go the other way.
+			return EarthIT_JSON::prettyEncode($this->requestContentObject);
 		}
-		return call_user_func($this->requestContentFuture);
+		if( $this->requestContentFuture !== null ) {
+			return call_user_func($this->requestContentFuture);
+		}
+		throw new Exception("No requestContentObject or requestContentFuture provided.");
 	}
 	public function getRequestContentType() {
 		return $this->SERVER['CONTENT_TYPE'];
@@ -172,7 +182,8 @@ class PHPTemplateProjectNS_Request
 	}
 	
 	public function getQueryString() {
-		return isset($this->SERVER['QUERY_STRING']) ? $this->SERVER['QUERY_STRING'] : null;
+		return $this->queryString !== null ? $this->queryString :
+			(isset($this->SERVER['QUERY_STRING']) ? $this->SERVER['QUERY_STRING'] : null);
 	}
 	
 	public function getParam($name,$default=null) {
