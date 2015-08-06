@@ -43,7 +43,7 @@ field modifier 'SRC' = has a database table : has a REST service : is in namespa
 class 'user' : SRC {
 	ID : EIPK
 	username : string
-	passhash : hash : nullable
+	passhash : hash : nullable : 
 	e-mail address : e-mail address : nullable
 }
 
@@ -53,6 +53,9 @@ class 'organization' : SRC : members are public {
 }
 
 class 'user organization attachment' : SRC : self-keyed {
+	# first 'user' is the name of the property of a 'user organization attachment'
+	# reference(user) means that this property is a reference to a 'user' record
+	# { ID = user ID } means the 'ID' of the 'user' record matches the 'user ID' field of this record
 	user : reference(user) {
 		ID = user ID
 	}
