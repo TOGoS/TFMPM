@@ -4,6 +4,7 @@
   - screen (and a decent .screenrc)
   - emacs
   - Make database created match config/dbc.json 
+  - Database initialization
 - Replace puppet with something not stupid
 
 - Examples of:
