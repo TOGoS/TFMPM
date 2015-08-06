@@ -18,7 +18,7 @@ class PHPTemplateProjectNS_Registry
 		} else {
 			$cf = "{$this->configDir}/{$file}.json";
 			if( !file_exists($cf) ) return null;
-			$c = json_decode(file_get_contents($cf), true);
+			$c = EarthIT_JSON::decode(file_get_contents($cf), true);
 			if( $c === null ) {
 				throw new Exception("Failed to load config from '{$cf}'");
 			}
