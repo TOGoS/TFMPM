@@ -1,5 +1,11 @@
 ## TODO
 
+- Include in Vagrant machine:
+  - screen (and a decent .screenrc)
+  - emacs
+  - Make database created match config/dbc.json 
+- Replace puppet with something not stupid
+
 - Examples of:
   * Loading components with acronyms, (e.g. xmlProdder -> XMLProdder)
   - Permission checking
