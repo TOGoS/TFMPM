@@ -1,3 +1,4 @@
+.vagrant
 build/db/all-tables.sql
 build/db/create-database.sql
 build/db/drop-database.sql
