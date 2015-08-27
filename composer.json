@@ -13,6 +13,7 @@
 		"earthit/schema": "^1.0.1",
 		"earthit/cmip-rest": "^0.6.15",
 		"earthit/php-project-utils": "^0.0.12",
+		"earthit/paxml": "^1.2.1",
 		"ryprop/nife": "^0.2.4",
 		"swiftmailer/swiftmailer": "~5.4",
 		"togos/action": "^1.0.0",

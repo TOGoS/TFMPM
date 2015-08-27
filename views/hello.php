@@ -37,15 +37,16 @@ dl.tabby dd {
 </form>
 
 <h4>Other stuff</h4>
+
 <dl class="tabby">
 <?php foreach($otherStuff as $thing=>$stuff): ?>
-<div><dt><?php eht($thing); ?></dt><dd><?php eht($stuff); ?></dd></div>
+<?php EarthIT_PAXML::emit( ['div', ['dt', $thing], ['dd', $stuff]] ); ?>
 <?php endforeach; ?>
 </dl>
 
 <ul>
 <?php foreach($otherLinks as $title=>$href): ?>
-<li><a href="<?php eht($href); ?>"><?php eht($title); ?></a></li>
+<?php EarthIT_PAXML::emit( ['li', ['a', 'href'=>$href, $title]] ); ?>
 <?php endforeach; ?>
 </ul>
 
