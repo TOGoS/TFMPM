@@ -210,10 +210,21 @@ class PHPTemplateProjectNS_Registry
 		$this->components[$attrName] = $value;
 	}
 	
+	/**
+	 * Don't use this directly, either.
+	 * Use cleanClone() to get a copy of the registry with the cache cleared.
+	 */
 	protected function clean() {
 		$this->cachedComponents = [];
 	}
-	
+
+	/**
+	 * Returns a copy of this Registry with the component cache cleared.
+	 *
+	 * This ensures that if any settings are changed on the clone that
+	 * would affect how components are reloaded, their new values get
+	 * used to load those components when they are requested.
+	 */
 	public function cleanClone() {
 		$c = clone $this;
 		$c->clean();
