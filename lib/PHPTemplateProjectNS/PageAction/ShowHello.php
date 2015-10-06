@@ -9,7 +9,9 @@ class PHPTemplateProjectNS_PageAction_ShowHello extends PHPTemplateProjectNS_Pag
 		$classLinks = array();
 		foreach( $this->schema->getResourceClasses() as $rc ) {
 			if( !$rc->hasRestService() ) continue;
-			$collectionName = ucfirst(EarthIT_Schema_WordUtil::pluralize($rc->getName()));
+			$collectionName = ucfirst(
+				$rc->getFirstPropertyValue(EarthIT_CMIPREST_NS::COLLECTION_NAME) ?:
+				EarthIT_Schema_WordUtil::pluralize($rc->getName()));
 			$dashName = str_replace(' ','-',strtolower($collectionName));
 			$classLinks[] = "<li><a href=\"api/".htmlspecialchars($dashName)."\">".htmlspecialchars($collectionName)."</a></li>";
 		}
