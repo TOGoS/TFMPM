@@ -31,7 +31,17 @@ class PHPTemplateProjectNS_PageAction_ShowDataTable extends PHPTemplateProjectNS
 				if( $f->getType()->getName() == 'entity ID' ) {
 					$td['align'] = 'right';
 				}
-				$td[] = $item[$fn];
+				if( $item[$fn] === null ) {
+					$td['class'] = 'null';
+					$dataString = '';					
+				} else if( $item[$fn] === true ) {
+					$dataString = 'true';
+				} else if( $item[$fn] === false ) {
+					$dataString = 'false';
+				} else {
+					$dataString = (string)$item[$fn];
+				}
+				$td[] = $dataString;
 				$tr[] = $td;
 			}
 			$trs[] = $tr;
