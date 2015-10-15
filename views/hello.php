@@ -7,10 +7,8 @@ You probably want to make some modifications.</p>
 
 <p>See also: <a href="<?php echo htmlspecialchars($helloUri); ?>"><?php echo htmlspecialchars($helloUri); ?></a></p>
 
-<h4>Some REST Services</h4>
-<ul>
-<?php echo implode("\n",$classLinks) ?>
-</ul>
+<h4>Data Tables</h4>
+<?php EarthIT_PAXML::emit($dataTablePaxml); ?>
 
 <style>
 dl.tabby { display: table; }

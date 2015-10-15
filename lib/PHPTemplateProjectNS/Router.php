@@ -74,6 +74,11 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		} else if( $path === '/blobs' && $req->requestMethod === 'POST' ) {
 			return $this->createPageAction('FileUpload', $req);
 		} else if(
+			preg_match('#^/([^/]+)$#',$path,$bif) and
+			($rc = EarthIT_CMIPREST_Util::getResourceClassByCollectionName($this->schema, $bif[1])) !== null
+		) {
+			return $this->createPageAction('ShowDataTable', $rc);
+		} else if(
 			preg_match('#^/api([;/].*)#',$path,$bif) and
 			($cmipUserAction = $this->apiRequestToAction(
 				$req->getRequestMethod(),

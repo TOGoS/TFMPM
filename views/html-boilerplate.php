@@ -3,6 +3,16 @@
 <title><?php echo htmlspecialchars("{$title} - PHP Template Project"); ?></title>
 <!-- TODO: [Relative!] link to CSS instead of including inline -->
 <style>
+table.bolly {
+	border-collapse: collapse;
+}
+table.bolly tbody tr:nth-child(2n+1) {
+	background-color: rgba(0,0,255,0.15);
+}
+table.bolly tbody td {
+	padding-right: 16px;
+}
+
 .tabby {
 	display: table;
 }
