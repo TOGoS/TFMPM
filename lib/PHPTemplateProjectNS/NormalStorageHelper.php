@@ -124,11 +124,20 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 	public function insertNewItem($rc, array $itemData) {
 		$this->insertNewItems($rc, [$itemData]);
 	}
-	/**
-	 * Insert a new item or update it if it doesn't already exist.
-	 */
+	
+	protected function _upsertItem($rc, array $itemData, $resultNeeded) {
+		$rc = $this->rc($rc);
+		$itemId = EarthIT_CMIPREST_Util::itemId($rc, $itemData);
+		if( $itemId === null ) {
+			return $this->storage->postItem($rc, $itemData);
+		} else {
+			return $this->storage->patchItem($rc, $itemId, $itemData);
+		}
+	}
+	
+	/** @override */
 	public function upsertItem($rc, array $itemData) {
-		throw new Exception(get_class($this).'#'.__FUNCTION__." not yet implemented!");
+		$this->_upsertItem($rc, $itemData, false);
 	}
 
 	/**
