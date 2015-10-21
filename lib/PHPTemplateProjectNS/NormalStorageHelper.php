@@ -105,22 +105,40 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 	}
 	
 	//
+	
+	protected $neededEntityIds = 0;
+	public function preallocateEntityIds($count) {
+		$this->neededEntityIds += $count;
+	}
+	
+	protected $entityIdPool = [];
+	/** Add $count new entity IDs to $this->entityIdPool */
+	protected function allocateEntityIds($count) {
+		$this->entityIdPool = array_merge($this->entityIdPool, $this->queryValueSet(
+			"SELECT nextval({seq}) AS id\n".
+			"FROM generate_series(1,{count})", [
+				'count'=>$count, 'seq'=>'phptemplateprojectdatabasenamespace.newentityid'
+			]));
+	}
+	
+	protected function finishPreallocatingEntityIds() {
+		$this->allocateEntityIds($this->neededEntityIds);
+		$this->neededEntityIds = 0;
+	}
+	
+	public function newEntityId() {
+		if( $this->neededEntityIds < 1 ) $this->preallocateEntityIds(1);
+		$this->finishPreallocatingEntityIds();
+		return array_shift($this->entityIdPool);
+	}
 
-	/**
-	 * Insert new items.
-	 * Use only when you know that there will be no key collisions.
-	 * If the item already exists, this will probably result in an error.
-	 * Returns nothing.
-	 */
 	public function insertNewItems($rc, array $itemData) {
 		// TODO: Better.
 		foreach( $itemData as $itemDat ) {
 			$this->storage->postItem($this->rc($rc), $itemDat);
 		}
 	}
-	/**
-	 * Insert a single new item.  Suggested implementation is just to call insertNewItems($rc, [$itemData]);
-	 */
+	
 	public function insertNewItem($rc, array $itemData) {
 		$this->insertNewItems($rc, [$itemData]);
 	}
@@ -139,7 +157,17 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 	public function upsertItem($rc, array $itemData) {
 		$this->_upsertItem($rc, $itemData, false);
 	}
-
+	
+	/** @override */
+	public function postItem($rc, array $itemData) {
+		return $this->_upsertItem($rc, $itemData, true);
+	}
+	
+	public function getItemById($rc, $itemId) {
+		$rc = $this->rc($rc);
+		return EarthIT_CMIPREST_Util::getItemById($this->storage, $rc, $itemId);
+	}
+	
 	/**
 	 * Fetch a bunch of items from a query.
 	 * Any transformations that need to be done on the query must be included in the SQL.
