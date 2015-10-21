@@ -12,6 +12,9 @@ table.bolly tbody tr:nth-child(2n+1) {
 table.bolly tbody td {
 	padding-right: 16px;
 }
+table.bolly thead th {
+	padding-right: 16px;
+}
 td.null {
 	background-color: rgba(128,128,0,0.2);
 }
