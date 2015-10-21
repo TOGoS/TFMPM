@@ -22,7 +22,7 @@ class 'string' :
         SQL type @ "VARCHAR(126)" :
         PHP type @ "string" : JSON type @ "string"
 class 'normal ID' : extends(unsigned integer)
-class 'entity ID' : extends(unsigned integer) : SQL type @ "BIGINT"
+class 'entity ID' : extends(unsigned integer) : PHP type @ "string" : SQL type @ "BIGINT"
 class 'code' : extends(string) : SQL type @ "CHAR(4)" : regex @ "[A-Za-z0-9 _-]{1,4}"
 class 'text' : extends(string) : SQL type @ "TEXT"
 class 'hash' : extends(string) : regex @ "[A-Fa-f0-9]{40}" : comment @ "Hex-encoded SHA-1 of something (40 bytes)"
