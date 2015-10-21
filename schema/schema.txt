@@ -43,7 +43,7 @@ field modifier 'SRC' = has a database table : has a REST service : is in namespa
 class 'user' : SRC {
 	ID : EIPK
 	username : string
-	passhash : hash : nullable
+	passhash : string : nullable
 	e-mail address : e-mail address : nullable
 }
 
