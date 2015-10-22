@@ -22,7 +22,13 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 		$data = $this->_queryRows($sql, $params);
 		if( $keyBy === null ) return $data;
 		
-		$keyed = [];
+		if( !is_string($keyBy) ) throw new Exception("keyBy parameter to queryRows, if specified must be a string.");
+		
+		$keyed = array();
+		foreach( $data as $r ) {
+			$keyed[$r[$keyBy]] = $r;
+		}
+		return $keyed;
 	}
 	public function queryValue($sql, array $params=[]) {
 		foreach( $this->_queryRows($sql,$params) as $row ) {
