@@ -11,6 +11,7 @@
 		"earthit/php-common": "^1.1.0",
 		"earthit/dbc": "^1.1.0",
 		"earthit/schema": "^1.0.1",
+		"earthit/storage": "^0.3.6",
 		"earthit/cmip-rest": "^0.7.0",
 		"earthit/php-project-utils": "^0.0.12",
 		"earthit/paxml": "^1.2.1",
