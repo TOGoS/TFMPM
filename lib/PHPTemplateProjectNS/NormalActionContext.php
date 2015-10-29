@@ -82,7 +82,8 @@ class PHPTemplateProjectNS_NormalActionContext implements PHPTemplateProjectNS_A
 	public function relativeUrl($path) {
 		if( $path[0] == '/' ) $path = substr($path,1);
 		$p = str_repeat('../', substr_count($this->path,'/')-1);
-		return $p . $path;
+		$p .= $path;
+		return $p == '' ? './' : $p;
 	}
 	
 	/** @override */

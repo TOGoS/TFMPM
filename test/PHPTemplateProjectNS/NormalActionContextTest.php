@@ -12,5 +12,6 @@ class PHPTemplateProjectNS_NormalActionContextTest extends PHPTemplateProjectNS_
 		$this->_testRelativeUrl('../../fence/chicken', '/barn/cow/udder', '/fence/chicken');
 		$this->_testRelativeUrl('../fence/chicken', '/barn/cow', '/fence/chicken');
 		$this->_testRelativeUrl('fence/chicken', '/', '/fence/chicken');
+		$this->_testRelativeUrl('./', '/fence', './');
 	}
 }
