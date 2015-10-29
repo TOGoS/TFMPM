@@ -3,16 +3,10 @@
 class PHPTemplateProjectNS_NormalActionContext implements PHPTemplateProjectNS_ActionContext
 {
 	protected $path;
+	protected $loggedInUserId;
 	
-	// TODO: Don't use session variables directly.
-	// Set this up before invoking actions and check
-	// basic auth in addition to session.
 	public function getLoggedInUserId() {
-		return $this->getSessionVariable('userId');
-	}
-	// TODO: Delete.  Set session variable directly if that's what you want to do.
-	public function setLoggedInUserId($userId) {
-		$this->setSessionVariable('userId', $userId);
+		return $this->loggedInUserId;
 	}
 	
 	protected function openSession() {

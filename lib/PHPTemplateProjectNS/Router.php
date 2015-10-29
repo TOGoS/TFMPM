@@ -117,8 +117,38 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		}
 	}
 	
+	/**
+	 * Check a few different ways that a user could be authenticated
+	 * and return a new ActionContext that reflects any logged-in-ness
+	 * 
+	 * @return PHPTemplateProjectNS_ActionContext with loggedInUserId set, if someone was authenticated
+	 * @throws PHPTemplateProjectNS_AuthenticationFailure
+	 */
+	public function authenticate( PHPTemplateProjectNS_Request $req, PHPTemplateProjectNS_ActionContext $actx ) {
+		$auth = $req->getAuthUserPw();
+		if( $auth['username'] !== null ) {
+			$loginResult = $this->userModel->checkLogin( $auth['username'], $auth['password'] );
+			if( $loginResult['success'] ) {
+				return $actx->with(array('loggedInUserId'=>$loginResult['userId']));
+			} else {
+				throw new PHPTemplateProjectNS_AuthenticationFailure($loginResult['message']);
+			}
+		}
+		
+		if( ($sessionUserId = $actx->getSessionVariable('userId')) !== null ) {
+			return $actx->with(array('loggedInUserId'=>$sessionUserId));
+		}
+		
+		return $actx;
+	}
+	
 	public function handleRequest( PHPTemplateProjectNS_Request $req, PHPTemplateProjectNS_ActionContext $actx ) {
-		// TODO: Any per-request authentication (basic, etc)
+		try {
+			$actx = $this->authenticate( $req, $actx );
+		} catch( PHPTemplateProjectNS_AuthenticationFailure $f ) {
+			return Nife_Util::httpResponse( 401, $f->getMessage() );
+		}
+		
 		$action = $this->requestToAction($req);
 		return $this->doAction($action, $actx);
 	}
