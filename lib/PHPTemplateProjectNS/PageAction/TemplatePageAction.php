@@ -19,6 +19,7 @@ abstract class PHPTemplateProjectNS_PageAction_TemplatePageAction extends PHPTem
 	 */
 	protected function contextTemplateVars( PHPTemplateProjectNS_ActionContext $actx, array $into=array() ) {
 		$userId = $actx->getLoggedInUserId();
+		$into['actionContext'] = $actx;
 		$into['loggedInUser'] = $userId === null ? null : $this->storageHelper->getItem('user', array('ID'=>$userId));
 		$into['errorMessage'] = $this->getErrorMessage($this->errorMessageId, $actx);
 		return $into;

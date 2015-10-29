@@ -37,7 +37,7 @@ $request = PHPTemplateProjectNS_Request::fromEnvironment([
 	'requestContentFuture'=>'eit_get_request_content'
 ]);
 $actx = new PHPTemplateProjectNS_NormalActionContext();
-$actx = $actx->with(array('path'=>$path));
+$actx = $actx->with(array('pathInfo'=>$path));
 $response = $router->handleRequest($request, $actx);
 
 $bubble404s = preg_match('/^PHP.*Development Server$/', $_SERVER['SERVER_SOFTWARE']);

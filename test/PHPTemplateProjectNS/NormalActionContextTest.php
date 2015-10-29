@@ -4,7 +4,7 @@ class PHPTemplateProjectNS_NormalActionContextTest extends PHPTemplateProjectNS_
 {
 	protected function _testRelativeUrl( $rel, $from, $to ) {
 		$actx = new PHPTemplateProjectNS_NormalActionContext();
-		$actx = $actx->with(array('path' => $from));
+		$actx = $actx->with(array('pathInfo' => $from));
 		$this->assertEquals( $rel, $actx->relativeUrl($to) );
 	}
 	

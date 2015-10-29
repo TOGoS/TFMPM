@@ -2,7 +2,7 @@
 
 class PHPTemplateProjectNS_NormalActionContext implements PHPTemplateProjectNS_ActionContext
 {
-	protected $path;
+	protected $pathInfo;
 	protected $loggedInUserId;
 	
 	public function getLoggedInUserId() {
@@ -68,14 +68,14 @@ class PHPTemplateProjectNS_NormalActionContext implements PHPTemplateProjectNS_A
 	}
 	
 	/** @override */
-	public function getPath() {
-		return $this->path;
+	public function getPathInfo() {
+		return $this->pathInfo;
 	}
 
 	/** @override */
 	public function relativeUrl($path) {
 		if( $path[0] == '/' ) $path = substr($path,1);
-		$p = str_repeat('../', substr_count($this->path,'/')-1);
+		$p = str_repeat('../', substr_count($this->pathInfo,'/')-1);
 		$p .= $path;
 		return $p == '' ? './' : $p;
 	}

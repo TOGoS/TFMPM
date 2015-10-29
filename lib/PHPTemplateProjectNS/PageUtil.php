@@ -29,6 +29,9 @@ class PHPTemplateProjectNS_PageUtil extends PHPTemplateProjectNS_Component
 	}
 	
 	public function linkHtml($target, $text) {
+		if( $target[0] == '/' ) {
+			$target = $this->params['actionContext']->relativeUrl($target);
+		}
 		return "<a href=\"".htmlspecialchars($target)."\">".htmlspecialchars($text)."</a>";
 	}
 	
