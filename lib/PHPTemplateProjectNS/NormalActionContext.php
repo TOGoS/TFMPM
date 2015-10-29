@@ -2,9 +2,15 @@
 
 class PHPTemplateProjectNS_NormalActionContext implements PHPTemplateProjectNS_ActionContext
 {
+	protected $path;
+	
+	// TODO: Don't use session variables directly.
+	// Set this up before invoking actions and check
+	// basic auth in addition to session.
 	public function getLoggedInUserId() {
 		return $this->getSessionVariable('userId');
 	}
+	// TODO: Delete.  Set session variable directly if that's what you want to do.
 	public function setLoggedInUserId($userId) {
 		$this->setSessionVariable('userId', $userId);
 	}
@@ -50,8 +56,38 @@ class PHPTemplateProjectNS_NormalActionContext implements PHPTemplateProjectNS_A
 		session_destroy();
 	}
 	
+	/** Don't use this unless you're #with */
+	public function set(array $params) {
+		foreach( $params as $k=>$v ) {
+			if( property_exists(get_class($this), $k) ) {
+				$this->$k = $v;
+			} else {
+				throw new Exception("No such property: $k");
+			}
+		}
+	}
+	
+	public function with(array $params) {
+		$c = clone $this;
+		$c->set($params);
+		return $c;
+	}
+	
+	/** @override */
 	public function getPath() {
-		// TODO!
-		return null;
+		return $this->path;
+	}
+
+	/** @override */
+	public function relativeUrl($path) {
+		if( $path[0] == '/' ) $path = substr($path,1);
+		$p = str_repeat('../', substr_count($this->path,'/')-1);
+		return $p . $path;
+	}
+	
+	/** @override */
+	public function absoluteUrl($path) {
+		// Faking it for now.
+		return $this->relativeUrl($path);
 	}
 }
