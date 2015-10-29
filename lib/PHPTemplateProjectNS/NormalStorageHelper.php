@@ -59,54 +59,9 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 	}
 	
 	//// DB <-> internal form transforms
-	// TODO: Maybe make these a public part of the Storage API
-	
-	protected static function dbToPhpValue( EarthIT_Schema_DataType $t, $value ) {
-		// Various special rules may end up here
-		return EarthIT_CMIPREST_Util::cast( $value, $t->getPhpTypeName() );
-	}
-	
-	protected function dbObjectToInternal( EarthIT_Schema_ResourceClass $rc, array $obj ) {
-		$fieldValues = array();
-		foreach( EarthIT_CMIPREST_Util::storableFields($rc) as $f ) {
-			$fieldName = $f->getName();
-			$columnName = $this->dbNamer->getColumnName($rc, $f);
-			if( isset($obj[$columnName]) ) {
-				$fieldValues[$f->getName()] = self::dbToPhpValue($f->getType(), $obj[$columnName]);
-			}
-		}
-		return $fieldValues;
-	}
 	
 	//// Parameter parsing/translation to CMIPREST classes
 
-	protected function fieldMatchers( EarthIT_Schema_ResourceClass $rc, array $fieldValues ) {
-		$fieldsByName = $rc->getFields();
-		$matchers = array();
-		foreach( $fieldValues as $k => $value ) {
-			if( isset($fieldsByName[$k]) ) {
-				$fn = $k;
-			} else if( isset($fieldsByName[$k]) ) {
-				$fn = $fieldsByName[$k]->getName();
-			} else {
-				throw new Exception("'".ucfirst($rc->getName())."' has no such field as '$k'.");
-			}
-			
-			if( $value instanceof EarthIT_CMIPREST_FieldMatcher ) {
-				$matchers[$fn] = $value;
-			} else if( is_array($value) ) {
-				$matchers[$fn] = new EarthIT_CMIPREST_FieldMatcher_In($value);
-			} else if( is_scalar($value) ) {
-				$matchers[$fn] = new EarthIT_CMIPREST_FieldMatcher_Equal($value);
-			} else {
-				throw new Exception("Don't know how to make field matcher from ".var_export($value,true));
-			}
-		}
-		return $matchers;
-	}
-	
-	//
-	
 	protected $neededEntityIds = 0;
 	public function preallocateEntityIds($count) {
 		$this->neededEntityIds += $count;
@@ -134,10 +89,7 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 	}
 
 	public function insertNewItems($rc, array $itemData) {
-		// TODO: Better.
-		foreach( $itemData as $itemDat ) {
-			$this->storage->postItem($this->rc($rc), $itemDat);
-		}
+		$this->storage->saveItems( $itemData, $this->rc($rc) );
 	}
 	
 	public function insertNewItem($rc, array $itemData) {
@@ -146,12 +98,11 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 	
 	protected function _upsertItem($rc, array $itemData, $resultNeeded) {
 		$rc = $this->rc($rc);
-		$itemId = EarthIT_CMIPREST_Util::itemId($rc, $itemData);
-		if( $itemId === null ) {
-			return $this->storage->postItem($rc, $itemData);
-		} else {
-			return $this->storage->patchItem($rc, $itemId, $itemData);
-		}
+		$items = $this->storage->saveItems([$itemData], $rc, array(
+			EarthIT_STorage_ItemSaver::RETURN_SAVED => $resultNeeded,
+			EarthIT_STorage_ItemSaver::ON_DUPLICATE_KEY => EarthIT_STorage_ItemSaver::ODK_UPDATE,
+		));
+		if( $resultNeeded ) return EarthIT_Storage_Util::first($items);
 	}
 	
 	/** @override */
@@ -192,6 +143,7 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 		$sp = EarthIT_Storage_Util::makeSearch($rc, $filters, $orderBy);
 		return $this->storage->searchItems($sp, []);
 	}
+	
 	/**
 	 * Return the first item returned by getItems($rc, $filters, $orderBy);
 	 */
@@ -199,10 +151,11 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 		foreach( $this->getItems($rc, $filters, $orderBy) as $item ) return $item;
 		return null;
 	}
+	
 	/**
 	 * Delete all items from the given class matching the given filters.
 	 */
 	public function deleteItems($rc, array $filters=[]) {
-		throw new Exception(get_class($this).'#'.__FUNCTION__." not yet implemented!");
+		$this->storage->deleteItems(EarthIT_Storage_ItemFilters::parseMulti($filters), $this->rc($rc));
 	}
 }
