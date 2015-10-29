@@ -38,7 +38,7 @@ class PHPTemplateProjectNS_Registry
 		return Doctrine_DBAL_DriverManager::getConnection( $this->getConfig('dbc') );
 	}
 	
-	public function loadDbNamer() {
+	public function loadDbObjectNamer() {
 		return new EarthIT_DBC_OverridableNamer(new EarthIT_DBC_PostgresNamer());
 	}
 		
@@ -54,9 +54,16 @@ class PHPTemplateProjectNS_Registry
 		return new PHPTemplateProjectNS_NormalStorageHelper($this);
 	}
 	
+	protected function loadSqlGenerator() {
+		return new EarthIT_Storage_PostgresSQLGenerator($this->dbObjectNamer);
+	}
+	
 	protected function loadStorage() {
-		return new EarthIT_CMIPREST_PostgresStorage(
-			$this->dbAdapter, $this->schema, $this->dbNamer );
+		return new EarthIT_CMIPREST_SQLStorage(
+			$this->schema,
+			$this->sqlRunner,
+			$this->dbObjectNamer,
+			$this->sqlGenerator);
 	}
 	
 	protected function loadRester() {

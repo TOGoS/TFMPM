@@ -80,11 +80,6 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 	
 	//// Parameter parsing/translation to CMIPREST classes
 
-	protected function orderBys( array $orderBySpecs ) {
-		if( count($orderBySpecs) == 0 ) return [];
-		throw new Exception("Order-by parsing not yet implemented.");
-	}
-	
 	protected function fieldMatchers( EarthIT_Schema_ResourceClass $rc, array $fieldValues ) {
 		$fieldsByName = $rc->getFields();
 		$matchers = array();
@@ -183,12 +178,9 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 	public function queryItems($rc, $sql, array $params=[]) {
 		$rc = $this->rc($rc);
 		$rows = $this->queryRows($sql, $params);
-		$items = [];
-		foreach( $rows as $row ) {
-			$items[] = $this->dbObjectToInternal($rc, $row);
-		}
-		return $items;
+		return $this->sqlGenerator->dbExternalToSchemaItems($rows);
 	}
+	
 	/**
 	 * Fetch a list of items matching the given filters.
 	 *
@@ -197,13 +189,8 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 	 */
 	public function getItems($rc, array $filters=[], array $orderBy=[]) {
 		$rc = $this->rc($rc);
-		$orderBy = $this->orderBys($orderBy);
-		$sp = new EarthIT_CMIPREST_SearchParameters(
-			$this->fieldMatchers($rc, $filters),
-			$orderBy, 0, null
-		);
-		$searchRes = $this->storage->search($rc, $sp, []);
-		return $searchRes['root'];
+		$sp = EarthIT_Storage_Util::makeSearch($rc, $filters, $orderBy);
+		return $this->storage->searchItems($sp, []);
 	}
 	/**
 	 * Return the first item returned by getItems($rc, $filters, $orderBy);
