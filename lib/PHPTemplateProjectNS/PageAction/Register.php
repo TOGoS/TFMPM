@@ -22,7 +22,7 @@ class PHPTemplateProjectNS_PageAction_Register extends PHPTemplateProjectNS_Page
 				$actx);
 		}
 
-		$password = "Asdf1234";
+		$password = $this->userModel->generatePassword(22);
 		
 		$okay = false;
 		$this->storageHelper->beginTransaction();
