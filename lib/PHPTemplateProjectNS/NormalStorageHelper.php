@@ -129,7 +129,7 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 	public function queryItems($rc, $sql, array $params=[]) {
 		$rc = $this->rc($rc);
 		$rows = $this->queryRows($sql, $params);
-		return $this->sqlGenerator->dbExternalToSchemaItems($rows);
+		return $this->sqlGenerator->dbExternalToSchemaItems($rows, $rc);
 	}
 	
 	/**
