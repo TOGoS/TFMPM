@@ -16,6 +16,8 @@ generated_resources := \
 build_resources := ${generated_resources} ${config_files}
 
 runtime_resources := \
+	config/dbc.json \
+	config/email-transport.json \
 	schema/schema.php \
 	vendor
 
@@ -25,18 +27,21 @@ schemaschemademo := java -jar util/SchemaSchemaDemo.jar schema/schema.txt
 
 fetch := vendor/bin/fetch -repo @config/ccouch-repos.lst
 
-default: resources run-tests
+default: runtime-resources run-tests
 
 .DELETE_ON_ERROR:
 
 .PHONY: \
+	build-resources \
 	create-database \
 	default \
 	drop-database \
 	everything \
 	empty-database \
 	rebuild-database \
+	redeploy \
 	resources \
+	runtime-resources \
 	run-tests \
 	run-unit-tests \
 	run-web-server \
@@ -108,6 +113,8 @@ run-tests: run-unit-tests
 
 run-web-server:
 	cd www && php -S localhost:6061 bootstrap.php
+
+redeploy: runtime-resources upgrade-database
 
 everything: \
 	config/dbc.json \
