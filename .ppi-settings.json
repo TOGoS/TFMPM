@@ -6,6 +6,5 @@
 	"databaseHost": "phptemplateprojectdatabasehost",
 	"databasePassword": "phptemplateprojectdatabasepassword",
 	"databaseNamespace": "phptemplateprojectdatabasenamespace",
-	"deploymentUrlPrefix": "http://phptemplateprojecthost/",
-	"sourceDirs": ["lib","test"]
+	"deploymentUrlPrefix": "http://phptemplateprojecthost/"
 }
