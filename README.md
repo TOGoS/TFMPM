@@ -17,10 +17,18 @@ this project is available at https://github.com/EarthlingInteractive/ChangeItLat
 - ```www/``` - Serves as the 'document root' for your project.
   Contains files to be served directly and a ```.htaccess``` and ```bootstrap.php```
   to handle paths that don't correspond to existing files.
-- ```views/``` - 'view' (i.e. HTML) templates
+- ```views/``` - 'view' (i.e. HTML) templates.
+- ```Vagrantfile``` - configuration file for Vagrant.
+- ```vm-files/``` - files to be imported into the vagrant Virtual machine.
+- ```provision.sh``` - Virtual machine provisioning script.
 
 ## Database
 ### Create the database
+
+If you're using Vagrant, don't do this.  Just ```vagrant up``` and you
+should be good to go.  The following only applies if you want to run
+outside of Vagrant.
+
 
 ```make create-database``` will attempt to create the database for you
 based on configuration in ```config/dbc.json```.
