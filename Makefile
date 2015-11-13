@@ -96,7 +96,7 @@ build/db/drop-database.sql: config/dbc.json vendor
 #	${fetch} -o "$@" "urn:bitprint:HYWPXT25DHVRV4BXETMRZQY26E6AQCYW.33QDQ443KBXZB5F5UGYODRN2Y34DOZ4GILDI7ZA"
 
 create-database drop-database: %: build/db/%.sql
-	sudo su postgres -c "cat '$<' | psql"
+	sudo -u postgres psql <"$<"
 
 empty-database: build/db/empty-database.sql util/phptemplateprojectdatabase-psql
 	cat "$<" | util/phptemplateprojectdatabase-psql
