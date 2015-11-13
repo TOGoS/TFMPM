@@ -67,4 +67,16 @@ mv composer.phar /usr/local/bin/composer
 
 #### Start apache
 
-service apache2 start
+# 'restart' instead of 'start' in case it was already running
+# to make sure our vhost changes take effect.
+service apache2 restart
+
+
+###E Create the database
+
+sudo -u vagrant make -C /vagrant build/db/create-database.sql
+# Purposely leaving off the usual '-v ON_ERROR_STOP=1' for now
+# so that reprovisioning will not crash due to the database
+# already existing:
+sudo -u postgres psql </vagrant/build/db/create-database.sql
+sudo -u vagrant make -C /vagrant redeploy
