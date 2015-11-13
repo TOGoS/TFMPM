@@ -13,10 +13,8 @@ apt-get install -y wget
 postgres_password='REJ#%*OfdaklJ*O4t5eH'
 
 wget -q -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-cat \
-    /etc/apt/sources.list.d/postgresql.list \
-    <(echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main") \
-    | uniq > /tmp/postgresql.list
+echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" >> /etc/apt/sources.list.d/postgresql.list
+uniq /etc/apt/sources.list.d/postgresql.list >/tmp/postgresql.list
 mv /tmp/postgresql.list /etc/apt/sources.list.d/postgresql.list
 
 apt-get update -y
