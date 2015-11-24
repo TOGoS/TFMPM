@@ -4,6 +4,7 @@ config_files := \
 	config/email-transport.json
 
 generated_resources := \
+	.git-object-urns.txt \
 	build/db/all-tables.sql \
 	build/db/create-database.sql \
 	build/db/drop-database.sql \
@@ -86,6 +87,9 @@ build/db/all-tables.sql: schema/schema.txt util/SchemaSchemaDemo.jar
 
 schema/schema.php: schema/schema.txt util/SchemaSchemaDemo.jar
 	${schemaschemademo} -o-schema-php "$@" -php-schema-class-namespace EarthIT_Schema
+
+.git-object-urns.txt: .git/HEAD
+	vendor/earthit/php-project-utils/bin/generate-git-urn-map >"$@"
 
 build/db/create-database.sql: config/dbc.json vendor
 	vendor/bin/generate-create-database-sql "$<" >"$@"

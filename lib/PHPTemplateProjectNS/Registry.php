@@ -115,14 +115,27 @@ class PHPTemplateProjectNS_Registry
 		return $repos;
 	}
 	
-	protected function loadN2rServer() {
+	protected function loadBlobRepository() {
 		$repos = array();
 		foreach( $this->getBlobRepositoryDirs() as $rd ) {
 			$repos[] = new TOGoS_PHPN2R_FSSHA1Repository($rd);
 		}
-		return new TOGoS_PHPN2R_Server($repos);
+		$gitDir = PHPTemplateProjectNS_ROOT_DIR.'/.git';
+		if( is_dir($gitDir) ) {
+			$repos[] = new TOGoS_PHPN2R_GitRepository($gitDir);
+		}
+		$multiRepo = new TOGoS_PHPN2R_MultiRepository($repos);
+		$mappingFile = PHPTemplateProjectNS_ROOT_DIR.'/.git-object-urns.txt';
+		if( file_exists($mappingFile) ) {
+			$multiRepo = new TOGoS_PHPN2R_URIMappingRepository($multiRepo, array(), array($mappingFile));
+		}
+		return $multiRepo;
 	}
-
+	
+	protected function loadN2rServer() {
+		return new TOGoS_PHPN2R_Server(array($this->blobRepository));
+	}
+	
 	protected function loadPrimaryBlobRepository() {
 		foreach( $this->getBlobRepositoryDirs() as $rd ) {
 			return new TOGoS_PHPN2R_FSSHA1Repository($rd);

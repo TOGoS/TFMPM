@@ -63,6 +63,11 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 			case 'POST':
 				return $this->createPageAction('Register', $req->getParams());
 			}
+		} else if( $path == '/schema-upgrades' ) {
+			switch( $req->getRequestMethod() ) {
+			case 'GET':
+				return $this->createPageAction('ShowSchemaUpgrades', $req->getParam('mode', 'list'));
+			}
 		} else if( $path == '/computations' ) {
 			switch( $req->getRequestMethod() ) {
 			case 'GET':
