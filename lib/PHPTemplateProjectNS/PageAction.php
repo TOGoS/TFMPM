@@ -2,7 +2,7 @@
 
 abstract class PHPTemplateProjectNS_PageAction extends PHPTemplateProjectNS_Component implements TOGoS_Action
 {
-	protected function makeTemplateResponse( $statusCode=200, $viewName, $vars=array(), $typeOrHeaders='text/html' ) {
+	protected function templateResponse( $statusCode=200, $viewName, $vars=array(), $typeOrHeaders='text/html' ) {
 		$pageUtil = new PHPTemplateProjectNS_PageUtil($this->registry, $vars);
 		$blob = $pageUtil->viewBlob($viewName);
 		return Nife_Util::httpResponse( $statusCode, $blob, $typeOrHeaders );

@@ -26,7 +26,7 @@ abstract class PHPTemplateProjectNS_PageAction_TemplatePageAction extends PHPTem
 	}
 	
 	public function __invoke( PHPTemplateProjectNS_ActionContext $actx ) {
-		return $this->makeTemplateResponse(
+		return $this->templateResponse(
 			$this->getStatusCode(),
 			$this->getTemplateName(),
 			$this->getTemplateParameters() + $this->contextTemplateVars($actx),
