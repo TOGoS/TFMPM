@@ -8,6 +8,10 @@ abstract class PHPTemplateProjectNS_PageAction extends PHPTemplateProjectNS_Comp
 		return Nife_Util::httpResponse( $statusCode, $blob, $typeOrHeaders );
 	}
 	
+	protected function jsonResponse($statusCode, $thing) {
+		return Nife_Util::httpResponse( $statusCode, new EarthIT_JSON_PrettyPrintedJSONBlob($thing), "application/json" );
+	}
+	
 	protected function redirect( $statusCode, $location ) {
 		return Nife_Util::httpResponse($statusCode, "Redirecting to $location...", ['location'=>$location]);
 	}
