@@ -19,7 +19,7 @@
 		"swiftmailer/swiftmailer": "~5.4",
 		"togos/action": "^1.0.0",
 		"togos/base32": "^1.0.1",
-		"togos/php-n2r": "^0.1.2",
+		"togos/php-n2r": "^0.1.3",
 		"togos/tpfetcher": "^0.0.7"
 	},
 	"autoload": {
