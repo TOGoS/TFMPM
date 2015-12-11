@@ -60,7 +60,7 @@ function ezdie() {
 		if( !isset($frame['file']) and !isset($frame['line']) ) continue;
 		echo "  from ", coalesce($frame['file']), ":", coalesce($frame['line']), "\n";
 	}
-	die();
+	exit(1);
 }
 
 function eit_get_request_content() {
