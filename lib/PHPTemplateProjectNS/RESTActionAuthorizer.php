@@ -11,6 +11,11 @@ extends EarthIT_CMIPREST_RESTActionAuthorizer_DefaultRESTActionAuthorizer
 	
 	/** @override */
 	public function preAuthorizeSimpleAction( EarthIT_CMIPREST_RESTAction $act, $ctx, array &$explanation ) {
+		if( $this->registry->getConfig("auth/bypass") ) {
+			$explanation[] = "Normal uuthorization rules bypassed as per auth/bypass config setting.";
+			return true;
+		}
+		
 		if( $act instanceof EarthIT_CMIPREST_RESTAction_SearchAction ) return self::AUTHORIZED_IF_RESULTS_VISIBLE;
 		
 		// Anything not explicitly allowed is disallowed.
@@ -19,6 +24,11 @@ extends EarthIT_CMIPREST_RESTActionAuthorizer_DefaultRESTActionAuthorizer
 	
 	/** @override */
 	public function itemsVisible( array $itemData, EarthIT_Schema_ResourceClass $rc, $ctx, array &$explanation ) {
+		if( $this->registry->getConfig("auth/bypass") ) {
+			$explanation[] = "Normal uuthorization rules bypassed as per auth/bypass config setting.";
+			return true;
+		}
+		
 		if( $rc->membersArePublic() ) return true;
 		
 		$visible = true;
