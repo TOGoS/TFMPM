@@ -9,10 +9,21 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 	public function apiRequestToAction( $method, $path, $queryString, Nife_Blob $content=null ) {
 		$requestParser = new EarthIT_CMIPREST_RequestParser_FancyRequestParser(
 			EarthIT_CMIPREST_RequestParser_FancyRequestParser::buildStandardParsers(
-				$this->schema, function($name, $plural=false) {
-					if($plural) $name = EarthIT_Schema_WordUtil::pluralize($name);
-					return EarthIT_Schema_WordUtil::toCamelCase($name);
-				}, 'cmip'));
+				$this->schema, $this->restNameFormatter, 'cmip'));
+		
+		if( ($request = $requestParser->parse( $method, $path, $queryString, $content )) !== null ) {
+			return $requestParser->toAction($request);
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Same API as for REST API requests, but returning HTML!
+	 */
+	public function restPageRequestToAction( $method, $path, $queryString, Nife_Blob $content=null ) {
+		$requestParser = new EarthIT_CMIPREST_RequestParser_CMIPRequestParser(
+			$this->schema, $this->restSchemaObjectNamer, $this->dataTableResultAssemblerFactory );
 		
 		if( ($request = $requestParser->parse( $method, $path, $queryString, $content )) !== null ) {
 			return $requestParser->toAction($request);
@@ -79,19 +90,22 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		} else if( $path === '/blobs' && $req->requestMethod === 'POST' ) {
 			return $this->createPageAction('FileUpload', $req);
 		} else if(
-			preg_match('#^/([^/]+)$#',$path,$bif) and
-			($rc = EarthIT_CMIPREST_Util::getResourceClassByCollectionName($this->schema, $bif[1])) !== null
-		) {
-			return $this->createPageAction('ShowDataTable', $rc);
-		} else if(
 			preg_match('#^/api([;/].*)#',$path,$bif) and
-			($cmipUserAction = $this->apiRequestToAction(
+			($restAction = $this->apiRequestToAction(
 				$req->getRequestMethod(),
 				$bif[1], $req->queryString,
 				$req->getRequestContentBlob())
 			 ) !== null
 		) {
-			return $cmipUserAction;
+			return $restAction;
+		} else if(
+			($restAction = $this->restPageRequestToAction(
+				$req->getRequestMethod(),
+				$path, $req->queryString,
+				$req->getRequestContentBlob())
+			) !== null
+		) {
+			return $restAction;
 		}
 		
 		return function(PHPTemplateProjectNS_ActionContext $actx) use ($req, $path) {
@@ -114,9 +128,7 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		if( is_callable($action) ) {
 			return call_user_func($action, $actx);
 		} else if( $action instanceof EarthIT_CMIPREST_RESTAction ) {
-			$rez = $this->rester->doAction($action, $actx);
-			if( $rez instanceof Nife_HTTP_Response ) return $rez;
-			return PHPTemplateProjectNS_PageUtil::jsonResponse(200, $rez);
+			return $this->rester->doActionAndGetHttpResponse($action, $actx);
 		} else {
 			throw new Exception("I don't know how to run ".PHPTemplateProjectNS_Debug::describe($action)." as an action");
 		}

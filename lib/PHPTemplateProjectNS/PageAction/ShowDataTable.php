@@ -3,19 +3,46 @@
 class PHPTemplateProjectNS_PageAction_ShowDataTable extends PHPTemplateProjectNS_PageAction_TemplatePageAction
 {
 	protected $rc;
+	protected $items;
 	
-	public function __construct( PHPTemplateProjectNS_Registry $reg, EarthIT_Schema_ResourceClass $rc ) {
+	public static function getInstance( PHPTemplateProjectNS_Registry $reg, EarthIT_Schema_ResourceClass $rc, $items=null ) {
+		$collectionName =
+			$rc->getFirstPropertyValue(EarthIT_CMIPREST_NS::COLLECTION_NAME) ?:
+			EarthIT_Schema_WordUtil::pluralize($rc->getName());
+		
+		$className = 'PHPTemplateProjectNS_PageAction_Show'.EarthIT_Schema_WordUtil::toPascalCase($collectionName);
+		if( !class_exists($className) or !is_subclass_of($className, 'PHPTemplateProjectNS_PageAction_ShowDataTable') ) {
+			$className = 'PHPTemplateProjectNS_PageAction_ShowDataTable';
+		}
+		return new $className( $reg, $rc, $items );
+	}
+	
+	/**
+	 * In addition to fetching the items itself,
+	 * this action can be used to dump out a predefined set of items
+	 * by passing a list of schema-form items to $items.
+	 * 
+	 * (The original use isn't even used anymore; the only reason this
+	 * is a PageAction is to get its protected methods for making
+	 * template responses)
+	 */
+	public function __construct( PHPTemplateProjectNS_Registry $reg, EarthIT_Schema_ResourceClass $rc, $items=null ) {
 		parent::__construct($reg);
 		$this->rc = $rc;
+		$this->items = $items;
+	}
+	
+	protected function getItems() {
+		return $this->items ?: $this->storageHelper->getItems($this->rc);
 	}
 	
 	public function getTemplateName() { return 'data-table'; }
 	public function getTemplateParameters() {
-		$items = $this->storageHelper->getItems($this->rc);
+		$items = $this->getItems();
 		
-		$collectionName = ucfirst(
+		$collectionName =
 			$this->rc->getFirstPropertyValue(EarthIT_CMIPREST_NS::COLLECTION_NAME) ?:
-			EarthIT_Schema_WordUtil::pluralize($this->rc->getName()));
+			EarthIT_Schema_WordUtil::pluralize($this->rc->getName());
 		
 		$ths = [];
 		$trs = [];

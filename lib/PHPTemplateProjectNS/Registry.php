@@ -41,7 +41,20 @@ class PHPTemplateProjectNS_Registry
 	public function loadDbObjectNamer() {
 		return new EarthIT_DBC_OverridableNamer(new EarthIT_DBC_PostgresNamer());
 	}
-		
+	
+	public function getRestNameFormatter() {
+		return function($name, $plural=false) {
+			if($plural) $name = EarthIT_Schema_WordUtil::pluralize($name);
+			return EarthIT_Schema_WordUtil::toCamelCase($name);
+		};
+	}
+	
+	public function getRestSchemaObjectNamer() {
+		return function($obj, $plural=false) {
+			return call_user_func($this->restNameFormatter, $obj->getName(), $plural);
+		};
+	}
+	
 	public function loadSchema($name='') {
 		return require PHPTemplateProjectNS_ROOT_DIR.'/schema/'.($name?$name.'.':'').'schema.php';
 	}
