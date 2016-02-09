@@ -34,11 +34,13 @@ default: runtime-resources run-tests
 
 .PHONY: \
 	build-resources \
+	clean \
 	create-database \
 	default \
 	drop-database \
 	everything \
 	empty-database \
+	realclean \
 	rebuild-database \
 	redeploy \
 	resources \
@@ -46,9 +48,7 @@ default: runtime-resources run-tests
 	run-tests \
 	run-unit-tests \
 	run-web-server \
-	upgrade-database \
-	clean \
-	everything
+	upgrade-database
 
 build-resources: ${build_resources}
 runtime-resources: ${runtime_resources}
@@ -56,6 +56,8 @@ resources: ${resources}
 
 clean:
 	rm -rf ${generated_resources}
+realclean:
+	rm -rf ${generated_resources} ${config_files}
 
 vendor: composer.lock
 	composer install
