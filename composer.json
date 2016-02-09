@@ -12,7 +12,7 @@
 		"earthit/dbc": "^1.1.0",
 		"earthit/schema": "^1.0.1",
 		"earthit/storage": "^0.3.16",
-		"earthit/cmip-rest": "^0.11.0",
+		"earthit/cmip-rest": "^0.11.2",
 		"earthit/php-project-utils": "^0.0.18",
 		"earthit/paxml": "^1.2.1",
 		"ryprop/nife": "^0.2.4",
