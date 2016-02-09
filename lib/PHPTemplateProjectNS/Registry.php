@@ -4,9 +4,9 @@ class PHPTemplateProjectNS_Registry
 {
 	protected $postResponseJobs = [];
 	
-	protected $configDir;
-	public function __construct( $configDir ) {
-		$this->configDir = $configDir;
+	protected $projectRootDir;
+	public function __construct( $projectRootDir ) {
+		$this->projectRootDir = $projectRootDir;
 	}
 	
 	protected $configCache = [];
@@ -16,7 +16,7 @@ class PHPTemplateProjectNS_Registry
 		if( isset($this->configCache[$file]) ) {
 			$c = $this->configCache[$file];
 		} else {
-			$cf = "{$this->configDir}/{$file}.json";
+			$cf = "{$this->projectRootDir}/config/{$file}.json";
 			if( !file_exists($cf) ) return null;
 			$c = EarthIT_JSON::decode(file_get_contents($cf), true);
 			if( $c === null ) {
@@ -105,7 +105,7 @@ class PHPTemplateProjectNS_Registry
 	}
 	
 	protected function getBlobRepositoryDirs() {
-		$repoListFile = "{$this->configDir}/local-ccouch-repos.lst";
+		$repoListFile = "{$this->projectRootDir}/config/local-ccouch-repos.lst";
 		if( file_exists($repoListFile) ) {
 			$repos = $this->readLstFile($repoListFile);
 		} else {
