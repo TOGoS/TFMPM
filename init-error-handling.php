@@ -33,6 +33,7 @@ function eit_dump_error_and_exit2( $text, $backtrace, Exception $cause=null ) {
 }
 
 function eit_dump_error_and_exit( $errno, $errstr, $errfile=null, $errline=null, $errcontext=null ) {
+	if( (error_reporting() & $errno) == 0 ) return; // @fopen, etc.
 	eit_dump_error_and_exit2( "Error code=$errno: $errstr", debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS ) );
 }
 
