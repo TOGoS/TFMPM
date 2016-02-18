@@ -1,25 +1,13 @@
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
-    ServerName lls.dev
-    ServerAlias link.lls.dev
+    ServerName phptemplateprojecthost.dev
     
-    Alias /static /vagrant/static/dev
-    <Directory /vagrant/static/dev>
-        Options Indexes FollowSymLinks Includes
-        AllowOverride All
-        Require all granted
-    </Directory>
     DocumentRoot /vagrant/www
     <Directory /vagrant/www>
         Options Indexes FollowSymLinks Includes
         AllowOverride All
         Require all granted
     </Directory>
-    
-    RewriteEngine On
-    RewriteCond %{HTTP_HOST} ^link\.lls\.dev$
-    RewriteCond %{REQUEST_URI} ^/[A-Za-z0-9]*$
-    RewriteRule ^/(.*)$ /link/$1 [PT]
 </VirtualHost>
 <VirtualHost *:443>
     SSLEngine on
@@ -28,13 +16,7 @@
     SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown
 
     ServerAdmin webmaster@localhost
-    ServerName lls.dev
-    Alias /static /vagrant/static/dev
-    <Directory /vagrant/static/dev>
-        Options Indexes FollowSymLinks Includes
-        AllowOverride All
-        Require all granted
-    </Directory>
+    ServerName phptemplateprojecthost.dev
     DocumentRoot /vagrant/www
     <Directory /vagrant/www>
         Options Indexes FollowSymLinks Includes
@@ -42,10 +24,3 @@
         Require all granted
     </Directory>
 </VirtualHost>
-
-#<VirtualHost *:80>
-#    ServerAdmin webmaster@localhost
-#    ServerName link.lls.dev
-#    
-#    RedirectPermanent / http://lls.dev/link/
-#</VirtualHost>

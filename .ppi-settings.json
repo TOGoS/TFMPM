@@ -6,6 +6,6 @@
 	"databaseHost": "phptemplateprojectdatabasehost",
 	"databasePassword": "phptemplateprojectdatabasepassword",
 	"databaseNamespace": "phptemplateprojectdatabasenamespace",
-	"deploymentUrlPrefix": "http://phptemplateprojecthost/",
+	"deploymentHostname": "phptemplateprojecthost.dev",
 	"vagrantIpAddress": "192.168.250.249"
 }
