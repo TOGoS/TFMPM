@@ -4,9 +4,9 @@ class PHPTemplateProjectNS_Registry
 {
 	protected $postResponseJobs = [];
 	
-	protected $configDir;
-	public function __construct( $configDir ) {
-		$this->configDir = $configDir;
+	protected $projectRootDir;
+	public function __construct( $projectRootDir ) {
+		$this->projectRootDir = $projectRootDir;
 	}
 	
 	protected $configCache = [];
@@ -16,7 +16,7 @@ class PHPTemplateProjectNS_Registry
 		if( isset($this->configCache[$file]) ) {
 			$c = $this->configCache[$file];
 		} else {
-			$cf = "{$this->configDir}/{$file}.json";
+			$cf = "{$this->projectRootDir}/config/{$file}.json";
 			if( !file_exists($cf) ) return null;
 			$c = EarthIT_JSON::decode(file_get_contents($cf), true);
 			if( $c === null ) {
@@ -43,7 +43,7 @@ class PHPTemplateProjectNS_Registry
 	}
 		
 	public function loadSchema($name='') {
-		return require PHPTemplateProjectNS_ROOT_DIR.'/schema/'.($name?$name.'.':'').'schema.php';
+		return require $this->projectRootDir.'/schema/'.($name?$name.'.':'').'schema.php';
 	}
 
 	public function loadSqlRunner() {
@@ -105,13 +105,13 @@ class PHPTemplateProjectNS_Registry
 	}
 	
 	protected function getBlobRepositoryDirs() {
-		$repoListFile = "{$this->configDir}/local-ccouch-repos.lst";
+		$repoListFile = "{$this->projectRootDir}/config/local-ccouch-repos.lst";
 		if( file_exists($repoListFile) ) {
 			$repos = $this->readLstFile($repoListFile);
 		} else {
 			$repos = [];
 		}
-		array_unshift($repos, PHPTemplateProjectNS_ROOT_DIR.'/datastore');
+		array_unshift($repos, "{$this->projectRootDir}/datastore");
 		return $repos;
 	}
 	
@@ -120,12 +120,12 @@ class PHPTemplateProjectNS_Registry
 		foreach( $this->getBlobRepositoryDirs() as $rd ) {
 			$repos[] = new TOGoS_PHPN2R_FSSHA1Repository($rd);
 		}
-		$gitDir = PHPTemplateProjectNS_ROOT_DIR.'/.git';
+		$gitDir = "{$this->projectRootDir}/.git";
 		if( is_dir($gitDir) ) {
 			$repos[] = new TOGoS_PHPN2R_GitRepository($gitDir);
 		}
 		$multiRepo = new TOGoS_PHPN2R_MultiRepository($repos);
-		$mappingFile = PHPTemplateProjectNS_ROOT_DIR.'/.git-object-urns.txt';
+		$mappingFile = "{$this->projectRootDir}/.git-object-urns.txt";
 		if( file_exists($mappingFile) ) {
 			$multiRepo = new TOGoS_PHPN2R_URIMappingRepository($multiRepo, array(), array($mappingFile));
 		}
@@ -144,7 +144,7 @@ class PHPTemplateProjectNS_Registry
 	}
 	
 	protected function getViewTemplateDirectory() {
-		return PHPTemplateProjectNS_ROOT_DIR.'/views';
+		return "{$this->projectRootDir}/views";
 	}
 	
 	/**
