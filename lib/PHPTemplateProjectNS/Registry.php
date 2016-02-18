@@ -9,6 +9,14 @@ class PHPTemplateProjectNS_Registry
 		$this->projectRootDir = $projectRootDir;
 	}
 	
+	protected function loadConfigFile($file) {
+		$c = EarthIT_JSON::decode(file_get_contents($file), true);
+		if( $c === null ) {
+			throw new Exception("Failed to load config from '{$file}'");
+		}
+		return $c;
+	}
+	
 	protected $configCache = [];
 	public function getConfig( $name ) {
 		$parts = explode('/', $name);
@@ -18,10 +26,7 @@ class PHPTemplateProjectNS_Registry
 		} else {
 			$cf = "{$this->projectRootDir}/config/{$file}.json";
 			if( !file_exists($cf) ) return null;
-			$c = EarthIT_JSON::decode(file_get_contents($cf), true);
-			if( $c === null ) {
-				throw new Exception("Failed to load config from '{$cf}'");
-			}
+			$c = $this->loadConfigFile($cf);
 			$this->configCache[$file] = $c;
 		}
 		foreach( $parts as $p ) {
@@ -33,6 +38,27 @@ class PHPTemplateProjectNS_Registry
 		}
 		return $c;
 	}
+	
+	public function requireConfig( $name ) {
+		$v = $this->getConfig($name);
+		if( $v === null ) throw new Exception("'$name' config variable not defined.");
+		return $v;
+	}
+	
+	/** Don't use this unless you're withConfig */
+	public function setConfig( $name, $v ) {
+		// Force it to get loaded:
+		$this->getConfig($name);
+		
+		$parts = explode('/', $name);
+		$lsat = array_pop($parts);
+		$c =& $this->configCache;
+		foreach( $parts as $p ) {
+			$c =& $c[$p];
+		}
+		$c[$lsat] = $v;
+	}
+
 	
 	public function loadDbAdapter() {
 		return Doctrine_DBAL_DriverManager::getConnection( $this->getConfig('dbc') );
@@ -56,7 +82,7 @@ class PHPTemplateProjectNS_Registry
 	}
 	
 	public function loadSchema($name='') {
-		return require PHPTemplateProjectNS_ROOT_DIR.'/schema/'.($name?$name.'.':'').'schema.php';
+		return require $this->projectRootDir.'/schema/'.($name?$name.'.':'').'schema.php';
 	}
 
 	public function loadSqlRunner() {
@@ -124,7 +150,7 @@ class PHPTemplateProjectNS_Registry
 		} else {
 			$repos = [];
 		}
-		array_unshift($repos, PHPTemplateProjectNS_ROOT_DIR.'/datastore');
+		array_unshift($repos, "{$this->projectRootDir}/datastore");
 		return $repos;
 	}
 	
@@ -133,12 +159,12 @@ class PHPTemplateProjectNS_Registry
 		foreach( $this->getBlobRepositoryDirs() as $rd ) {
 			$repos[] = new TOGoS_PHPN2R_FSSHA1Repository($rd);
 		}
-		$gitDir = PHPTemplateProjectNS_ROOT_DIR.'/.git';
+		$gitDir = "{$this->projectRootDir}/.git";
 		if( is_dir($gitDir) ) {
 			$repos[] = new TOGoS_PHPN2R_GitRepository($gitDir);
 		}
 		$multiRepo = new TOGoS_PHPN2R_MultiRepository($repos);
-		$mappingFile = PHPTemplateProjectNS_ROOT_DIR.'/.git-object-urns.txt';
+		$mappingFile = "{$this->projectRootDir}/.git-object-urns.txt";
 		if( file_exists($mappingFile) ) {
 			$multiRepo = new TOGoS_PHPN2R_URIMappingRepository($multiRepo, array(), array($mappingFile));
 		}
@@ -157,7 +183,7 @@ class PHPTemplateProjectNS_Registry
 	}
 	
 	protected function getViewTemplateDirectory() {
-		return PHPTemplateProjectNS_ROOT_DIR.'/views';
+		return "{$this->projectRootDir}/views";
 	}
 	
 	/**
@@ -268,6 +294,16 @@ class PHPTemplateProjectNS_Registry
 		$alt = $this->cleanClone();
 		foreach( $stuff as $k=>$v ) $alt->$k = $v;
 		return $alt;
+	}
+	
+	public function withConfig($k, $v) {
+		$alt = $this->cleanClone();
+		$alt->setConfig($k, $v);
+		return $alt;
+	}
+	
+	public function withConfigFile($k, $filename) {
+		return $this->withConfig($k, $this->loadConfigFile($filename));
 	}
 	
 	public function withSchema(EarthIT_Schema $schema) {
