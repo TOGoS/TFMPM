@@ -1,0 +1,20 @@
+language: php
+
+sudo: false
+
+php:
+  - 5.3
+  - 5.4
+  - 5.5
+  - 5.6
+  - nightly
+
+addons:
+  postgresql: "9.3"
+
+before_script:
+  - make config/dbc.json build/db/create-database.sql
+  - psql -U postgres <build/db/create-database.sql
+  - touch .database-created
+
+script: make run-unit-tests
