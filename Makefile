@@ -91,7 +91,7 @@ schema/schema.php: schema/schema.txt util/SchemaSchemaDemo.jar
 	${schemaschemademo} -o-schema-php "$@" -php-schema-class-namespace EarthIT_Schema
 
 .git-object-urns.txt: .git/HEAD
-	vendor/earthit/php-project-utils/bin/generate-git-urn-map >"$@"
+	vendor/earthit/php-project-utils/bin/generate-git-urn-map -i "$@"
 
 build/db/create-database.sql: config/dbc.json vendor
 	vendor/bin/generate-create-database-sql "$<" >"$@"
@@ -113,7 +113,7 @@ upgrade-database: resources
 rebuild-database: empty-database upgrade-database
 
 run-unit-tests: runtime-resources upgrade-database
-	vendor/bin/phpunit --bootstrap init-environment.php test
+	vendor/bin/phpunit --bootstrap init-environment.php src/test/php
 
 run-tests: run-unit-tests
 

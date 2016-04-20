@@ -10,10 +10,10 @@
 		"doctrine/dbal": "^2.4",
 		"earthit/php-common": "^1.1.0",
 		"earthit/dbc": "^1.1.0",
-		"earthit/schema": "^1.0.1",
-		"earthit/storage": "^0.3.16",
-		"earthit/cmip-rest": "^0.11.3",
-		"earthit/php-project-utils": "^0.0.18",
+		"earthit/schema": "^1.1.1",
+		"earthit/storage": "^0.3.17",
+		"earthit/cmip-rest": "^0.13.0",
+		"earthit/php-project-utils": "^0.1.1",
 		"earthit/paxml": "^1.2.1",
 		"ryprop/nife": "^0.2.4",
 		"swiftmailer/swiftmailer": "~5.4",
@@ -24,12 +24,12 @@
 	},
 	"autoload": {
 		"psr-0": {
-			"PHPTemplateProjectNS_": "test/"
+			"PHPTemplateProjectNS_": "src/test/php/"
 		}
 	},
 	"autoload-dev": {
 		"psr-0": {
-			"PHPTemplateProjectNS_": "lib/"
+			"PHPTemplateProjectNS_": "src/main/php/"
 		}
 	}
 }

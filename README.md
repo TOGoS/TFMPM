@@ -10,8 +10,11 @@ this project is available at https://github.com/EarthlingInteractive/ChangeItLat
 ## Folder structure
 
 - ```composer.json``` - PHP package and dependency information, used by Composer.
+- ```package.json``` - Node package and dependency information, used by NPM.
 - ```init-*.php``` - Scripts to initialize global state in PHP.
-- ```lib/``` - PHP libraries defined by this project.
+- ```src/``` - Source code for this project.
+- ```target/``` - Compiled stuff.  Not checked in.
+- ```node_modules/``` - External node libraries, managed my NPM.
 - ```vendor/``` - External PHP libraries, managed by Composer.
 - ```config/``` - Deployment configuration.
 - ```www/``` - Serves as the 'document root' for your project.
@@ -21,6 +24,12 @@ this project is available at https://github.com/EarthlingInteractive/ChangeItLat
 - ```Vagrantfile``` - configuration file for Vagrant.
 - ```vm-files/``` - files to be imported into the vagrant Virtual machine.
 - ```provision.sh``` - Virtual machine provisioning script.
+
+Note that the ```src/main/language``` directory is a Maven
+convention.  It's verbose, but gives enough information to keep
+projects with multiple languages and components (unit tests, build
+system, runtime, etc) organized.
+
 
 ## Database
 ### Create the database
