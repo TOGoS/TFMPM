@@ -43,6 +43,7 @@ default: runtime-resources run-tests
 	realclean \
 	rebuild-database \
 	redeploy \
+	redeploy-without-upgrading-the-database \
 	resources \
 	runtime-resources \
 	run-tests \
@@ -120,7 +121,9 @@ run-tests: run-unit-tests
 run-web-server:
 	cd www && php -S localhost:6061 bootstrap.php
 
-redeploy: runtime-resources upgrade-database
+redeploy-without-upgrading-the-database: runtime-resources
+
+redeploy: redeploy-without-upgrading-the-database upgrade-database
 
 everything: \
 	config/dbc.json \
