@@ -104,7 +104,7 @@ build/db/drop-database.sql: config/dbc.json vendor
 
 create-database: build/db/create-database.sql
 	sudo -u postgres psql <"$<"
-	sudo -u postgres psql $(util/get-db-name) <build/db/enable-extensions.sql
+	sudo -u postgres psql $$(util/get-db-name) <build/db/enable-extensions.sql
 drop-database: build/db/drop-database.sql
 	sudo -u postgres psql <"$<"
 
