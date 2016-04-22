@@ -4,7 +4,6 @@ config_files := \
 	config/email-transport.json
 
 generated_resources := \
-	.git-object-urns.txt \
 	build/db/all-tables.sql \
 	build/db/create-database.sql \
 	build/db/drop-database.sql \
@@ -13,6 +12,9 @@ generated_resources := \
 	util/SchemaSchemaDemo.jar \
 	schema/schema.php \
 	vendor
+
+# Include .git-object-urns.txt in the above list if
+# you like deployments to take forever.
 
 build_resources := ${generated_resources} ${config_files}
 
