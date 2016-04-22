@@ -1,0 +1,17 @@
+#!/usr/bin/php
+<?php
+
+require_once __DIR__.'/../init-environment.php';
+
+$dbcConfig = $PHPTemplateProjectNS_Registry->getConfig('dbc');
+echo __FILE__.": DBC Config:", print_r($dbcConfig,true), "\n";
+
+$sqlRunner = $PHPTemplateProjectNS_Registry->sqlRunner;
+$ftRows = $sqlRunner->fetchRows("SELECT 42 AS ft");
+if( $ftRows != array(array('ft'=>42)) ) {
+	fwrite(STDERR, "My select didn't work as expected. :(\n");
+	fwrite(STDERR, "Got back:\n".print_r($ftRows,true)."\n");
+	exit(1);
+}
+
+echo __FILE__.": Yay, I ran a query successfully.\n";
