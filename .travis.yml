@@ -11,6 +11,9 @@ php:
 
 addons:
   postgresql: "9.3"
+  apt:
+    packages:
+      - php5-pgsql
 
 before_script:
   - make config/dbc.json build/db/create-database.sql
