@@ -2,3 +2,4 @@
 # If you want to check something in as an example, call it something.json.example.
 *
 !*.example
+!*.circle

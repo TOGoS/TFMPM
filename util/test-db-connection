@@ -1,4 +1,4 @@
-#!/usr/bin/php
+#!/usr/bin/env php
 <?php
 
 require_once __DIR__.'/../init-environment.php';
@@ -7,6 +7,7 @@ $dbcConfig = $PHPTemplateProjectNS_Registry->getConfig('dbc');
 echo __FILE__.": DBC Config:", print_r($dbcConfig,true), "\n";
 
 $sqlRunner = $PHPTemplateProjectNS_Registry->sqlRunner;
+
 $ftRows = $sqlRunner->fetchRows("SELECT 42 AS ft");
 if( $ftRows != array(array('ft'=>42)) ) {
 	fwrite(STDERR, "My select didn't work as expected. :(\n");
@@ -14,4 +15,10 @@ if( $ftRows != array(array('ft'=>42)) ) {
 	exit(1);
 }
 
-echo __FILE__.": Yay, I ran a query successfully.\n";
+$gjRows = $sqlRunner->fetchRows("SELECT ST_AsGeoJSON('LINESTRING(1 2 3, 4 5 6)')");
+if( count($gjRows) != 1 ) {
+    fwrite(STDERR, "My ST_AsGeoJSON SELECT didn't return anything. :(\n");
+    exit(1);
+}
+
+echo __FILE__.": Yay, database connection and PostGIS functions seem to work.\n";

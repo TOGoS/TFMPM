@@ -1,0 +1,15 @@
+#!/usr/bin/env php
+<?php
+
+$dbcFile = __DIR__.'/../config/dbc.json';
+
+$dbc = json_decode(file_get_contents($dbcFile), true);
+if( !empty($dbc['dbname']) ) {
+	echo $dbc['dbname'], "\n";
+	exit(0);
+}
+
+fwrite(STDERR,
+	"No 'dbname' configured.\n".
+	"$dbcFile\n");
+exit(1);

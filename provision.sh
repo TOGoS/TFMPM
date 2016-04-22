@@ -79,4 +79,5 @@ sudo -u vagrant make -C /vagrant build/db/create-database.sql
 # so that reprovisioning will not crash due to the database
 # already existing:
 sudo -u postgres psql </vagrant/build/db/create-database.sql
+sudo -u postgres psql $(util/get-db-name) </vagrant/build/db/enable-extensions.sql
 sudo -u vagrant make -C /vagrant redeploy
