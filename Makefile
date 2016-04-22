@@ -4,7 +4,6 @@ config_files := \
 	config/email-transport.json
 
 generated_resources := \
-	.git-object-urns.txt \
 	build/db/all-tables.sql \
 	build/db/create-database.sql \
 	build/db/drop-database.sql \
@@ -49,6 +48,7 @@ default: runtime-resources run-tests
 	run-tests \
 	run-unit-tests \
 	run-web-server \
+	test-db-connection \
 	upgrade-database
 
 build-resources: ${build_resources}
@@ -102,8 +102,14 @@ build/db/drop-database.sql: config/dbc.json vendor
 #www/images/head.png:
 #	${fetch} -o "$@" "urn:bitprint:HYWPXT25DHVRV4BXETMRZQY26E6AQCYW.33QDQ443KBXZB5F5UGYODRN2Y34DOZ4GILDI7ZA"
 
-create-database drop-database: %: build/db/%.sql
+create-database: build/db/create-database.sql
 	sudo -u postgres psql <"$<"
+	sudo -u postgres psql $(util/get-db-name) <build/db/enable-extensions.sql
+drop-database: build/db/drop-database.sql
+	sudo -u postgres psql <"$<"
+
+test-db-connection: config/dbc.json
+	util/test-db-connection
 
 empty-database: build/db/empty-database.sql util/phptemplateprojectdatabase-psql
 	cat "$<" | util/phptemplateprojectdatabase-psql
