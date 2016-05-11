@@ -36,11 +36,28 @@ class 'normal ID' : extends(unsigned integer)
 class 'entity ID' : extends(unsigned integer) : PHP type @ "string" : SQL type @ "BIGINT"
 class 'code' : extends(string) : SQL type @ "CHAR(4)" : regex @ "[A-Za-z0-9 _-]{1,4}"
 class 'text' : extends(string) : SQL type @ "TEXT"
+class 'HTML fragment' : extends(text) : comment @ "a block of HTML"
 class 'hash' : extends(string) : regex @ "[A-Fa-f0-9]{40}" : comment @ "Hex-encoded SHA-1 of something (40 bytes)"
 class 'e-mail address' : extends(string)
 class 'URI' : extends(string)
 class 'time' : extends(string) : SQL type @ "TIMESTAMP"
 class 'date' : extends(string) : SQL type @ "DATE"
+# Address components
+class 'postal code' : extends(string)
+class 'region code' : extends(string) :
+	SQL type @ "CHAR(2)" :
+	regex @ "[A-Z]{2}" :
+	comment @ "2-letter state code."
+class 'country code' : extends(string) :
+	SQL type @ "CHAR(3)" :
+	regex @ "[A-Z]{3}" :
+	comment @ "ISO 3166-1 alpha-3 3-letter country code."
+# Large ID types
+class 'blob ID' : extends(string) :
+        SQL type @ "CHAR(32)" :
+        regex @ "[A-Z2-7]{32}" :
+        comment @ "Base32-encoded SHA-1 of the blob"
+class 'picture ID' : extends(blob ID)
 
 schema 'phptemplateprojectdatabasenamespace'
 
@@ -51,11 +68,27 @@ field modifier 'EIPK' = entity ID : default value sequence @ new entity ID : key
 # SRC = 'standard resource class'
 field modifier 'SRC' = has a database table : has a REST service : is in namespace @ 'phptemplateprojectdatabasenamespace'
 
+field property 'uses user text canonicalization rules' :
+	long name @ "http://ns.earthit.com/Phrebar/usesUserTextCanonicalizationRules" :
+	comment @ "Means text is stored trimmed, and null when empty for nullable fields"
+
+field modifier UTCR = uses user text canonicalization rules
+
 class 'user' : SRC {
 	ID : EIPK
 	username : string
 	passhash : string : nullable
 	e-mail address : e-mail address : nullable
+}
+
+class 'postal address' : records are immutable : SRC {
+	ID : blob ID : key(primary) : comment @ "Base32-encoded SHA-1 of JSON representation of address"
+	street address : string : nullable : UTCR
+	unit address : string : nullable : UTCR
+	city name : string : nullable : UTCR
+	region code : region code : nullable : UTCR
+	postal code : postal code : nullable : UTCR
+	country code : country code : nullable : UTCR
 }
 
 class 'organization' : SRC : members are public {
@@ -85,4 +118,24 @@ class 'computation' : SRC : members are public {
 	expression : string : key(primary)
 	status : reference(computation status) = status code
 	result : string : nullable
+}
+
+# Demonstrate an order system or something
+
+class 'product' : SRC : members are public {
+	ID : EIPK
+	UPC : string
+	title : string
+	description HTML : HTML fragment
+}
+
+class 'order' : SRC {
+	ID : EIPK
+	user : reference(user) = ID = user ID
+	
+}
+
+class 'order item' : SRC {
+	order : reference(order) = ID = order ID
+	product : reference(product) = ID = product ID
 }
