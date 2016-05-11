@@ -1,0 +1,120 @@
+/* Generic stuff */
+
+body {
+	font-family: sans-serif;
+	box-sizing: border-box;
+	margin-top: 0px;
+	padding: 0;
+	margin: 0;
+}
+a.devlink, a.devlink:hover {
+	color: inherit;
+	cursor: default;
+	text-decoration: none;
+}
+*, *:before, *:after {
+	box-sizing: inherit;
+}
+h1, h2, h3, h4, h5, p, dl, label, pre {
+	margin: 0;
+	padding: 3px 6px;
+}
+form {
+	/* We don't necessarily want placement of <form> tags affecting layout any more than it has to. */
+	margin: 0;
+	padding: 0;
+}
+ul {
+	margin: 0;
+	padding-top: 6px;
+	padding-bottom: 6px;
+}
+hr {
+	height: 0px;
+	border: none;
+	border-bottom: 1px solid silver;
+}
+
+/* Nav-bar */
+
+.nav-bar {
+	border-bottom: 1px solid silver;
+	margin-bottom: 8px;
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	background: white;
+	height: 32px;
+}
+.nav-bar > * {
+	padding: 4px;
+	text-align: right;
+}
+.nav-bar > *:nth-child(1) {
+	text-align: left;
+}
+.nav-bar > *:nth-child(2) {
+	flex-direction: row-reverse;
+}
+
+ul.nav {
+	display: flex;
+	flex-direction: row;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+ul.nav li {
+	display: inline;
+	margin: 0;
+	padding: 3px 6px;
+}
+
+/* Content area */
+
+div.content {
+	padding: 3px 6px 3px 6px;
+}
+
+/* Footer */
+
+div.footer {
+	color: silver;
+	border-top: 1px solid silver;
+	margin-top: 8px;
+	padding: 3px 6px;
+	
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+}
+div.footer > * {
+	flex: 1 1 33%;
+}
+div.footer > *:nth-child(1) {
+	text-align: left;
+}
+div.footer > *:nth-child(2) {
+	text-align: center;
+}
+div.footer > *:nth-child(3) {
+	text-align: right;
+}
+
+/* Tables */
+
+table.bolly {
+       border-collapse: collapse;
+}
+table.bolly tbody tr:nth-child(2n+1) {
+       background-color: rgba(0,0,255,0.15);
+}
+table.bolly tbody td {
+       padding-right: 16px;
+}
+table.bolly thead th {
+       padding-right: 16px;
+}
+td.null {
+       background-color: rgba(128,128,0,0.2);
+}
