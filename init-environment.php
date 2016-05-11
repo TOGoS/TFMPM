@@ -9,6 +9,13 @@ require __DIR__.'/vendor/autoload.php';
 
 define('PHPTemplateProjectNS_ROOT_DIR', __DIR__);
 
+global $PHPTemplateProjectNS_script_start_time;
+$PHPTemplateProjectNS_script_start_time = microtime(true);
+function PHPTemplateProjectNS_time_since_script_start() {
+	global $PHPTemplateProjectNS_script_start_time;
+	return microtime(true) - $PHPTemplateProjectNS_script_start_time;
+}
+
 /** 'Emit HTML text' */
 function eht( $text ) {
 	echo htmlspecialchars($text);
