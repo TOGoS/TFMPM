@@ -156,10 +156,12 @@ class 'product' : SRC : members are public {
 class 'order' : SRC {
 	ID : EIPK
 	user : reference(user) = ID = user ID
-	
+	shipping address : reference(postal address) = ID = shipping address ID
+	billing address : reference(postal address) = ID = billing address ID
 }
 
 class 'order item' : SRC {
 	order : reference(order) = ID = order ID
 	product : reference(product) = ID = product ID
+	quantity : integer : default value @ 1
 }

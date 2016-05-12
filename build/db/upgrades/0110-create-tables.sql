@@ -54,12 +54,17 @@ CREATE TABLE "phptemplateprojectdatabasenamespace"."product" (
 CREATE TABLE "phptemplateprojectdatabasenamespace"."order" (
 	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
 	"userid" BIGINT NOT NULL,
+	"shippingaddressid" CHAR(32) NOT NULL,
+	"billingaddressid" CHAR(32) NOT NULL,
 	PRIMARY KEY ("id"),
-	FOREIGN KEY ("userid") REFERENCES "phptemplateprojectdatabasenamespace"."user" ("id")
+	FOREIGN KEY ("userid") REFERENCES "phptemplateprojectdatabasenamespace"."user" ("id"),
+	FOREIGN KEY ("shippingaddressid") REFERENCES "phptemplateprojectdatabasenamespace"."postaladdress" ("id"),
+	FOREIGN KEY ("billingaddressid") REFERENCES "phptemplateprojectdatabasenamespace"."postaladdress" ("id")
 );
 CREATE TABLE "phptemplateprojectdatabasenamespace"."orderitem" (
 	"orderid" BIGINT NOT NULL,
 	"productid" BIGINT NOT NULL,
+	"quantity" INT NOT NULL,
 	FOREIGN KEY ("orderid") REFERENCES "phptemplateprojectdatabasenamespace"."order" ("id"),
 	FOREIGN KEY ("productid") REFERENCES "phptemplateprojectdatabasenamespace"."product" ("id")
 );
