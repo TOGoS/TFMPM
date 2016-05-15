@@ -4,8 +4,8 @@ class PHPTemplateProjectNS_FormBlob extends Nife_AbstractBlob
 {
 	const INDENT = 'indent';
 	const INDENT_DELTA = 'indentDelta';
-	const ID_PREFIX = 'idPrefix';
 	const INCLUDE_FORM_ELEMENT = 'includeFormElement';
+	const FORM_ID = 'formId';
 	const FORM_METHOD = 'formMethod';
 	const FORM_ENCTYPE = 'formEncType';
 	const FORM_ACTION = 'formAction';
@@ -30,7 +30,7 @@ class PHPTemplateProjectNS_FormBlob extends Nife_AbstractBlob
 		$this->options     = $options;
 		$this->indent      = self::av($options, self::INDENT, "");
 		$this->indentDelta = self::av($options, self::INDENT_DELTA, "\t");
-		$this->idPrefix    = self::av($options, self::ID_PREFIX, 'ff-');
+		$this->idPrefix    = self::av($options, self::FORM_ID, 'the-form').'-';
 	}
 	
 	protected static function formFieldName( $fieldName, $prefix='' ) {
@@ -105,9 +105,10 @@ class PHPTemplateProjectNS_FormBlob extends Nife_AbstractBlob
 		$itemPaxml = $this->itemToPaxml( $this->formInfo );
 		if( $this->optVal(self::INCLUDE_FORM_ELEMENT) ) {
 			$formPaxml = ['form'];
-			if( ($method = $this->optVal(self::FORM_METHOD)) ) $formPaxml['method'] = $method;
-			if( ($action = $this->optVal(self::FORM_ACTION)) ) $formPaxml['action'] = $action;
-			if( ($eType = $this->optVal(self::FORM_ENCTYPE)) ) $formPaxml['enctype'] = $eType;
+			if( ($formId = $this->optVal(self::FORM_ID))     ) $formPaxml['id']      = $formId;
+			if( ($method = $this->optVal(self::FORM_METHOD)) ) $formPaxml['method']  = $method;
+			if( ($action = $this->optVal(self::FORM_ACTION)) ) $formPaxml['action']  = $action;
+			if( ($eType  = $this->optVal(self::FORM_ENCTYPE))) $formPaxml['enctype'] = $eType;
 			$formPaxml[] = $itemPaxml;
 			return $formPaxml;
 		} else {

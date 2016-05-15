@@ -1,12 +1,12 @@
-<form method="POST" action="place">
+<form id="le-test" method="POST" action="place">
 	<fieldset>
 		<table class="form-fields">
 			<tr>
 				<th>
-					<label for="ff-favoriteColor">Your Favorite Color</label>
+					<label for="le-test-favoriteColor">Your Favorite Color</label>
 				</th>
 				<td>
-					<select name="favoriteColor" id="ff-favoriteColor">
+					<select name="favoriteColor" id="le-test-favoriteColor">
 						<option value="red">Red</option>
 						<option value="green">Green</option>
 						<option value="blue" selected="selected">Blue</option>
@@ -21,10 +21,10 @@
 						<table class="form-fields">
 							<tr>
 								<th>
-									<label for="ff-person1[name]">name</label>
+									<label for="le-test-person1[name]">name</label>
 								</th>
 								<td>
-									<input type="text" id="ff-person1[name]" value="" placeholder="Bob Smith"/>
+									<input type="text" id="le-test-person1[name]" value="" placeholder="Bob Smith"/>
 								</td>
 								<td class="validation-error">
 									<p>Name must not be empty</p>
@@ -32,10 +32,10 @@
 							</tr>
 							<tr>
 								<th>
-									<label for="ff-person1[phoneNumber]">phoneNumber</label>
+									<label for="le-test-person1[phoneNumber]">phoneNumber</label>
 								</th>
 								<td>
-									<input type="text" id="ff-person1[phoneNumber]" value="1-608-123-4567" placeholder="1-555-555-5555"/>
+									<input type="text" id="le-test-person1[phoneNumber]" value="1-608-123-4567" placeholder="1-555-555-5555"/>
 								</td>
 							</tr>
 						</table>
@@ -48,18 +48,18 @@
 						<table class="form-fields">
 							<tr>
 								<th>
-									<label for="ff-billingAddress[streetAddress]">Street address</label>
+									<label for="le-test-billingAddress[streetAddress]">Street address</label>
 								</th>
 								<td>
-									<input type="text" id="ff-billingAddress[streetAddress]" placeholder="123 Place Street"/>
+									<input type="text" id="le-test-billingAddress[streetAddress]" placeholder="123 Place Street"/>
 								</td>
 							</tr>
 							<tr>
 								<th>
-									<label for="ff-billingAddress[unitAddress]">Unit address</label>
+									<label for="le-test-billingAddress[unitAddress]">Unit address</label>
 								</th>
 								<td>
-									<input type="text" id="ff-billingAddress[unitAddress]" placeholder="Apt #5"/>
+									<input type="text" id="le-test-billingAddress[unitAddress]" placeholder="Apt #5"/>
 								</td>
 							</tr>
 						</table>

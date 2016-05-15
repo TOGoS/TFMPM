@@ -8,6 +8,7 @@ class PHPTemplateProjectNS_FormBlobTest extends PHPTemplateProjectNS_TestCase
 		$formInfo = EarthIT_JSON::decode(file_get_contents(__DIR__.'/test-form-info.json'));
 		$formBlob = new FB($formInfo, array(
 			FB::INCLUDE_FORM_ELEMENT => true,
+			FB::FORM_ID     => 'le-test',
 			FB::FORM_METHOD => 'POST',
 			FB::FORM_ACTION => 'place'
 		));
