@@ -80,7 +80,7 @@ class PHPTemplateProjectNS_FormBlob extends Nife_AbstractBlob
 		}
 	}
 	
-	public function itemToPaxml( array $formInfo, $prefix='' ) {
+	public function itemToPaxml( array $formInfo, $prefix='', array $opts=array() ) {
 		$paxml = ['fieldset'];
 		if( isset($formInfo['fieldsetClassName']) ) {
 			$paxml['class'] = $formInfo['fieldsetClassName'];
@@ -91,6 +91,9 @@ class PHPTemplateProjectNS_FormBlob extends Nife_AbstractBlob
 		if( isset($formInfo['fields']) ) {
 			$tablePaxml = ['table', 'class'=>'form-fields'];
 			$this->fieldsToPaxml( $formInfo['fields'], $prefix, $tablePaxml );
+			if( self::av($opts,'includeSubmitButton') ) {
+				$tablePaxml[] = ['tr','class'=>'submit-buttons',['td','colspan'=>'3',['input','type'=>'submit']]];
+			}
 			$paxml[] = $tablePaxml;
 		}
 		if( isset($formInfo['items']) ) {
@@ -102,17 +105,17 @@ class PHPTemplateProjectNS_FormBlob extends Nife_AbstractBlob
 	}
 	
 	public function toPaxml() {
-		$itemPaxml = $this->itemToPaxml( $this->formInfo );
 		if( $this->optVal(self::INCLUDE_FORM_ELEMENT) ) {
 			$formPaxml = ['form'];
 			if( ($formId = $this->optVal(self::FORM_ID))     ) $formPaxml['id']      = $formId;
 			if( ($method = $this->optVal(self::FORM_METHOD)) ) $formPaxml['method']  = $method;
 			if( ($action = $this->optVal(self::FORM_ACTION)) ) $formPaxml['action']  = $action;
 			if( ($eType  = $this->optVal(self::FORM_ENCTYPE))) $formPaxml['enctype'] = $eType;
+			$itemPaxml = $this->itemToPaxml( $this->formInfo, '', array('includeSubmitButton'=>true) );
 			$formPaxml[] = $itemPaxml;
 			return $formPaxml;
 		} else {
-			return $itemPaxml;
+			return $this->itemToPaxml( $this->formInfo );
 		}
 	}
 	
