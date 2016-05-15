@@ -79,11 +79,18 @@ class PHPTemplateProjectNS_PageAction_ShowDataTable extends PHPTemplateProjectNS
 			array_merge(['tbody'], $trs)
 		];
 		
+		$createTablePaxml = ['table', 'class'=>'item-creation-form'];
+		foreach( $fields as $fn=>$f ) {
+			$createTablePaxml[
+		}
+		$createFormPaxml = ['form', $createTablePaxml];
+		
 		return [
 			'rc' => $this->rc,
 			'collectionName' => $collectionName,
 			'items' => $items,
-			'tablePaxml' => $tablePaxml
+			'tablePaxml' => $tablePaxml,
+			'createFormPaxml' => $createFormPaxml
 		];
 	}
 }

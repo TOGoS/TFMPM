@@ -1,0 +1,71 @@
+<form method="POST" action="place">
+	<fieldset>
+		<table class="form-fields">
+			<tr>
+				<th>
+					<label for="ff-favoriteColor">Your Favorite Color</label>
+				</th>
+				<td>
+					<select name="favoriteColor" id="ff-favoriteColor">
+						<option value="red">Red</option>
+						<option value="green">Green</option>
+						<option value="blue" selected="selected">Blue</option>
+						<option value="purple">Purple</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<fieldset class="person">
+						<legend>Person #1</legend>
+						<table class="form-fields">
+							<tr>
+								<th>
+									<label for="ff-person1[name]">name</label>
+								</th>
+								<td>
+									<input type="text" id="ff-person1[name]" value="" placeholder="Bob Smith"/>
+								</td>
+								<td class="validation-error">
+									<p>Name must not be empty</p>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<label for="ff-person1[phoneNumber]">phoneNumber</label>
+								</th>
+								<td>
+									<input type="text" id="ff-person1[phoneNumber]" value="1-608-123-4567" placeholder="1-555-555-5555"/>
+								</td>
+							</tr>
+						</table>
+					</fieldset>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<fieldset>
+						<table class="form-fields">
+							<tr>
+								<th>
+									<label for="ff-billingAddress[streetAddress]">Street address</label>
+								</th>
+								<td>
+									<input type="text" id="ff-billingAddress[streetAddress]" placeholder="123 Place Street"/>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<label for="ff-billingAddress[unitAddress]">Unit address</label>
+								</th>
+								<td>
+									<input type="text" id="ff-billingAddress[unitAddress]" placeholder="Apt #5"/>
+								</td>
+							</tr>
+						</table>
+					</fieldset>
+				</td>
+			</tr>
+		</table>
+	</fieldset>
+</form>

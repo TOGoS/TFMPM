@@ -1,0 +1,58 @@
+{
+	"dataType": { "name": "complex" },
+	"fields": {
+		"favoriteColor": {
+			"title": "Your Favorite Color",
+			"dataType": { "name": "text" },
+			"inputValue": "blue",
+			"possibleValues": {
+				"red": "Red",
+				"green": "Green",
+				"blue": "Blue",
+				"purple": "Purple"
+			}
+		},
+		"person1": {
+			"title": "Person #1",
+			"fieldsetClassName": "person",
+			"fields": {
+				"name": {
+					"placeholderValue": "Bob Smith",
+					"inputValue": "",
+					"dataType": { "name": "text" },
+					"errors": [
+						{
+							"message": "Name must not be empty"
+						}
+					]
+				},
+				"phoneNumber": {
+					"placeholderValue": "1-555-555-5555",
+					"inputValue": "1-608-123-4567",
+					"dataType": { "name": "text" },
+					"regex": "(+\\d)?[- ]?\\d{3}[- ]?\\d{3}[- ]?\\d{4}",
+					"patternText": "[+1] 123-456-7890"
+				}
+			}
+		},
+		"billingAddress": {
+			"fields": {
+				"streetAddress": {
+					"title": "Street address",
+					"dataType": { "name": "text" },
+					"placeholderValue": "123 Place Street"
+				},
+				"unitAddress": {
+					"title": "Unit address",
+					"dataType": { "name": "text" },
+					"placeholderValue": "Apt #5"
+				}
+			}
+		}
+	},
+	"errors": [
+		{
+			"message": "You waited too long before submitting the form"
+		}
+	]
+}
