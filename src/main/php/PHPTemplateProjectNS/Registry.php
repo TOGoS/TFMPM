@@ -183,7 +183,7 @@ class PHPTemplateProjectNS_Registry
 	}
 	
 	protected function getViewTemplateDirectory() {
-		return "{$this->projectRootDir}/views";
+		return "{$this->projectRootDir}/src/views/php";
 	}
 	
 	/**
