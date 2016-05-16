@@ -99,6 +99,11 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		) {
 			return $restAction;
 		} else if(
+			$req->getRequestMethod() === 'POST' and preg_match('#^/([^/]+)$#', $path, $bif) and
+			($rc = EarthIT_CMIPREST_Util::getResourceClassByCollectionName($this->schema, $bif[1])) !== null
+		) {
+			return new PHPTemplateProjectNS_PageAction_PostToDataTable($this->registry, $rc, $req->getParams());
+		} else if(
 			($restAction = $this->restPageRequestToAction(
 				$req->getRequestMethod(),
 				$path, $req->queryString,
