@@ -1,9 +1,9 @@
 {
-	"dataType": { "name": "complex" },
+	"dataTypeName": "complex",
 	"fields": {
 		"favoriteColor": {
 			"title": "Your Favorite Color",
-			"dataType": { "name": "text" },
+			"dataTypeName": "text",
 			"inputValue": "blue",
 			"possibleValues": {
 				"red": "Red",
@@ -19,7 +19,7 @@
 				"name": {
 					"placeholderValue": "Bob Smith",
 					"inputValue": "",
-					"dataType": { "name": "text" },
+					"dataTypeName": "text",
 					"errors": [
 						{
 							"message": "Name must not be empty"
@@ -29,7 +29,7 @@
 				"phoneNumber": {
 					"placeholderValue": "1-555-555-5555",
 					"inputValue": "1-608-123-4567",
-					"dataType": { "name": "text" },
+					"dataTypeName": "text",
 					"regex": "(+\\d)?[- ]?\\d{3}[- ]?\\d{3}[- ]?\\d{4}",
 					"patternText": "[+1] 123-456-7890"
 				}
@@ -39,12 +39,12 @@
 			"fields": {
 				"streetAddress": {
 					"title": "Street address",
-					"dataType": { "name": "text" },
+					"dataTypeName": "text",
 					"placeholderValue": "123 Place Street"
 				},
 				"unitAddress": {
 					"title": "Unit address",
-					"dataType": { "name": "text" },
+					"dataTypeName": "text",
 					"placeholderValue": "Apt #5"
 				}
 			}

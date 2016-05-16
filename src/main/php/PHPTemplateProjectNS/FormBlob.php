@@ -50,7 +50,7 @@ class PHPTemplateProjectNS_FormBlob extends Nife_AbstractBlob
 	protected function fieldsToPaxml( array $fields, $prefix='', array &$tableRows ) {
 		foreach( $fields as $fieldName=>$fieldInfo ) {
 			$inputName = self::formFieldName($fieldName, $prefix);
-			$dtn = isset($fieldInfo['dataType']['name']) ? $fieldInfo['dataType']['name'] :
+			$dtn = isset($fieldInfo['dataTypeNname']) ? $fieldInfo['dataTypeName'] :
 				  (isset($fieldInfo['fields']) ? 'complex' : 'text');
 			if( $dtn == 'complex' ) {
 				$tr = ['tr', ['td', 'colspan'=>'3', $this->itemToPaxml($fieldInfo, $inputName)]];
