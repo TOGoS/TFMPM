@@ -69,7 +69,7 @@ class PHPTemplateProjectNS_FormBlob extends Nife_AbstractBlob
 						$inputPaxml[] = $optionPaxml;
 					}
 				} else {
-					$inputPaxml = ['input', 'type'=>'text', 'id'=>$inputId];
+					$inputPaxml = ['input', 'type'=>'text', 'name'=>$inputName, 'id'=>$inputId];
 					if( isset($fieldInfo['inputValue']) ) $inputPaxml['value'] = $fieldInfo['inputValue'];
 					if( isset($fieldInfo['placeholderValue']) ) $inputPaxml['placeholder'] = $fieldInfo['placeholderValue'];
 				}
