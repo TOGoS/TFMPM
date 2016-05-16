@@ -83,7 +83,8 @@ field property 'is content hash-based ID' :
 
 schema 'phptemplateprojectdatabasenamespace'
 
-sequence 'new entity ID' : initial value @ 1001 : is in namespace @ 'phptemplateprojectdatabasenamespace'
+sequence 'new entity ID' : initial value @ 1001 : is in namespace @ 'phptemplateprojectdatabasenamespace' :
+	long name @ "urn:x-the-new-entity-id-sequence" # Meaningless long name for schema.php
 
 field modifier 'AIPK' = normal ID : is auto-incremented : key(primary)
 field modifier 'EIPK' = entity ID : default value sequence @ new entity ID : key(primary)

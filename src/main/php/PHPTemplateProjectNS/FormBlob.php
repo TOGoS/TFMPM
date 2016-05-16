@@ -9,6 +9,7 @@ class PHPTemplateProjectNS_FormBlob extends Nife_AbstractBlob
 	const FORM_METHOD = 'formMethod';
 	const FORM_ENCTYPE = 'formEncType';
 	const FORM_ACTION = 'formAction';
+	const SUBMIT_TITLE = 'submitTitle';
 	
 	protected $formInfo;
 	protected $indent;
@@ -100,7 +101,11 @@ class PHPTemplateProjectNS_FormBlob extends Nife_AbstractBlob
 			$tablePaxml = ['table', 'class'=>'form-fields'];
 			$this->fieldsToPaxml( $formInfo['fields'], $prefix, $tablePaxml );
 			if( self::av($opts,'includeSubmitButton') ) {
-				$tablePaxml[] = ['tr','class'=>'submit-buttons',['td','colspan'=>'3',['input','type'=>'submit']]];
+				$submit = ['input','type'=>'submit'];
+				if( ($st = $this->optVal(self::SUBMIT_TITLE)) ) {
+					$submit['value'] = $st;
+				}
+				$tablePaxml[] = ['tr','class'=>'submit-buttons',['td','colspan'=>'3',$submit]];
 			}
 			$paxml[] = $tablePaxml;
 		}
