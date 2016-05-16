@@ -1,5 +1,7 @@
 <?php
 
+use PHPTemplateProjectNS_FormBlob as FB;
+
 class PHPTemplateProjectNS_PageAction_ShowDataTable extends PHPTemplateProjectNS_PageAction_TemplatePageAction
 {
 	protected $rc;
@@ -79,18 +81,29 @@ class PHPTemplateProjectNS_PageAction_ShowDataTable extends PHPTemplateProjectNS
 			array_merge(['tbody'], $trs)
 		];
 		
-		$createTablePaxml = ['table', 'class'=>'item-creation-form'];
+		$postForm = null;
+		$formInfo = ['dataType'=>['name'=>['complex']]];
 		foreach( $fields as $fn=>$f ) {
-			$createTablePaxml[
+			$ffn = EarthIT_Schema_WordUtil::toCamelCase($fn);
+			// TODO: Don't show fields that are auto-generated (AIPKs, EIPKs, HJPKs, etc)
+			//if( $fn->
+			$fieldDataType = 'text'; // TODO: Not always
+			$fieldInfo = ['dataType' => $fieldDataType];
+			$formInfo['fields'][$ffn] = $fieldInfo;
 		}
-		$createFormPaxml = ['form', $createTablePaxml];
+		
+		$postForm = new PHPTemplateProjectNS_FormBlob($formInfo, array(
+			FB::INCLUDE_FORM_ELEMENT => true,
+			FB::FORM_ID => 'post-form',
+			FB::FORM_METHOD => 'POST',
+		));
 		
 		return [
 			'rc' => $this->rc,
 			'collectionName' => $collectionName,
 			'items' => $items,
 			'tablePaxml' => $tablePaxml,
-			'createFormPaxml' => $createFormPaxml
+			'postForm' => $postForm
 		];
 	}
 }

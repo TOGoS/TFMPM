@@ -33,6 +33,14 @@ class PHPTemplateProjectNS_FormBlob extends Nife_AbstractBlob
 		$this->idPrefix    = self::av($options, self::FORM_ID, 'the-form').'-';
 	}
 	
+	public function __get($k) {
+		switch( $k ) {
+		case 'formId': case 'formMethod': case 'formAction':
+			return $this->optVal($k);
+		}
+		throw new Exception("No such property on FormBlob: $k");
+	}
+	
 	protected static function formFieldName( $fieldName, $prefix='' ) {
 		if( empty($prefix) ) return $fieldName;
 		return "{$prefix}[{$fieldName}]";
