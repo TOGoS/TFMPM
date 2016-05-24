@@ -15,7 +15,7 @@ implements EarthIT_CMIPREST_ResultAssembler
 		return call_user_func($assembled, $ctx);
 	}
 	
-	public static function exceptionToHttpResponse( Exception $e, TOGoS_Action $action=null, $ctx=null ) {
+	public function exceptionToHttpResponse( Exception $e, TOGoS_Action $action=null, $ctx=null ) {
 		// Could make a nice page,
 		// but let's just let the root exception handler deal with it for now.
 		throw $e;
