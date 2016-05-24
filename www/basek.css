@@ -104,17 +104,17 @@ div.footer > *:nth-child(3) {
 /* Tables */
 
 table.bolly {
-       border-collapse: collapse;
+	border-collapse: collapse;
 }
 table.bolly tbody tr:nth-child(2n+1) {
-       background-color: rgba(0,0,255,0.15);
+	background-color: rgba(0,0,255,0.15);
 }
 table.bolly tbody td {
-       padding-right: 16px;
+	padding-right: 16px;
 }
 table.bolly thead th {
-       padding-right: 16px;
+	padding-right: 16px;
 }
 td.null {
-       background-color: rgba(128,128,0,0.2);
+	background-color: rgba(128,128,0,0.2);
 }
