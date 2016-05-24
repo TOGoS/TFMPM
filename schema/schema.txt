@@ -41,7 +41,7 @@ class 'code' : extends(string) : SQL type @ "CHAR(4)" : regex @ "[A-Za-z0-9 _-]{
 class 'text' : extends(string) : SQL type @ "TEXT"
 class 'HTML fragment' : extends(text) : comment @ "a block of HTML"
 class 'hash' : extends(string) : regex @ "[A-Fa-f0-9]{40}" : comment @ "Hex-encoded SHA-1 of something (40 bytes)"
-class 'e-mail address' : extends(string)
+class 'e-mail address' : extends(string) : regex @ "[^\\s@]+@[^\\s@]+"
 class 'URI' : extends(string)
 class 'time' : extends(string) : SQL type @ "TIMESTAMP"
 class 'date' : extends(string) : SQL type @ "DATE"

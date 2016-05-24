@@ -36,27 +36,53 @@ class PHPTemplateProjectNS_FormModel extends PHPTemplateProjectNS_Component
 					// Is explicitly valid even if sub-items have onEmpty = error
 					return true;
 				case 'error':
-					$formInfo['errors'][] = "May not be empty";
-					$okay = false;
-					break;
+					$formInfo['errors'][] = array('message'=>"May not be empty");
+					return false;
 				default:
 					throw new Exception("Unrecognized 'onEmpty' behavior: '{$formInfo['onEmpty']}'");
 				}
 			}
 		}
 		
-		switch( ($dt = $this->dataTypeName($formInfo)) ) {
-		case 'complex':
+		$dt = $this->dataTypeName($formInfo);
+		if( $dt === 'complex' ) {
 			foreach( $formInfo['fields'] as $fn=>$_ ) {
 				$okay &= $this->validate($formInfo['fields'][$fn]);
 			}
-			break;
+			return $okay;
+		}
+
+		$v = $formInfo['inputValue'];
+		
+		switch( $dt ) {
 		case 'text':
-			// TODO: match regex
-			break;
+			if( isset($formInfo['regex']) ) {
+				// TODO: Pick a delimiter based on it not being in regex:
+				if( !preg_match('#^'.$formInfo['regex'].'$#', $v) ) {
+					if( isset($formInfo['patternText']) ) {
+						$formInfo['errors'][] = array('message'=>"Must be of the form: ‹{$formInfo['patternText']}›");
+					} else {
+						$formInfo['errors'][] = array('message'=>"Must match the regex: ‹{$formInfo['regex']}›");
+					}
+					return false;
+				}
+			}
+			return true;
 		case 'boolean':
-			// TODO: Ensure valid boolean representation, convert to true/false
-			break;
+			if( is_boolean($v) ) return true;
+			if( is_number($v) ) $v = (string)$v;
+			if( is_string($v) ) {
+				switch( $v ) {
+				case '1': case 'on': case 'yes': case 'true':
+					$formInfo['inputValue'] = true;
+					return true;
+				case '0': case 'off': case 'no': case 'false':
+					$formInfo['inputValue'] = false;
+					return true;
+				}
+			}
+			$formInfo['errors'][] = "Invalid boolean representation: ".var_export($v,true);
+			return false;
 		default:
 			// Don't know how to validate!
 			throw new Exception("Don't know how to validate form field of type '{$dt}'");
