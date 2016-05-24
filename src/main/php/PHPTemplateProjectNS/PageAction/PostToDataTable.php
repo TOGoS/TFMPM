@@ -20,8 +20,9 @@ class PHPTemplateProjectNS_PageAction_PostToDataTable extends PHPTemplateProject
 		$this->formModel->populateInputValuesFromParameters( $formInfo, $this->formData );
 		if( $this->formModel->validate($formInfo) ) {
 			$data = $this->formModel->extractInputData($formInfo);
-			// TODO: save the data
-			ezdie("Posting data", $data);
+			$schemaData = EarthIT_CMIPREST_RESTItemCodec::getInstance()->decodeItems($data, $this->rc);
+			$this->storage->saveItems( $schemaData, $this->rc );
+			return $this->redirect(303, '#');
 		} else {
 			$forwardTo = new PHPTemplateProjectNS_PageAction_ShowDataTable($this->registry, $this->rc, null, $formInfo);
 			return call_user_func($forwardTo, $actx);
