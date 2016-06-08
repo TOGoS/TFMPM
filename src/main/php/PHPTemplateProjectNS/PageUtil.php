@@ -28,9 +28,16 @@ class PHPTemplateProjectNS_PageUtil extends PHPTemplateProjectNS_Component
 		return $params + $this->params + ['PU' => $this];
 	}
 	
+	protected function getActionContext() {
+		if( !isset($this->params['actionContext']) ) {
+			throw new Exception("No 'actionContext' available.");
+		}
+		return $this->params['actionContext'];
+	}
+	
 	public function relativeUrl($target) {
 		if( strlen($target) > 0 && $target[0] == '/' ) {
-			$target = $this->params['actionContext']->relativeUrl($target);
+			$target = $this->getActionContext()->relativeUrl($target);
 		}
 		return $target;
 	}
