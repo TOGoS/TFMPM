@@ -43,6 +43,7 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 	
 	public function requestToAction( PHPTemplateProjectNS_Request $req ) {
 		$path = $req->getPathInfo();
+		$method = $req->getRequestMethod();
 		if( $path == '/' ) {
 			return $this->createPageAction('ShowHello');
 		} else if( preg_match('<^/uri-res(/.*)>', $path, $bif) ) {
@@ -68,19 +69,19 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		} else if( preg_match('<^/hello/(.*)$>', $path, $bif) ) {
 			return $this->createPageAction('SayHelloTo',$bif[1]);
 		} else if( $path == '/register' ) {
-			switch( $req->getRequestMethod() ) {
+			switch( $method ) {
 			case 'GET':
 				return $this->createPageAction('ShowRegistrationForm', $req->getParam('error-message-id'));
 			case 'POST':
 				return $this->createPageAction('Register', $req->getParams());
 			}
 		} else if( $path == '/schema-upgrades' ) {
-			switch( $req->getRequestMethod() ) {
+			switch( $method ) {
 			case 'GET':
 				return $this->createPageAction('ShowSchemaUpgrades', $req->getParam('mode', 'list'));
 			}
 		} else if( $path == '/computations' ) {
-			switch( $req->getRequestMethod() ) {
+			switch( $method ) {
 			case 'GET':
 				return $this->createPageAction('ShowComputations');
 			case 'POST':
@@ -92,21 +93,21 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		} else if(
 			preg_match('#^/api([;/].*)#',$path,$bif) and
 			($restAction = $this->apiRequestToAction(
-				$req->getRequestMethod(),
-				$bif[1], $req->queryString,
+				$method,
+				$bif[1], $req->getQueryString(),
 				$req->getRequestContentBlob())
 			 ) !== null
 		) {
 			return $restAction;
 		} else if(
-			$req->getRequestMethod() === 'POST' and preg_match('#^/([^/]+)$#', $path, $bif) and
+			$method === 'POST' and preg_match('#^/([^/]+)$#', $path, $bif) and
 			($rc = EarthIT_CMIPREST_Util::getResourceClassByCollectionName($this->schema, $bif[1])) !== null
 		) {
 			return new PHPTemplateProjectNS_PageAction_PostToDataTable($this->registry, $rc, $req->getParams());
 		} else if(
 			($restAction = $this->restPageRequestToAction(
-				$req->getRequestMethod(),
-				$path, $req->queryString,
+				$method,
+				$path, $req->getQueryString(),
 				$req->getRequestContentBlob())
 			) !== null
 		) {
