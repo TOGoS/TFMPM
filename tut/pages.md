@@ -102,4 +102,5 @@ Now you should be able to browse to your deployment ```/my-new-page```
 and see something like:
 
 > Hello, welcome to my new page!
+> 
 > The current date is 2016-06-08
