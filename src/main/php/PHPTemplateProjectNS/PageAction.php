@@ -5,7 +5,7 @@ abstract class PHPTemplateProjectNS_PageAction extends PHPTemplateProjectNS_Comp
 	/**
 	 * Get standard template variables from the action context (logged in user, etc)
 	 */
-	protected function contextTemplateVars( PHPTemplateProjectNS_ActionContext $actx, array $into=array() ) {
+	protected function contextTemplateVars( PHPTemplateProjectNS_ActionContext $actx, array &$into=array() ) {
 		$userId = $actx->getLoggedInUserId();
 		$into['actionContext'] = $actx;
 		$into['loggedInUser'] = $userId === null ? null : $this->storageHelper->getItem('user', array('ID'=>$userId));

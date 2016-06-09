@@ -14,7 +14,7 @@ abstract class PHPTemplateProjectNS_PageAction_TemplatePageAction extends PHPTem
 		$this->errorMessageId = $errorMessageId;
 	}
 
-	protected function contextTemplateVars( PHPTemplateProjectNS_ActionContext $actx, array $into=array() ) {
+	protected function contextTemplateVars( PHPTemplateProjectNS_ActionContext $actx, array &$into=array() ) {
 		parent::contextTemplateVars( $actx, $into );
 		$into['errorMessage'] = $this->getErrorMessage($this->errorMessageId, $actx);
 		return $into;
