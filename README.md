@@ -17,6 +17,9 @@ See also:
 - ```package.json``` - Node package and dependency information, used by NPM.
 - ```init-*.php``` - Scripts to initialize global state in PHP.
 - ```src/``` - Source code for this project.
+  - ```main/``` - Primary application code, broken down by language
+  - ```test/``` - Unit tests
+  - ```views/``` - View templates
 - ```target/``` - Compiled stuff.  Not checked in.
 - ```node_modules/``` - External node libraries, managed my NPM.
 - ```vendor/``` - External PHP libraries, managed by Composer.
@@ -24,12 +27,11 @@ See also:
 - ```www/``` - Serves as the 'document root' for your project.
   Contains files to be served directly and a ```.htaccess``` and ```bootstrap.php```
   to handle paths that don't correspond to existing files.
-- ```views/``` - 'view' (i.e. HTML) templates.
 - ```Vagrantfile``` - configuration file for Vagrant.
 - ```vm-files/``` - files to be imported into the vagrant Virtual machine.
 - ```provision.sh``` - Virtual machine provisioning script.
 
-Note that the ```src/main/language``` directory is a Maven
+Note that the ```src/<component>/<language>``` directory is a Maven
 convention.  It's verbose, but gives enough information to keep
 projects with multiple languages and components (unit tests, build
 system, runtime, etc) organized.
