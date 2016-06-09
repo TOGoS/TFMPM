@@ -1,23 +1,18 @@
 ## TODO
 
+- Make address saving work (need to generate ID)
+- Use Nife_HTTP_FancyRequests
 - Include in Vagrant machine:
   - screen (and a decent .screenrc)
   - emacs
   - Make database created match config/dbc.json 
   - Database initialization
-- Replace puppet with something not stupid
-- Replace 'import everything's in schema.txt with importing the specific stuffs
 - Make sure 'passhash' field doesn't get included in data from /api/users
 - Support Basic authorization
 - Make a To-Do list app
 - Comment stuff in schema.txt
-- Explicitly $this->registry->thing instead of $this->thing from components
-  to make code easier for new people to follow
-- Convention for naming/instantiating PageActions so rules don't have to be
-  hardcoded
-- Write somehHow-to guides
+- Tutorials
   - Defining classes
-  - Making PageActions
   - Altering authorization rules
 
 Include examples of:
@@ -42,3 +37,8 @@ Include examples of:
 * Separate ComponentGears out of Component class
 * Rename Dispatcher to Router
 * Refactor Dispatcher/Router to create/invoke actions as separate steps
+* Replace puppet with something not stupid
+  - provision.sh
+* Replace 'import everything's in schema.txt with importing the specific stuffs
+* Tutorials (tut/)
+  * Making PageActions
