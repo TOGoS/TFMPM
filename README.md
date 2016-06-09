@@ -70,3 +70,23 @@ SQL.
 Once a database exists and permissions are set up for our user, you
 should be able to run ```make rebuild-database```, which will empty
 the database and rebuild it from the upgrade scripts.
+
+
+## Web serving
+
+If you're using Vagrant,
+you can just HTTP to whatever IP address you told Vagrant to use.  e.g.
+
+  http://192.168.250.250/
+
+If you accepted the default.
+
+If you are running Apache (and Postgres, and other required programs)
+on your development machine,
+and this directory is checked out somewhere under the DocumentRoot or an Alias,
+you may be able to just browse to the www directory and have things work.
+For me, that's
+
+  http://my-local-machine/~my-username/proj/PHPTemplateProject/www/
+
+Most people probably need to run Vagrant though.
