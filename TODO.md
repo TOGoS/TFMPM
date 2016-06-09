@@ -1,5 +1,6 @@
 ## TODO
 
+- Re-enable compound request test
 - Use Nife_HTTP_FancyRequests
 - Include in Vagrant machine:
   - screen (and a decent .screenrc)
