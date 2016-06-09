@@ -21,7 +21,11 @@ class PHPTemplateProjectNS_PageAction_PostToDataTable extends PHPTemplateProject
 		if( $this->formModel->validate($formInfo) ) {
 			$data = $this->formModel->extractInputData($formInfo);
 			$schemaData = EarthIT_CMIPREST_RESTItemCodec::getInstance()->decodeItems($data, $this->rc);
-			$this->storage->saveItems( $schemaData, $this->rc );
+			$this->storage->saveItems( $schemaData, $this->rc, [
+				// Only time we'll get duplicate keys is if they're content-based,
+				// in which case we don't care that what we saved alreay existed.
+				EarthIT_Storage_ItemSaver::ON_DUPLICATE_KEY => EarthIT_Storage_ItemSaver::ODK_KEEP
+			] );
 			return $this->redirect(303, '#');
 		} else {
 			$forwardTo = new PHPTemplateProjectNS_PageAction_ShowDataTable($this->registry, $this->rc, null, $formInfo);

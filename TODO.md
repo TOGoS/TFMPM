@@ -1,6 +1,5 @@
 ## TODO
 
-- Make address saving work (need to generate ID)
 - Use Nife_HTTP_FancyRequests
 - Include in Vagrant machine:
   - screen (and a decent .screenrc)
@@ -42,3 +41,4 @@ Include examples of:
 * Replace 'import everything's in schema.txt with importing the specific stuffs
 * Tutorials (tut/)
   * Making PageActions
+* Make address saving work (need to generate ID)

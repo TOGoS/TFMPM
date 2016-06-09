@@ -97,12 +97,16 @@ class PHPTemplateProjectNS_Registry
 		return new EarthIT_Storage_PostgresSQLGenerator($this->dbObjectNamer);
 	}
 	
-	protected function loadStorage() {
+	protected function loadSqlStorage() {
 		return new EarthIT_CMIPREST_SQLStorage(
 			$this->schema,
 			$this->sqlRunner,
 			$this->dbObjectNamer,
 			$this->sqlGenerator);
+	}
+
+	protected function loadStorage() {
+		return new PHPTemplateProjectNS_HJPKFixingStorage($this, $this->sqlStorage);
 	}
 	
 	protected function loadRester() {
