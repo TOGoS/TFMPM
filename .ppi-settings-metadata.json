@@ -1,4 +1,13 @@
 {
+	"phpNamespace": {
+		"title": "PHP namespace",
+		"notes": [
+			"Namespace to be prefixed to your PHP class names.",
+			"Usually this is a 2-part thing made of client and project name,",
+			"but it doesn't have to be.",
+			"Example: SomeClient_SomeProject"
+		]
+	},
 	"databaseNamespace": {
 		"title": "Database namespace",
 		"notes": [
@@ -13,7 +22,9 @@
 			"IP address that will be assigned to Vagrant-managed virtual machines.",
 			"See VagrantIPs.md in the EarthlingDocs repository for a list, choose",
 			"one not already assigned, and update the list when making a new project.",
-			"(https://github.com/EarthlingInteractive/EarthlingDocs/blob/master/VagrantIPs.md)"
-		]
+			"(https://github.com/EarthlingInteractive/EarthlingDocs/blob/master/VagrantIPs.md)",
+			"Use the default value if you don't care.  It's easy to change later."
+		],
+		"defaultValue": "192.168.250.250"
 	}
 }
