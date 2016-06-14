@@ -19,7 +19,7 @@ class PHPTemplateProjectNS_StorageHelperTest extends PHPTemplateProjectNS_TestCa
 	}
 	
 	public function testUpsertExistingUser() {
-		$SH = $this->registry->storageHelper;
+		$SH = $this->storageHelper;
 		
 		$randoUsername = 'test'.rand(100000,999999).rand(100000,999999).rand(100000,999999);
 		$userId = $SH->newEntityId();
@@ -38,7 +38,7 @@ class PHPTemplateProjectNS_StorageHelperTest extends PHPTemplateProjectNS_TestCa
 	}
 	
 	public function testUpsertNewUser() {
-		$SH = $this->registry->storageHelper;
+		$SH = $this->storageHelper;
 		
 		$randoUsername = 'test'.rand(100000,999999).rand(100000,999999).rand(100000,999999);
 		$userId = $SH->newEntityId();
@@ -55,7 +55,7 @@ class PHPTemplateProjectNS_StorageHelperTest extends PHPTemplateProjectNS_TestCa
 	}
 	
 	public function testPostNewUser() {
-		$SH = $this->registry->storageHelper;
+		$SH = $this->storageHelper;
 		
 		$randoUsername = 'test'.rand(100000,999999).rand(100000,999999).rand(100000,999999);
 		$userId = $SH->newEntityId();
