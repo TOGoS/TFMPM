@@ -38,6 +38,8 @@ interface PHPTemplateProjectNS_QueryHelper
 	public function queryRows($sql, array $params=[], $keyBy=null);
 	public function queryValue($sql, array $params=[]);
 	public function queryValueSet($sql, array $params=[]);
+	/** Returns a map of first value => second value of each row */
+	public function queryValueMap($sql, array $params=[]);
 
 	public function beginTransaction();
 	public function endTransaction($success);

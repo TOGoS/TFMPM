@@ -46,6 +46,17 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 		}
 		return $set;
 	}
+	public function queryValueMap($sql, array $params=[]) {
+		$map = [];
+		foreach( $this->_queryRows($sql, $params) as $row ) {
+			if( count($row) != 2 ) {
+				throw new Exception("Query returns ".count($row)." columns; queryValueMap expects exactly 2: $sql");
+			}
+			$kv = array_values($row);
+			$map[$kv[0]] = $kv[1];
+		}
+		return $map;
+	}
 	
 	public function beginTransaction() {
 		$this->sqlRunner->doRawQuery("START TRANSACTION");

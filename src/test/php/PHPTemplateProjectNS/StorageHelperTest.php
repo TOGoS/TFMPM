@@ -2,6 +2,22 @@
 
 class PHPTemplateProjectNS_StorageHelperTest extends PHPTemplateProjectNS_TestCase
 {
+	public function testQueryValueMap() {
+		$this->assertEquals(
+			array(
+				'foo' => 'bar',
+				'baz' => 'quux',
+			),
+			$this->storageHelper->queryValueMap(
+				"SELECT 'foo' AS k, 'x' AS v\n".
+				"UNION ALL\n".
+				"SELECT 'baz' AS k, 'quux' AS v\n".
+				"UNION ALL\n".
+				"SELECT 'foo' AS k, 'bar' AS v"
+			)
+		);
+	}
+	
 	public function testUpsertExistingUser() {
 		$SH = $this->registry->storageHelper;
 		
