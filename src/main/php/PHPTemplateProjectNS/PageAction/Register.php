@@ -42,18 +42,18 @@ class PHPTemplateProjectNS_PageAction_Register extends PHPTemplateProjectNS_Page
 			];
 			$this->storageHelper->insertNewItem('user', $user);
 			
+			$newMessage->setFrom( array('fake-registrator@example.org' => 'PHP Template Project') );
+			$newMessage->setSubject( "Thank you for registering!" );
+			$newMessage->setBody(
+				"Thanks for registering, {$this->name}!\n".
+				"Your password is $password." );
+			
+			$this->mailer->send( $newMessage );
+			
 			$okay = true;
 		} finally {
 			$this->storageHelper->endTransaction($okay);
 		}
-
-		$newMessage->setFrom( array('fake-registrator@example.org' => 'PHP Template Project') );
-		$newMessage->setSubject( "Thank you for registering!" );
-		$newMessage->setBody(
-			"Thanks for registering, {$this->name}!\n".
-			"Your password is $password." );
-		
-		$this->mailer->send( $newMessage );
 		
 		return Nife_Util::httpResponse(200, 'Confirmation message sent!');
 	}
