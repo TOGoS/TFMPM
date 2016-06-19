@@ -103,6 +103,16 @@ div.footer > *:nth-child(3) {
 
 /* Tables */
 
+form.tabby {
+	display: table;
+}
+form.tabby > div {
+	 display: table-row;
+}
+form.tabby > div > * {
+	 display: table-cell;
+}
+
 table.bolly {
 	border-collapse: collapse;
 }
