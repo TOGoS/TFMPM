@@ -68,6 +68,27 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 			};
 		} else if( preg_match('<^/hello/(.*)$>', $path, $bif) ) {
 			return $this->createPageAction('SayHelloTo',$bif[1]);
+		} else if( $path == '/my-new-page' and $method == 'GET' ) {
+			return $this->createPageAction('ShowMyNewPage');
+		} else if( $path == '/do-action-script' ) {
+			return $this->createPageAction('DoActionScript', $req->getParam('script'));
+		} else if( $path == '/send-login-link' ) {
+			switch( $method ) {
+			case 'POST':
+				return $this->createPageAction('SendLoginLink');
+			}
+		} else if( $path == '/forgot-password' ) {
+			switch( $method ) {
+			case 'POST':
+				return $this->createPageAction('SendPasswordResetEmail');
+			}
+		} else if( $path == '/reset-password' ) {
+			switch( $method ) {
+			case 'GET':
+				return $this->createPageAction('ShowPasswordResetForm', $req->getParam('token'));
+			case 'POST':
+				return $this->createPageAction('ResetPassword', $req->getParams());
+			}
 		} else if( $path == '/register' ) {
 			switch( $method ) {
 			case 'GET':
@@ -75,6 +96,8 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 			case 'POST':
 				return $this->createPageAction('Register', $req->getParams());
 			}
+		} else if( $path == '/do-token' ) {
+			return $this->createPageAction('DoToken', $req->getParam('token'), $req->getParam('forward'));
 		} else if( $path == '/schema-upgrades' ) {
 			switch( $method ) {
 			case 'GET':

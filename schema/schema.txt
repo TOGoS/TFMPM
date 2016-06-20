@@ -97,8 +97,19 @@ field modifier UTCR = uses user text canonicalization rules
 class 'user' : SRC {
 	ID : EIPK
 	username : string
-	passhash : string : nullable
+	passhash : hash : nullable
 	e-mail address : e-mail address : nullable
+}
+
+class 'token action' : has a database table : is in namespace @ 'phptemplateprojectdatabasenamespace' {
+	token hash : hash : key(primary)
+	half user : reference(user) : comment @ unindent @ «
+		User on whose beHALF the action will be done.
+	» = ID = half user ID
+	action script : text
+	re-useable : boolean
+	expiration time : time : nullable
+	usage time : time : nullable
 }
 
 class 'postal address' : records are immutable : SRC {

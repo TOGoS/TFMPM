@@ -58,7 +58,6 @@ class PHPTemplateProjectNS_Registry
 		}
 		$c[$lsat] = $v;
 	}
-
 	
 	public function loadDbAdapter() {
 		return Doctrine_DBAL_DriverManager::getConnection( $this->getConfig('dbc') );

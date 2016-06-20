@@ -1,6 +1,10 @@
-<?php if($errorMessage): ?>
-<div class="error-messages">
+<?php if( !empty($errorMessages) ): ?>
+<div class="error">
 <p>Oh no!</p>
-<ul><li><?php eht($errorMessage); ?></li></ul>
+<ul>
+<?php foreach( $errorMessages as $msg ): ?>
+<li><?php eht($msg); ?></li>
+<?php endforeach; ?>
+</ul>
 </div>
 <?php endif; ?>

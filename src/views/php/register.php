@@ -2,22 +2,28 @@
 
 <h2>Registration form!</h2>
 
-<?php $PU->emitErrorMessageBlock($params); ?>
+<?php $PU->emitMessageBlock($params); ?>
 
-<p>This doesn't actually do anything yet except attempt to send you an e-mail.</p>
-
-<form method="POST" action="register" class="tabby">
-<div>
-  <label>Your name</label>
-  <input type="text" name="name" placeholder="Foo McBar"/>
-</div>
-<div>
-  <label>Your e-mail address</label>
-  <input type="text" name="e-mail-address" placeholder="foo@bar.com"/>
-</div>
-<div>
-  <input type="submit" value="Register!"/>
-</div>
+<form method="POST" action="register">
+<table>
+<tr>
+  <td><label>Your name</label></td>
+  <td><input type="text" name="name" placeholder="Foo McBar"/></td>
+</tr>
+<tr>
+  <td><label>Your e-mail address</label></td>
+  <td><input type="text" name="e-mail-address" placeholder="foo@bar.com"/></td>
+</tr>
+<tr>
+  <td colspan="2">
+    <input id="send-login-link-box" type="checkbox" name="send-login-link"/>
+    <label for="send-login-link-box">Send a login link so you don't have to fool with passwords</label>
+  </td>
+</tr>
+<tr>
+  <td colspan="2"><input type="submit" value="Register!"/></td>
+</tr>
+</table>
 </form>
 
 <?php $PU->emitHtmlFooter(); ?>

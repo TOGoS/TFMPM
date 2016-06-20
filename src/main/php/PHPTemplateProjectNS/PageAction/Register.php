@@ -4,11 +4,13 @@ class PHPTemplateProjectNS_PageAction_Register extends PHPTemplateProjectNS_Page
 {
 	protected $name;
 	protected $emailAddress;
+	protected $loginLinkRequested;
 	
 	public function __construct( PHPTemplateProjectNS_Registry $reg, array $params ) {
 		parent::__construct($reg);
 		$this->name = $params['name'];
 		$this->emailAddress = $params['e-mail-address'];
+		$this->loginLinkRequested = !empty($params['send-login-link']);
 	}
 	
 	public function __invoke( PHPTemplateProjectNS_ActionContext $actx ) {
@@ -21,8 +23,6 @@ class PHPTemplateProjectNS_PageAction_Register extends PHPTemplateProjectNS_Page
 				["The supplied e-mail address, '{$this->emailAddress}', is invalid",$e->getMessage()],
 				$actx);
 		}
-
-		$password = $this->userModel->generatePassword(22);
 		
 		$okay = false;
 		$this->storageHelper->beginTransaction();
@@ -34,19 +34,42 @@ class PHPTemplateProjectNS_PageAction_Register extends PHPTemplateProjectNS_Page
 					"The supplied e-mail address, '{$this->emailAddress}', is already taken.",
 					$actx);
 			}
-			$passhash = $this->userModel->hashPassword($password);
+			
+			$newUserId = $this->storageHelper->newEntityId();
+			
 			$user = [
+				'ID' => $newUserId,
 				'username' => $this->name,
 				'e-mail address' => $this->emailAddress,
-				'passhash' => $passhash
 			];
-			$this->storageHelper->insertNewItem('user', $user);
+			
+			$this->storageHelper->insertNewItem('user', $user);			
+
+			$ps = ["Thanks for registering, {$this->name}!"];
+			
+			$pwrAction = $this->tokenModel->newTokenAction( [
+				'half user ID' => $newUserId,
+				'action script' => 'reset-password',
+				're-useable' => false,
+			] );
+			$ps[] =
+				"Go here to set your password:\n".
+				$actx->absoluteUrl("/reset-password?token={$pwrAction['token']}");
+			
+			if( $this->loginLinkRequested ) {
+				$loginAction = $this->tokenModel->newTokenAction( [
+					'half user ID' => $newUserId,
+					'action script' => 'log-in',
+					're-useable' => true,
+				] );
+				$ps[] =
+					"To log in without a password, use this link:\n".
+					$actx->absoluteUrl("/do-token?token={$loginAction['token']}");
+			}
 			
 			$newMessage->setFrom( array('fake-registrator@example.org' => 'PHP Template Project') );
 			$newMessage->setSubject( "Thank you for registering!" );
-			$newMessage->setBody(
-				"Thanks for registering, {$this->name}!\n".
-				"Your password is $password." );
+			$newMessage->setBody( implode("\n\n", $ps) );
 			
 			$this->mailer->send( $newMessage );
 			
@@ -55,6 +78,6 @@ class PHPTemplateProjectNS_PageAction_Register extends PHPTemplateProjectNS_Page
 			$this->storageHelper->endTransaction($okay);
 		}
 		
-		return Nife_Util::httpResponse(200, 'Confirmation message sent!');
+		return Nife_Util::httpResponse(200, "Confirmation message sent to {$this->emailAddress}");
 	}
 }

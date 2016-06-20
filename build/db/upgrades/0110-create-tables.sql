@@ -5,6 +5,16 @@ CREATE TABLE "phptemplateprojectdatabasenamespace"."user" (
 	"emailaddress" VARCHAR(126),
 	PRIMARY KEY ("id")
 );
+CREATE TABLE "phptemplateprojectdatabasenamespace"."tokenaction" (
+	"tokenhash" VARCHAR(126) NOT NULL,
+	"halfuserid" BIGINT NOT NULL,
+	"actionscript" TEXT NOT NULL,
+	"reuseable" BOOLEAN NOT NULL,
+	"expirationtime" TIMESTAMP,
+	"usagetime" TIMESTAMP,
+	PRIMARY KEY ("tokenhash"),
+	FOREIGN KEY ("halfuserid") REFERENCES "phptemplateprojectdatabasenamespace"."user" ("id")
+);
 CREATE TABLE "phptemplateprojectdatabasenamespace"."postaladdress" (
 	"id" CHAR(32) NOT NULL,
 	"streetaddress" VARCHAR(126),

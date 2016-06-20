@@ -34,7 +34,7 @@ abstract class PHPTemplateProjectNS_PageAction extends PHPTemplateProjectNS_Comp
 	}
 	
 	protected function redirectWithErrorMessage( $location, $message, PHPTemplateProjectNS_ActionContext $actx ) {
-		if( is_array($message) ) $message = implode("\n", $message);
+		if( is_array($message) ) $message = implode("\x1e", $message);
 		$actx->setSessionVariable('errorMessage', $message);
 		$messageHash = hash('sha1', $message);
 		return $this->redirect(303, "{$location}?error-message-id={$messageHash}");

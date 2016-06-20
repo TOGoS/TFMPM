@@ -129,7 +129,12 @@ td.null {
 	background-color: rgba(128,128,0,0.2);
 }
 
-
+.success {
+	color: green;
+}
+.error {
+	color: red;
+}
 .validation-error {
 	color: red;
 }

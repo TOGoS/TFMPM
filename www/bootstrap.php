@@ -36,7 +36,7 @@ $request = PHPTemplateProjectNS_Request::fromEnvironment([
 	'pathInfo'=>$path,
 	'requestContentFuture'=>'eit_get_request_content'
 ]);
-$actx = new PHPTemplateProjectNS_NormalActionContext();
+$actx = new PHPTemplateProjectNS_NormalActionContext($PHPTemplateProjectNS_Registry);
 $actx = $actx->with(array('pathInfo'=>$path));
 $response = $router->handleRequest($request, $actx);
 

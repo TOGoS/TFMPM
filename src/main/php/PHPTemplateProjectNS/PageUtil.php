@@ -20,7 +20,8 @@ class PHPTemplateProjectNS_PageUtil extends PHPTemplateProjectNS_Component
 	public function emitHtmlFooter( array $params=array() ) {
 		$this->emitView('html-footer', $params);
 	}
-	public function emitErrorMessageBlock( array $params=array() ) {
+	public function emitMessageBlock( array $params=array() ) {
+		$this->emitView('success-message-block', $params);
 		$this->emitView('error-message-block', $params);
 	}
 	

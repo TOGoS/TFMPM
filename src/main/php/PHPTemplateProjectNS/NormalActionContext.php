@@ -1,6 +1,6 @@
 <?php
 
-class PHPTemplateProjectNS_NormalActionContext implements PHPTemplateProjectNS_ActionContext
+class PHPTemplateProjectNS_NormalActionContext extends PHPTemplateProjectNS_Component implements PHPTemplateProjectNS_ActionContext
 {
 	protected $pathInfo;
 	protected $loggedInUserId;
@@ -82,7 +82,7 @@ class PHPTemplateProjectNS_NormalActionContext implements PHPTemplateProjectNS_A
 	
 	/** @override */
 	public function absoluteUrl($path) {
-		// Faking it for now.
-		return $this->relativeUrl($path);
+		if( $path[0] == '/' ) $path = substr($path,1);
+		return $this->registry->getConfig('www/deployment-url-prefix').$path;
 	}
 }
