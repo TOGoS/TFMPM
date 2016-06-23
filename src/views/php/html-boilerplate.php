@@ -1,7 +1,7 @@
 <html>
 <head>
 <title><?php echo htmlspecialchars("{$title} - PHP Template Project"); ?></title>
-<link rel="stylesheet" type="text/css" href="<?php echo $PU->relativeUrl('/basek.css'); ?>"/>
+<link rel="stylesheet" type="text/css" href="<?php eht($PU->relativeUrl('/basek.css')); ?>"/>
 <script>
 var footerClickCount = 0;
 function footerClicked() {
