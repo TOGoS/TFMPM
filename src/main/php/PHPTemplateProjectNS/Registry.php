@@ -75,9 +75,7 @@ class PHPTemplateProjectNS_Registry
 	}
 	
 	public function getRestSchemaObjectNamer() {
-		return function($obj, $plural=false) {
-			return call_user_func($this->restNameFormatter, $obj->getName(), $plural);
-		};
+		return EarthIT_CMIPREST_Namers::getStandardCamelCaseNamer();		
 	}
 	
 	public function loadSchema($name='') {

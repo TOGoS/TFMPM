@@ -7,10 +7,9 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 	 * Otherwise return null.
 	 */
 	public function apiRequestToAction( $method, $path, $queryString, Nife_Blob $content=null ) {
-		$requestParser = new EarthIT_CMIPREST_RequestParser_FancyRequestParser(
-			EarthIT_CMIPREST_RequestParser_FancyRequestParser::buildStandardParsers(
-				$this->schema, $this->restNameFormatter, 'cmip'));
-		
+		$requestParser = EarthIT_CMIPREST_RequestParser_FancyRequestParser::buildStandardFancyParser(
+			$this->schema, $this->restSchemaObjectNamer, 'cmip');
+
 		if( ($request = $requestParser->parse( $method, $path, $queryString, $content )) !== null ) {
 			return $requestParser->toAction($request);
 		}
