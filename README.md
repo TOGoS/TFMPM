@@ -9,6 +9,7 @@ See also:
 - [PHP Application Architecture](PHP-APP-ARCHITECTURE.md)
 - [Tutorials](tut/)
   - [Make a simple page](tut/pages.md)
+- [Upgrading from the template project](UPGRADING.md)
 
 
 ## Folder structure
