@@ -34,13 +34,13 @@ Each column corresponds to a branch.
 
 - TP/M is the original template project's ```master``` branch.
 - YP/M is your project's ```master``` branch.
-- TP/RTP is your project's ```rewritten-template-project``` branch'.
+- TP/RTP is your project's ```rewritten-template-project``` branch.
 
 The ```rewritten-template-project``` branch is created automatically
 by PHPProjectInitializer when you create the project.
 It is simply the template project with names and config settings
 rewritten to match those for your new project
-(these 'rewrite rules' are stored in .ppi-settings.json).
+(these 'rewrite rules' are stored in ```.ppi-settings.json```).
 Your project's ```master``` branch is initialized to the same initial commit
 as on ```rewritten-template-project```.
 
