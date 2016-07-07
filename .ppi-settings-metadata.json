@@ -11,9 +11,11 @@
 	"databaseNamespace": {
 		"title": "Database namespace",
 		"notes": [
-			"'Database namespace' is the name of postgres schema",
+			"'Database namespace' is the name of Postgres schema",
 			"within which all your tables will be placed.",
-			"Use 'public' if you don't want to deal with an explicit scheme."
+			"You might think it will make your life easier to use 'public',",
+			"but that causes problems with permissions because the upgrader can't delete the schema,",
+			"so don't do that."
 		]
 	},
 	"vagrantIpAddress": {
