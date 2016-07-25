@@ -126,6 +126,14 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 			($rc = EarthIT_CMIPREST_Util::getResourceClassByCollectionName($this->schema, $bif[1])) !== null
 		) {
 			return new PHPTemplateProjectNS_PageAction_PostToDataTable($this->registry, $rc, $req->getParams());
+		} else if( $path == '/exception' ) {
+			return function(PHPTemplateProjectNS_ActionContext $actx) {
+				throw new Exception( "You asked for an exception and this is it." );
+			};
+		} else if( $path == '/error' ) {
+			return function(PHPTemplateProjectNS_ActionContext $actx) {
+				trigger_error( "An error occurred for demonstrative porpoises.", E_USER_ERROR );
+			};
 		} else if(
 			($restAction = $this->restPageRequestToAction(
 				$method,
@@ -137,18 +145,7 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		}
 		
 		return function(PHPTemplateProjectNS_ActionContext $actx) use ($req, $path) {
-			// These are here because they haven't yetb been converted to
-			// the newer interpret-then-execute style, though it'd be
-			// easy to do.
-			if( preg_match('<^/hello/(.*)$>', $path, $matchData) ) {
-				return Nife_Util::httpResponse( 200, "Hello, ".rawurldecode($matchData[1]).'!' );
-			} else if( $path == '/error' ) {
-				trigger_error( "An error occurred for demonstrative porpoises.", E_USER_ERROR );
-			} else if( $path == '/exception' ) {
-				throw new Exception( "You asked for an exception and this is it." );
-			} else {
-				return Nife_Util::httpResponse( 404, "I don't know about $path!" );
-			}
+			return Nife_Util::httpResponse( 404, "I don't know about $path!" );
 		};
 	}
 	
