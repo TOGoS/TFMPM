@@ -46,8 +46,7 @@ but we'll have to define ```$currentTime``` ourselves.
 
 ### The PageAction
 
-Create a new PHP class
-```src/main/php/PHPTemplateProjectNS/PageAction/ShowMyNewPage.php```:
+Create a new PHP class, ```src/main/php/PHPTemplateProjectNS/PageAction/ShowMyNewPage.php```:
 
 ```php
 <?php
@@ -70,7 +69,7 @@ PageActions are named using a verb phrase describing that.
 (for REST services, "Get" is used).
 
 If you follow the inheritance tree upward,
-you'll eventually find yourself at TOGoS_Action,
+you'll eventually find yourself at [TOGoS_Action](https://raw.githubusercontent.com/TOGoS/PHPAction/master/lib/TOGoS/Action.php),
 which is an empty interface with a long explanation about what it means to be an action.
 I'll leave reading said explanation as an exercise for the reader.
 
