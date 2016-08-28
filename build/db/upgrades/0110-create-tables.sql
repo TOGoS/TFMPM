@@ -28,7 +28,9 @@ CREATE TABLE "phptemplateprojectdatabasenamespace"."postaladdress" (
 CREATE TABLE "phptemplateprojectdatabasenamespace"."organization" (
 	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
 	"name" VARCHAR(126) NOT NULL,
-	PRIMARY KEY ("id")
+	"parentid" BIGINT,
+	PRIMARY KEY ("id"),
+	FOREIGN KEY ("parentid") REFERENCES "phptemplateprojectdatabasenamespace"."organization" ("id")
 );
 CREATE TABLE "phptemplateprojectdatabasenamespace"."entitypostaladdress" (
 	"entityid" BIGINT NOT NULL,
@@ -36,11 +38,41 @@ CREATE TABLE "phptemplateprojectdatabasenamespace"."entitypostaladdress" (
 	PRIMARY KEY ("entityid", "postaladdressid"),
 	FOREIGN KEY ("postaladdressid") REFERENCES "phptemplateprojectdatabasenamespace"."postaladdress" ("id")
 );
+CREATE TABLE "phptemplateprojectdatabasenamespace"."userrole" (
+	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+	"name" VARCHAR(126) NOT NULL,
+	PRIMARY KEY ("id")
+);
+CREATE TABLE "phptemplateprojectdatabasenamespace"."resourceclass" (
+	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+	"name" VARCHAR(126) NOT NULL,
+	PRIMARY KEY ("id")
+);
+CREATE TABLE "phptemplateprojectdatabasenamespace"."actionclass" (
+	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+	"name" VARCHAR(126) NOT NULL,
+	PRIMARY KEY ("id")
+);
+CREATE TABLE "phptemplateprojectdatabasenamespace"."userrolepermission" (
+	"userid" BIGINT NOT NULL,
+	"resourceclassid" BIGINT NOT NULL,
+	"actionclassid" BIGINT NOT NULL,
+	"appliessystemwide" BOOLEAN NOT NULL,
+	"appliesatattachmentpoint" BOOLEAN NOT NULL,
+	"appliesaboveattachmentpoint" BOOLEAN NOT NULL,
+	"appliesbelowattachmentpoint" BOOLEAN NOT NULL,
+	PRIMARY KEY ("userid", "resourceclassid", "actionclassid"),
+	FOREIGN KEY ("userid") REFERENCES "phptemplateprojectdatabasenamespace"."userrole" ("id"),
+	FOREIGN KEY ("resourceclassid") REFERENCES "phptemplateprojectdatabasenamespace"."resourceclass" ("id"),
+	FOREIGN KEY ("actionclassid") REFERENCES "phptemplateprojectdatabasenamespace"."actionclass" ("id")
+);
 CREATE TABLE "phptemplateprojectdatabasenamespace"."userorganizationattachment" (
 	"userid" BIGINT NOT NULL,
+	"roleid" BIGINT NOT NULL,
 	"organizationid" BIGINT NOT NULL,
-	PRIMARY KEY ("userid", "organizationid"),
+	PRIMARY KEY ("userid", "roleid", "organizationid"),
 	FOREIGN KEY ("userid") REFERENCES "phptemplateprojectdatabasenamespace"."user" ("id"),
+	FOREIGN KEY ("roleid") REFERENCES "phptemplateprojectdatabasenamespace"."userrole" ("id"),
 	FOREIGN KEY ("organizationid") REFERENCES "phptemplateprojectdatabasenamespace"."organization" ("id")
 );
 CREATE TABLE "phptemplateprojectdatabasenamespace"."computationstatus" (

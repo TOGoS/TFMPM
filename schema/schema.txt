@@ -128,7 +128,7 @@ class 'postal address' : records are immutable : SRC {
 class 'organization' : SRC : members are public {
 	ID : EIPK
 	name : string
-	parent : reference(organization) = ID = parent ID
+	parent : reference(organization) : nullable = ID = parent ID
 }
 
 class 'entity postal address' : SRC : self-keyed {
@@ -168,7 +168,7 @@ class 'user organization attachment' : SRC : self-keyed {
 	# reference(user) means that this property is a reference to a 'user' record
 	# { ID = user ID } means the 'ID' of the 'user' record matches the 'user ID' field of this record
 	user : reference(user) = ID = user ID
-	role : reference(user role) = ID = user role ID
+	role : reference(user role) = ID = role ID
 	organization : reference(organization) = ID = organization ID
 }
 
