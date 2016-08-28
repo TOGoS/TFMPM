@@ -66,6 +66,9 @@ class 'picture ID' : extends(blob ID)
 class property 'records are immutable' : value type @ boolean :
 	long name @ "http://ns.nuke24.net/Schema/Application/recordsAreImmutable" :
 	comment @ "Indicates that records of this class are immutable, once written."
+class property 'record set is immutable' : value type @ boolean :
+	long name @ "http://ns.nuke24.net/Schema/Application/recordSetIsImmutable" :
+	comment @ "Indicates that the set of records of this class is fixed as far as application code is concerned."
 field property 'value is calculated' : value type @ boolean :
 	long name @ "http://ns.nuke24.net/Schema/Application/valueIsCalculated" :
 	comment @ "Indicates that the field's value is a function of other data, so cannot be edited directly."
