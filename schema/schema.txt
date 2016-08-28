@@ -125,6 +125,7 @@ class 'postal address' : records are immutable : SRC {
 class 'organization' : SRC : members are public {
 	ID : EIPK
 	name : string
+	parent : reference(organization) = ID = parent ID
 }
 
 class 'entity postal address' : SRC : self-keyed {
@@ -132,16 +133,40 @@ class 'entity postal address' : SRC : self-keyed {
 	address : reference(postal address) = ID = postal address ID
 }
 
+class 'user role' : SRC {
+	ID : EIPK
+	name : string
+}
+
+class 'resource class' : record set is immutable : SRC {
+	ID : EIPK
+	name : string : comment @ "Name of resource class as spelled in schema.txt"
+}
+
+class 'action class' : record set is immutable : SRC : comment @ unindent @ «
+	e.g. 'create', 'read', 'update', 'move-to', 'move-from'
+» {
+	ID : EIPK
+	name : string : comment @ "Name of resource class as spelled in schema.txt"
+}
+
+class 'user role permission' : SRC {
+	role : reference(user role) : key(primary) = ID = user ID
+	resource set : reference(resource class) : key(primary) = ID = resource class ID
+	action class : reference(action class) : key(primary) = ID = action class ID
+	applies system-wide : boolean : comment @ "Good for superuser roles!"
+	applies at attachment point : boolean
+	applies above attachment point : boolean
+	applies below attachment point : boolean
+}
+
 class 'user organization attachment' : SRC : self-keyed {
 	# first 'user' is the name of the property of a 'user organization attachment'
 	# reference(user) means that this property is a reference to a 'user' record
 	# { ID = user ID } means the 'ID' of the 'user' record matches the 'user ID' field of this record
-	user : reference(user) {
-		ID = user ID
-	}
-	organization : reference(organization) {
-		ID = organization ID
-	}
+	user : reference(user) = ID = user ID
+	role : reference(user role) = ID = user role ID
+	organization : reference(organization) = ID = organization ID
 }
 
 # Actual enums are hard.
