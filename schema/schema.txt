@@ -62,6 +62,11 @@ class 'blob ID' : extends(string) :
         comment @ "Base32-encoded SHA-1 of the blob"
 class 'picture ID' : extends(blob ID)
 
+# 'entity ID' the type should still work separately
+redefine property 'entity ID' : value type @ entity ID :
+	long name @ "http://ns.nuke24.net/Phrebar/entityId" :
+	comment @ "Entity ID for this thing"
+
 # TODO: Make these more officially part of the Schema/Application schema
 class property 'records are immutable' : value type @ boolean :
 	long name @ "http://ns.nuke24.net/Schema/Application/recordsAreImmutable" :
@@ -97,14 +102,14 @@ field modifier 'SRC' = has a database table : has a REST service : is in namespa
 
 field modifier UTCR = uses user text canonicalization rules
 
-class 'user' : SRC {
+class 'user' : SRC : entity ID @ 1121 {
 	ID : EIPK
 	username : string
 	passhash : hash : nullable
 	e-mail address : e-mail address : nullable
 }
 
-class 'token action' : has a database table : is in namespace @ 'phptemplateprojectdatabasenamespace' {
+class 'token action' : has a database table : is in namespace @ 'phptemplateprojectdatabasenamespace' : entity ID @ 1122 {
 	token hash : hash : key(primary)
 	half user : reference(user) : comment @ unindent @ «
 		User on whose beHALF the action will be done.
@@ -115,7 +120,7 @@ class 'token action' : has a database table : is in namespace @ 'phptemplateproj
 	usage time : time : nullable
 }
 
-class 'postal address' : records are immutable : SRC {
+class 'postal address' : records are immutable : SRC : entity ID @ 1123 {
 	ID : HJPK
 	street address : string : nullable : UTCR
 	unit address : string : nullable : UTCR
@@ -125,35 +130,35 @@ class 'postal address' : records are immutable : SRC {
 	country code : country code : nullable : UTCR
 }
 
-class 'organization' : SRC : members are public {
+class 'organization' : SRC : members are public : entity ID @ 1124 {
 	ID : EIPK
 	name : string
 	parent : reference(organization) : nullable = ID = parent ID
 }
 
-class 'entity postal address' : SRC : self-keyed {
+class 'entity postal address' : SRC : self-keyed : entity ID @ 1125 {
 	entity ID : entity ID
 	address : reference(postal address) = ID = postal address ID
 }
 
-class 'user role' : SRC {
+class 'user role' : SRC : entity ID @ 1126 {
 	ID : EIPK
 	name : string
 }
 
-class 'resource class' : record set is immutable : SRC {
+class 'resource class' : record set is immutable : SRC : entity ID @ 1126 {
 	ID : EIPK
 	name : string : comment @ "Name of resource class as spelled in schema.txt"
 }
 
-class 'action class' : record set is immutable : SRC : comment @ unindent @ «
+class 'action class' : record set is immutable : SRC : entity ID @ 1127 : comment @ unindent @ «
 	e.g. 'create', 'read', 'update', 'move-to', 'move-from'
 » {
 	ID : EIPK
 	name : string : comment @ "Name of resource class as spelled in schema.txt"
 }
 
-class 'user role permission' : SRC {
+class 'user role permission' : SRC : entity ID @ 1128 {
 	role : reference(user role) : key(primary) = ID = user ID
 	resource set : reference(resource class) : key(primary) = ID = resource class ID
 	action class : reference(action class) : key(primary) = ID = action class ID
@@ -163,7 +168,7 @@ class 'user role permission' : SRC {
 	applies below attachment point : boolean
 }
 
-class 'user organization attachment' : SRC : self-keyed {
+class 'user organization attachment' : SRC : self-keyed : entity ID @ 1129 {
 	# first 'user' is the name of the property of a 'user organization attachment'
 	# reference(user) means that this property is a reference to a 'user' record
 	# { ID = user ID } means the 'ID' of the 'user' record matches the 'user ID' field of this record
@@ -174,11 +179,11 @@ class 'user organization attachment' : SRC : self-keyed {
 
 # Actual enums are hard.
 # Best practice according to Dan is avoid defining enum types and just always use a table.
-class 'computation status' : SRC : members are public {
+class 'computation status' : SRC : members are public : entity ID @ 1130 {
 	status code : string : key(primary)
 }
 
-class 'computation' : SRC : members are public {
+class 'computation' : SRC : members are public : entity ID @ 1131 {
 	expression : string : key(primary)
 	status : reference(computation status) = status code
 	result : string : nullable
@@ -186,21 +191,21 @@ class 'computation' : SRC : members are public {
 
 # Demonstrate an order system or something
 
-class 'product' : SRC : members are public {
+class 'product' : SRC : members are public : entity ID @ 1132 {
 	ID : EIPK
 	UPC : string
 	title : string
 	description HTML : HTML fragment
 }
 
-class 'order' : SRC {
+class 'order' : SRC : entity ID @ 1133 {
 	ID : EIPK
 	user : reference(user) = ID = user ID
 	shipping address : reference(postal address) = ID = shipping address ID
 	billing address : reference(postal address) = ID = billing address ID
 }
 
-class 'order item' : SRC {
+class 'order item' : SRC : entity ID @ 1134 {
 	order : reference(order) = ID = order ID
 	product : reference(product) = ID = product ID
 	quantity : integer : default value @ 1

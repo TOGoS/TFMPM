@@ -3,6 +3,7 @@
 /build/db/all-tables.sql
 /build/db/create-database.sql
 /build/db/drop-database.sql
+/build/db/rc-inserts.sql
 /composer.lock
 /datastore
 /schema/schema.php

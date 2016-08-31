@@ -91,6 +91,9 @@ util/SchemaSchemaDemo.jar: \
 build/db/all-tables.sql: schema/schema.txt util/SchemaSchemaDemo.jar
 	${schemaschemademo} -o-create-tables-script "$@"
 
+build/db/rc-inserts.sql: schema/schema.php
+	util/generate-rc-inserts >"$@"
+
 schema/schema.php: schema/schema.txt util/SchemaSchemaDemo.jar
 	${schemaschemademo} -o-schema-php "$@" -php-schema-class-namespace EarthIT_Schema
 
