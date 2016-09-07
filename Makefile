@@ -30,7 +30,7 @@ schemaschemademo := java -jar util/SchemaSchemaDemo.jar schema/schema.txt
 
 fetch := vendor/bin/fetch -repo @config/ccouch-repos.lst
 
-default: runtime-resources run-tests
+default: redeploy
 
 .DELETE_ON_ERROR:
 
@@ -123,6 +123,9 @@ empty-database: build/db/empty-database.sql util/phptemplateprojectdatabase-psql
 upgrade-database: resources
 	vendor/bin/upgrade-database -upgrade-table 'phptemplateprojectdatabasenamespace.schemaupgrade'
 
+fix-entity-id-sequence: resources config/entity-id-sequence.json
+	util/fix-entity-id-sequence
+
 rebuild-database: empty-database upgrade-database
 
 run-unit-tests: runtime-resources upgrade-database
@@ -135,7 +138,7 @@ run-web-server:
 
 redeploy-without-upgrading-the-database: runtime-resources
 
-redeploy: redeploy-without-upgrading-the-database upgrade-database
+redeploy: redeploy-without-upgrading-the-database upgrade-database fix-entity-id-sequence
 
 everything: \
 	config/dbc.json \

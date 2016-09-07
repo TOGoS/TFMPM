@@ -1,0 +1,126 @@
+#!/usr/bin/env php
+<?php
+
+define('USAGE_TEXT',
+		 "Usage: fix-entity-id-sequence [<options>]\n".
+		 "\n".
+		 "Options:\n".
+		 "  -v       ; be verbose\n".
+		 "  -h       ; show help and exit\n".
+		 "  -dry-run ; show what would be done instead of doing it\n"
+);
+
+define('ABOUT_TEXT',
+		 "fix-entity-id-sequence: Fixes your entity ID sequence if it doesn't\n".
+		 "already match that specified in config/entity-id-sequence.json.\n".
+		 "Entity ID sequence should already exist before this is run.\n".
+		 "\n".
+		 USAGE_TEXT
+);
+
+require_once __DIR__.'/../init-error-handling.php';
+$reg = require_once __DIR__.'/../init-environment.php';
+
+$verbosity = 100;
+$doUpdate = true;
+for( $i=1; $i<count($argv); ++$i ) {
+	if( $argv[$i] == '-h' or $argv[$i] == '--help' or $argv[$i] == '-?' ) {
+		echo ABOUT_TEXT;
+		exit(0);
+	} else if( $argv[$i] == '-v' ) {
+		$verbosity = 200;
+	} else if( $argv[$i] == '-vv' ) {
+		$verbosity = 300;
+	} else if( $argv[$i] == '-dry-run' ) {
+		$verbosity = 300;
+		$doUpdate = false;
+	} else {
+		fwrite(STDERR, "Unrecognized argument: {$argv[$i]}\n\n".USAGE_TEXT);
+		exit(1);
+	}
+}
+
+$sequenceConfig = $reg->getConfig('entity-id-sequence');
+if( empty($sequenceConfig) ) {
+	fwrite(STDERR, "Error: No 'entity-id-sequence' config found (check that config/entity-id-sequence.json exists)\n");
+	exit(1);
+}
+
+if( !empty($sequenceConfig['direction']) and $sequenceConfig['direction'] != 'asc' ) {
+	fwrite(STDERR, "Error: only direction='asc' sequences supported, for now.\n");
+	exit(1);
+}
+
+$sqlRunner = $reg->sqlRunner;
+
+/*
+
+phptemplateprojectdatabase=> SELECT * FROM phptemplateprojectdatabasenamespace.newentityid;
+ sequence_name | last_value | start_value | increment_by |      max_value      | min_value | cache_value | log_cnt | is_cycled | is_called 
+---------------+------------+-------------+--------------+---------------------+-----------+-------------+---------+-----------+-----------
+ newentityid   |       1014 |        1001 |            1 | 9223372036854775807 |         1 |           1 |      30 | f         | t
+
+ */
+
+
+$fetchSql =
+	"SELECT min_value, max_value, start_value, last_value\n".
+	"FROM phptemplateprojectdatabasenamespace.newentityid";
+
+$crs = $sqlRunner->fetchRows($fetchSql);
+$cr = null;
+foreach( $crs as $cr );
+if( $cr === null ) throw new Exception("Query returned no rows:\n".$fetchSql);
+
+$alterations = array();
+if( $cr['min_value'] != $sequenceConfig['bottom'] ) {
+	$alterations[] = "MINVALUE {$sequenceConfig['bottom']}";
+}
+if( $cr['start_value'] != $sequenceConfig['first'] ) {
+	$alterations[] = "START {$sequenceConfig['first']}";
+}
+// Apparently PHP will convert large values to doubles,
+// so this works out even if $sequenceConfig['top'] doesn't fit in
+// a native 'int'.
+$newMaxValue = $sequenceConfig['top'] - 1;
+if( $cr['max_value'] != $newMaxValue ) {
+	$alterations[] = "MAXVALUE {$newMaxValue}";
+}
+// If the current value is within our range we'll leave it alone.
+// Otherwise we'll RESTART at $first
+$needsRestart = ($cr['last_value'] < $sequenceConfig['bottom'] || $cr['last_value'] > $newMaxValue);
+if( $needsRestart ) {
+	$alterations[] = "RESTART {$sequenceConfig['first']}";
+	if( $verbosity >= 300 ) {
+		echo
+			"-- Need restart because current value, {$cr['last_value']}, ",
+			"not in range {$sequenceConfig['bottom']}...{$sequenceConfig['top']}\n";
+	}
+} else {
+	if( $verbosity >= 300 ) {
+		echo
+			"-- No restart needed because current value, {$cr['last_value']}, ",
+			"already in range {$sequenceConfig['bottom']}...{$sequenceConfig['top']}\n";
+	}
+}
+
+if( count($alterations) == 0 ) {
+	if( $verbosity >= 300 ) {
+		echo "-- No changes need to be made.\n";
+	}
+	exit(0);
+}
+
+$sql =
+	"ALTER SEQUENCE phptemplateprojectdatabasenamespace.newentityid\n".
+	implode("\n", $alterations);
+
+if( $verbosity >= 200 ) {
+	echo $sql, "\n";
+}
+
+if( $doUpdate ) {
+	$sqlRunner->doQuery($sql);
+} else {
+	echo "-- Dry-run; no updates actually ran.\n";
+}

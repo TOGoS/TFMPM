@@ -1,0 +1,15 @@
+{
+	"le-comments": [
+		"This file should be edited on each deployment to indicate a unique range of IDs.",
+		"For local development we can use the same range if we assume that all data generated",
+		"on those deployments is temporary.",
+		"Usually the range 10000000000-20000000000 is used for this,",
+		"and 20000000000-30000000000 is 'production'.",
+		"But this can vary from project to project.",
+		"Check your project's space on http://oid-allocator.nuke24.net/ for guidance."
+	],	
+	"bottom": "10000000000",
+	"top":    "20000000000",
+	"first":  "10000000001",
+	"direction": "asc"
+}
