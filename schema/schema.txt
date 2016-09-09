@@ -89,6 +89,17 @@ field property 'is content hash-based ID' :
 		with the record as long as not included with the hash.
 	»
 
+reference property 'indicates owner' :
+	long name @ "http://ns.nuke24.net/Schema/Application/indicatesOwner" : comment @ unindent @ «
+		The thing pointed to by this reference is the owns this object
+		for permission checking purposes.
+	»
+reference property 'indicates ownee' :
+	long name @ "http://ns.nuke24.net/Schema/Application/indicatesOwnee" : comment @ unindent @ «
+		The thing pointed to by this reference is the owned by this object
+		for permission checking purposes.
+	»
+
 schema 'phptemplateprojectdatabasenamespace'
 
 sequence 'new entity ID' : initial value @ 1001 : is in namespace @ 'phptemplateprojectdatabasenamespace' :
@@ -101,6 +112,15 @@ field modifier 'HJPK' = blob ID : is content hash-based ID : key(primary) : comm
 field modifier 'SRC' = has a database table : has a REST service : is in namespace @ 'phptemplateprojectdatabasenamespace'
 
 field modifier UTCR = uses user text canonicalization rules
+
+class 'entity' : comment @ «
+	Abstract class for all things that have an entity ID as their ID.
+	There might not be an entity table in the database,
+	but for schema definition purposes, things that link to 'any entity'
+	can have a reference to this class.
+» {
+	ID : EIPK
+}
 
 class 'user' : SRC : entity ID @ 1121 {
 	ID : EIPK
@@ -133,11 +153,12 @@ class 'postal address' : records are immutable : SRC : entity ID @ 1123 {
 class 'organization' : SRC : members are public : entity ID @ 1124 {
 	ID : EIPK
 	name : string
-	parent : reference(organization) : nullable = ID = parent ID
+	parent : reference(organization) : indicates owner : nullable = ID = parent ID
 }
 
 class 'entity postal address' : SRC : self-keyed : entity ID @ 1125 {
 	entity ID : entity ID
+	entity : reference(entity) : indicates owner = ID = entity ID
 	address : reference(postal address) = ID = postal address ID
 }
 
@@ -174,7 +195,7 @@ class 'user organization attachment' : SRC : self-keyed : entity ID @ 1129 {
 	# { ID = user ID } means the 'ID' of the 'user' record matches the 'user ID' field of this record
 	user : reference(user) = ID = user ID
 	role : reference(user role) = ID = role ID
-	organization : reference(organization) = ID = organization ID
+	organization : reference(organization) : indicates owner = ID = organization ID
 }
 
 # Actual enums are hard.
