@@ -38,6 +38,7 @@ class PHPTemplateProjectNS_DataTableFormModel extends PHPTemplateProjectNS_Compo
 			$fieldInfo = [
 				'dataTypeName' => $fieldDataTypeName,
 				'title' => ucfirst($f->getName()),
+				'onEmpty' => $f->isNullable() ? 'null' : 'blank'
 			];
 			if( ($regex = $dataType === null ? null : $dataType->getRegex()) !== null ) {
 				$fieldInfo['regex'] = $regex;
