@@ -44,6 +44,7 @@ default: redeploy
 	empty-database \
 	realclean \
 	rebuild-database \
+	rebuild-database-with-test-data \
 	redeploy \
 	redeploy-without-upgrading-the-database \
 	resources \
@@ -52,7 +53,8 @@ default: redeploy
 	run-unit-tests \
 	run-web-server \
 	test-db-connection \
-	upgrade-database
+	upgrade-database \
+	upgrade-database-with-test-data
 
 build-resources: ${build_resources}
 runtime-resources: ${runtime_resources}
@@ -122,11 +124,16 @@ empty-database: build/db/empty-database.sql util/phptemplateprojectdatabase-psql
 
 upgrade-database: resources
 	vendor/bin/upgrade-database -upgrade-table 'phptemplateprojectdatabasenamespace.schemaupgrade'
+upgrade-database-with-test-data: resources
+	vendor/bin/upgrade-database -upgrade-table 'phptemplateprojectdatabasenamespace.schemaupgrade' \
+		-upgrade-script-dir build/db/upgrades \
+		-upgrade-script-dir build/db/test-data
 
 fix-entity-id-sequence: resources config/entity-id-sequence.json
 	util/fix-entity-id-sequence
 
 rebuild-database: empty-database upgrade-database
+rebuild-database-with-test-data: empty-database upgrade-database-with-test-data
 
 run-unit-tests: runtime-resources upgrade-database
 	vendor/bin/phpunit --bootstrap init-environment.php src/test/php
