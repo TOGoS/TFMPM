@@ -62,10 +62,19 @@ class 'blob ID' : extends(string) :
         comment @ "Base32-encoded SHA-1 of the blob"
 class 'picture ID' : extends(blob ID)
 
-# 'entity ID' the type should still work separately
+# 'entity ID' used as a type should still work separately
 redefine property 'entity ID' : value type @ entity ID :
 	long name @ "http://ns.nuke24.net/Phrebar/entityId" :
 	comment @ "Entity ID for this thing"
+
+class property 'collection name' : value type @ string :
+	long name @ "http://ns.earthit.com/CMIPREST/collectionName" :
+	comment @ "Name of the set of members of this class; usually this would be the plural form of the class name"
+
+reference property 'inverse collection name': value type @ string :
+	long name @ "http://ns.earthit.com/CMIPREST/inverseCollectionName"
+reference property 'inverse name'            : value type @ string :
+	long name @ "http://ns.earthit.com/CMIPREST/inverseName"
 
 # TODO: Make these more officially part of the Schema/Application schema
 class property 'records are immutable' : value type @ boolean :
