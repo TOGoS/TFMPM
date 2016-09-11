@@ -32,6 +32,12 @@ CREATE TABLE "phptemplateprojectdatabasenamespace"."organization" (
 	PRIMARY KEY ("id"),
 	FOREIGN KEY ("parentid") REFERENCES "phptemplateprojectdatabasenamespace"."organization" ("id")
 );
+CREATE TABLE "phptemplateprojectdatabasenamespace"."facility" (
+	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+	"curtaincolor" VARCHAR(126) NOT NULL,
+	PRIMARY KEY ("id"),
+	FOREIGN KEY ("id") REFERENCES "phptemplateprojectdatabasenamespace"."organization" ("id")
+);
 CREATE TABLE "phptemplateprojectdatabasenamespace"."entitypostaladdress" (
 	"entityid" BIGINT NOT NULL,
 	"postaladdressid" CHAR(32) NOT NULL,
@@ -49,22 +55,22 @@ CREATE TABLE "phptemplateprojectdatabasenamespace"."resourceclass" (
 	PRIMARY KEY ("id")
 );
 CREATE TABLE "phptemplateprojectdatabasenamespace"."actionclass" (
-	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
 	"name" VARCHAR(126) NOT NULL,
-	PRIMARY KEY ("id")
+	"description" TEXT,
+	PRIMARY KEY ("name")
 );
 CREATE TABLE "phptemplateprojectdatabasenamespace"."userrolepermission" (
-	"userid" BIGINT NOT NULL,
+	"roleid" BIGINT NOT NULL,
 	"resourceclassid" BIGINT NOT NULL,
-	"actionclassid" BIGINT NOT NULL,
+	"actionclassname" VARCHAR(126) NOT NULL,
 	"appliessystemwide" BOOLEAN NOT NULL,
 	"appliesatattachmentpoint" BOOLEAN NOT NULL,
 	"appliesaboveattachmentpoint" BOOLEAN NOT NULL,
 	"appliesbelowattachmentpoint" BOOLEAN NOT NULL,
-	PRIMARY KEY ("userid", "resourceclassid", "actionclassid"),
-	FOREIGN KEY ("userid") REFERENCES "phptemplateprojectdatabasenamespace"."userrole" ("id"),
+	PRIMARY KEY ("roleid", "resourceclassid", "actionclassname"),
+	FOREIGN KEY ("roleid") REFERENCES "phptemplateprojectdatabasenamespace"."userrole" ("id"),
 	FOREIGN KEY ("resourceclassid") REFERENCES "phptemplateprojectdatabasenamespace"."resourceclass" ("id"),
-	FOREIGN KEY ("actionclassid") REFERENCES "phptemplateprojectdatabasenamespace"."actionclass" ("id")
+	FOREIGN KEY ("actionclassname") REFERENCES "phptemplateprojectdatabasenamespace"."actionclass" ("name")
 );
 CREATE TABLE "phptemplateprojectdatabasenamespace"."userorganizationattachment" (
 	"userid" BIGINT NOT NULL,
