@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 <title><?php echo htmlspecialchars("{$title} - PHP Template Project"); ?></title>
