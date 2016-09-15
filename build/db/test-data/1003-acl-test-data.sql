@@ -1,4 +1,5 @@
 -- This test data uses entity IDs 1000041-1000050
+-- Can also use 1000051-59, since not using those for action classes after all.
 
 INSERT INTO phptemplateprojectdatabasenamespace.organization
 (id, name, parentid) VALUES
@@ -50,7 +51,8 @@ INSERT INTO phptemplateprojectdatabasenamespace.user
 (id, username) VALUES
 (1000048, 'Test Organization Administrator'),
 (1000049, 'Test Facility Administrator'),
-(1000050, 'Test Some Guy');
+(1000050, 'Test Some Visitor'),
+(1000051, 'Test Unattached User');
 
 INSERT INTO phptemplateprojectdatabasenamespace.userorganizationattachment
 (userid, roleid, organizationid) VALUES
