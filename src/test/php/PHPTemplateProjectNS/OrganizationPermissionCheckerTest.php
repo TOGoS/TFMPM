@@ -14,8 +14,8 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 		$act = $this->makeAction($meth,$path,$qs,$contobj);
 		$actx = new PHPTemplateProjectNS_FakeActionContext($userId);
 		$notes = array();
-		$isAllowed = $this->organizationPermissionChecker->isAllowed( $act, $actx, $notes );
-		$this->assertEquals( false, $isAllowed, var_export($isAllowed).' != '.var_export($expected)."\n".implode("\n", $notes) );
+		$isAllowed = $this->organizationPermissionChecker->isActionAllowed( $act, $actx, $notes );
+		$this->assertEquals( false, $isAllowed, var_export($isAllowed,true).' != '.var_export($expected,true)."\n".implode("\n", $notes) );
 	}
 	
 	protected function assertAllowed( $userId, $meth, $path, $qs='', $contobj=null ) {
