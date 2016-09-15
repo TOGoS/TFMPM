@@ -2,16 +2,174 @@
 
 class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProjectNS_Component
 {
+	protected $uoaCache = array();
+	
+	public function getUserOrganizationAttachments( $userId ) {
+		if( isset($this->uoaCache[$userId]) ) return $this->uoaCache[$userId];
+		
+		$rose = $this->storageHelper->queryRows(
+			"SELECT\n".
+			"\tuoa.userid, uoa.organizationid,\n".
+			"\tur.id AS roleid, ur.name AS rolename,\n".
+			"\turp.resourceclassid,\n".
+			"\turp.actionclassname,\n".
+			"\turp.appliessystemwide,\n".
+			"\turp.appliesatattachmentpoint,\n".
+			"\turp.appliesaboveattachmentpoint,\n".
+			"\turp.appliesbelowattachmentpoint,\n".
+			"\trc.name AS resourceclassname\n".
+			"FROM phptemplateprojectdatabasenamespace.userorganizationattachment AS uoa\n".
+			"JOIN phptemplateprojectdatabasenamespace.userrole AS ur ON ur.id = uoa.roleid\n".
+			"JOIN phptemplateprojectdatabasenamespace.userrolepermission AS urp ON urp.roleid = uoa.roleid\n".
+			"JOIN phptemplateprojectdatabasenamespace.resourceclass AS rc ON rc.id = urp.resourceclassid\n".
+			"WHERE uoa.userid IN {userIds}",
+			['userIds' => [$userId]]
+		);
+		$uoas = [];
+		foreach( $rose as $rouse ) {
+			$uoaId = $rouse['userid'].'-'.$rouse['roleid'].'-'.$rouse['organizationid'];
+			if( !isset($uoas[$uoaId]) ) $uoas[$uoaId] = [
+				'user ID' => $rouse['userid'],
+				'organization ID' => $rouse['organizationid'],
+				'role' => [
+					'ID' => $rouse['roleid'],
+					'name' => $rouse['rolename'],
+					'user role permissions' => [],
+				]
+			];
+			$urpId = $rouse['roleid'].'-'.$rouse['resourceclassid'].'-'.$rouse['actionclassname'];
+			$uoas[$uoaId]['user role permissions'][$urpId] = [
+				'action class name' => $rouse['actionclassname'],
+				'resource class ID' => $rouse['resourceclassid'],
+				'resource class name' => $rouse['resourceclassname'],
+				'applies system-wide' => (bool)$rouse['appliessystemwide'],
+				'applies at attachment point' => (bool)$rouse['appliesatattachmentpoint'],
+				'applies above attachment point' => (bool)$rouse['appliesaboveattachmentpoint'],
+				'applies below attachment point' => (bool)$rouse['appliesbelowattachmentpoint'],
+			];
+		}
+		
+		return $this->uoaCache[$userId] = $uoas;
+	}
+		
+	public function userCanDoBasicActionOnObjectInOrg( $userId, $actionName, $objectOrgId, $objectRcName, &$notes=[] ) {
+		$uoas = $this->getUserOrganizationAttachments( $userId );
+		
+		foreach( $uoas as $uoa ) {
+			foreach( $uoa['user role permissions'] as $urp ) {
+				if( $urp['resource class name'] == $objectRcName and $urp['action class name'] == $actionName ) {
+					$userOrgId = $uoa['organization ID'];
+					$orgRlxn = $this->organizationModel->getOrganizationRelationship( $objectOrgId, $userOrgId );
+					if( $orgRlxn !== 'none' ) {
+						$checkApplicabilityFieldName = "applies {$orgRlxn} attachment point";
+						if( $urp[$checkApplicabilityFieldName] ) {
+							$notes[] = "User has $actionName permission on $objectRcName records $orgRlxn their attachment point at $userOrgId";
+							return true;
+						}
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	/** Array of $rcName => $itemId => $itemData */
+	protected $itemCache = array();
+	protected function getItem( $itemId, $rcName ) {
+		if( isset($this->itemCache[$rcName]) and array_key_exists($itemId, $this->itemCache[$rcName]) ) {
+			return $this->itemCache[$rcName][$itemId];
+		}
+		
+		return $this->itemCache[$rcName][$itemId] = $this->storageHelper->getItemById($rcName, $itemId);
+	}
+	
+	public function getOwningOrganizationIds( $itemId, $rcName ) {
+		// We could make this be a more generic 'get owner IDs'
+		// that returns all IDs of a set of RCs, not just organization.
+		// e.g. in case the user record itself owns something.
+		// Which isn't so far fetched
+		// (but then we could accomplish the same thing by just giving the user their own organization)
+		
+		if( $rcName == PHPTemplateProjectNS_OrganizationModel::ORGANIZATION_RC_NAME ) return array($itemId);
+		$rc = $this->rc($rcName);
+		$owningOrgIds = array();
+		foreach( $rc->getReferences() as $ref ) {
+			if( $ref->getFirstPropertyValue("http://ns.nuke24.net/Schema/Application/indicatesOwner") ) {
+				$item = $this->getItem($itemId, $rcName);
+				
+				$idFieldNames = $ref->getTargetFieldNames();
+				$targetIdParts = [];
+				foreach( $idFieldNames as $idfn ) $targetIdParts[] = $item[$idfn];
+				$targetId = implode('-', $targetIdParts);
+				
+				foreach( $this->getOwningOrganizationIds($targetId, $ref->getTargetClassName()) as $id ) {
+					$owningOrgIds[$id] = $id;
+				}
+			}
+			// TODO: May eventually also need to go through and check all tables for ownees
+			// if we want to support that, which will be a pain.
+		}
+		
+		return $owningOrgIds;
+	}
+	
+	public function userCanDoBasicActionOnObject( $userId, $actionName, $objectId, $objectRcName, array &$notes=[] ) {
+		$uoas = $this->getUserOrganizationAttachments( $userId );
+		
+		// Check for any system-wide permissions first,
+		// since we could then skip organization queries.
+		$anyNonSystemWidePermissions = false;
+		foreach( $uoas as $uoa ) {
+			foreach( $uoa['user role permissions'] as $urp ) {
+				if( $urp['resource class name'] == $objectRcName and $urp['action class name'] == $actionName ) {
+					if( $urp['applies system-wide'] ) {
+						$notes[] = "User has system-wide permission to {$actionName} {$objectRcName} records";
+						return true;
+					} else {
+						// Will have to do organization structure checks. ;(
+						$anyNonSystemWidePermissions = true;
+					}
+				}
+			}
+		}
+		
+		if( !$anyNonSystemWidePermissions ) {
+			$notes[] = "User has no organization permissions to $actionName $objectRcName records";
+			return false;
+		}
+		
+		$objectOrgIds = $this->getOwningOrganizationIds($objectId, $objectRcName);
+		foreach( $objectOrgIds as $objectOrgId ) {
+			if( $this->userCanDoBasicActionOnObjectInOrg($userId, $actionName, $objectOrgId, $objectRcName, $notes) ) return true;
+		}
+		
+		return false;
+	}
+	
 	public function itemsVisible(
 		array $itemData,
-		EarthIT_Schema_ResourceClass $rc,
+		EarthIT_Schema_ResourceClass $itemRc,
 		PHPTemplateProjectNS_ActionContext $actx,
 		array &$notes
 	) {
-		$notes[] = get_class($this)."#itemsVisible doesn't know what to do with ".$rc->getName();
-		return false;
+		$userId = $actx->getLoggedInUserId();
+		if( $userId === null ) {
+			$notes[] = "Not logged in; can't do anything as far as the OrganizationPermissionChecker is concerned";
+			return false;
+		}
+		
+		foreach( $itemData as $item ) {
+			$itemId = EarthIT_Storage_Util::itemId($item, $itemRc);
+			$itemRcName = $itemRc->getName();
+			$notes[] = "Checking 'read' permission on $itemRcName $itemId...";
+			if( !$this->userCanDoBasicActionOnObject($userId, 'read', $itemId, $itemRcName, $notes) ) return false;
+		}
+		
+		$notes[] = "No items unreadable by $userId";
+		return true;
 	}
-
+	
 	public function preAuthorizeSimpleAction( $act, PHPTemplateProjectNS_ActionContext $actx, array &$notes ) {
 		if(
 			$act instanceof EarthIT_CMIPREST_RESTAction_SearchAction or

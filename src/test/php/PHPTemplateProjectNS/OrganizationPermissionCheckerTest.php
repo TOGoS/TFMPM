@@ -34,13 +34,19 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 			$isAllowed = null;
 			try {
 				$this->testRester->doAction($act, $actx);
-				$isAllowed = false;
+				// Aw naw we don't have any way to get at those notes!
+				$isAllowed = true;
 			} catch( EarthIT_CMIPREST_ActionUnauthorized $e ) {
 				foreach( $e->getNotes() as $n ) $notes[] = $n;
 				$isAllowed = false;
 			}
 		}
 		$this->assertEquals( $expected, $isAllowed, var_export($isAllowed,true).' != '.var_export($expected,true)."\n".implode("\n", $notes) );
+		/*
+		echo "Yay, ".($userId === null ? "unauthenticated user" : $userId)." ".
+						($isAllowed ? "may" : "mayn't")." $meth $path?$qs".
+						($notes ? ":\n\t".implode("\n\t", $notes)."\n" : "\n");
+		*/
 	}
 	
 	protected function assertAllowed( $userId, $meth, $path, $qs='', $contobj=null ) {
