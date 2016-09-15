@@ -135,7 +135,7 @@ fix-entity-id-sequence: resources config/entity-id-sequence.json
 rebuild-database: empty-database upgrade-database
 rebuild-database-with-test-data: empty-database upgrade-database-with-test-data
 
-run-unit-tests: runtime-resources upgrade-database
+run-unit-tests: runtime-resources upgrade-database-with-test-data
 	vendor/bin/phpunit --bootstrap init-environment.php src/test/php
 
 run-tests: run-unit-tests
