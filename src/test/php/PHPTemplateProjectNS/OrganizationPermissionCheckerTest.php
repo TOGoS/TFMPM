@@ -15,7 +15,7 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 		$actx = new PHPTemplateProjectNS_FakeActionContext($userId);
 		$notes = array();
 		$isAllowed = $this->organizationPermissionChecker->isActionAllowed( $act, $actx, $notes );
-		$this->assertEquals( false, $isAllowed, var_export($isAllowed,true).' != '.var_export($expected,true)."\n".implode("\n", $notes) );
+		$this->assertEquals( $expected, $isAllowed, var_export($isAllowed,true).' != '.var_export($expected,true)."\n".implode("\n", $notes) );
 	}
 	
 	protected function assertAllowed( $userId, $meth, $path, $qs='', $contobj=null ) {
@@ -41,5 +41,13 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 	
 	public function testUnattachedUserCantDoStuff() {
 		$this->assertCantDoStuff(self::UNATTACHED_USER_ID);
+	}
+	
+	public function testFacilityAdminCanSeeTheirOwnFacility() {
+		$this->assertAllowed(self::FACADMIN_USER_ID, 'GET', '/facilities/1000043');
+	}
+	
+	public function testFacilityAdminCantDoStuffToOtherFacilities() {
+		$this->assertUnallowed(self::FACADMIN_USER_ID, 'GET', '/facilities/1000044');
 	}
 }
