@@ -10,11 +10,36 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 		return $this->router->apiRequestToAction($meth, $path, $qs, $contentBlob);
 	}
 	
+	/**
+	 * A CMIPREST_RESTer that only uses our OrganizationPermissionChecker
+	 * for authorizing.
+	 */
+	protected $testRester;
+	
+	public function setUp() {
+		$this->testRester = new EarthIT_CMIPREST_RESTer( array(
+			'storage' => $this->storage,
+			'schema' => $this->schema,
+			'keyByIds' => true,
+			'authorizer' => $this->organizationPermissionChecker
+		));
+	}
+	
 	protected function assertAllowedness( $expected, $userId, $meth, $path, $qs='', $contobj=null ) {
 		$act = $this->makeAction($meth,$path,$qs,$contobj);
 		$actx = new PHPTemplateProjectNS_FakeActionContext($userId);
 		$notes = array();
-		$isAllowed = $this->organizationPermissionChecker->isActionAllowed( $act, $actx, $notes );
+		$isAllowed = $this->organizationPermissionChecker->preAuthorizeSimpleAction( $act, $actx, $notes );
+		if( $isAllowed === EarthIT_CMIPREST_RESTActionAuthorizer::AUTHORIZED_IF_RESULTS_VISIBLE ) {
+			$isAllowed = null;
+			try {
+				$this->testRester->doAction($act, $actx);
+				$isAllowed = false;
+			} catch( EarthIT_CMIPREST_ActionUnauthorized $e ) {
+				foreach( $e->getNotes() as $n ) $notes[] = $n;
+				$isAllowed = false;
+			}
+		}
 		$this->assertEquals( $expected, $isAllowed, var_export($isAllowed,true).' != '.var_export($expected,true)."\n".implode("\n", $notes) );
 	}
 	
