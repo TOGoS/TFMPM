@@ -40,6 +40,6 @@ class PHPTemplateProjectNS_OrganizationModelTest extends PHPTemplateProjectNS_Te
 	}
 
 	public function testThatOrgIsUnrelated() {
-		$this->assertOrgRlxn( 'none', '1000042', '1000053' );
+		$this->assertOrgRlxn( 'unrelated-to', '1000042', '1000053' );
 	}
 }

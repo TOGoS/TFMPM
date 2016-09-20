@@ -2,6 +2,14 @@
 
 class PHPTemplateProjectNS_OrganizationModel extends PHPTemplateProjectNS_Component
 {
+	// Hey, hey!  These values are somewhat magical, in that they can be used as
+	// "<org A> is <rlxn> <org B>", and (except for RLXN_NONE) "applies <rlxn> attachment point"
+	// (that's user role permission columns).
+	const RLXN_SAME  = 'at';
+	const RLXN_ABOVE = 'above';
+	const RLXN_BELOW = 'below';
+	const RLXN_NONE  = 'unrelated-to';
+	
 	const ORGANIZATION_RC_NAME = 'organization';
 	const ORGANIZATION_TABLE_NAME = 'phptemplateprojectdatabasenamespace.organization';
 
@@ -49,23 +57,23 @@ class PHPTemplateProjectNS_OrganizationModel extends PHPTemplateProjectNS_Compon
 	
 	/** What is $orgA's relationship to $orgB? */
 	protected function _getOrganizationRelationship( $orgAId, $orgBId ) {
-		if( $orgAId == $orgBId ) return 'at';
+		if( $orgAId == $orgBId ) return self::RLXN_SAME;
 		
 		$orgId = $orgAId;
 		while( $orgId !== null ) {
 			$org = $this->getOrganization($orgId);
 			$orgId = $org['parent ID'];
-			if( $orgId == $orgBId ) return 'below';
+			if( $orgId == $orgBId ) return self::RLXN_BELOW;
 		}
 		
 		$orgId = $orgBId;
 		while( $orgId !== null ) {
 			$org = $this->getOrganization($orgId);
 			$orgId = $org['parent ID'];
-			if( $orgId == $orgAId ) return 'above';
+			if( $orgId == $orgAId ) return self::RLXN_ABOVE;
 		}
 		
-		return 'none'; // They could be cousins or something, but we don't care about that
+		return self::RLXN_NONE; // They could be cousins or something, but we don't care about that
 	}
 
 	protected $orgRlxnCache = array();
