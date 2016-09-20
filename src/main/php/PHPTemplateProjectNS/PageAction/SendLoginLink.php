@@ -4,32 +4,42 @@ class PHPTemplateProjectNS_PageAction_SendLoginLink extends PHPTemplateProjectNS
 {
 	protected $emailAddress;
 	
-	public function __construct( PHPTemplateProjectNS_Registry $reg, $emailAddress ) {
+	public function __construct( PHPTemplateProjectNS_Registry $reg, array $params ) {
 		parent::__construct($reg);
-		$this->emailAddress = $emailAddress;
+		$this->emailAddress = $params['email-address'];
 	}
 	
 	public function __invoke( PHPTemplateProjectNS_ActionContext $actx ) {
-		$errors = [];
-		
-		$userId = $this->storageHelper->queryValue(
-			"SELECT id FROM phptemplateprojectdatabasenamespace.user WHERE emailaddress = {ea}",
-			['ea' => $this->emailAddress]
-		);
-		if( $userId === null ) {
-			// We might not want to admit this, but for testing purposes...
-			$errors[] = "No user record for e-mail address '{$this->emailAddress}' exists.";
-		} else {
-			$this->tokenModel->
+		$user = $this->storageHelper->getItem('user', ['e-mail address'=>$this->emailAddress]);
+		if( $user === null ) {
+			return $this->redirectWithErrorMessage(
+				'login',
+				"No user with e-mail address '{$this->emailAddress}' exists.",
+				$actx);
 		}
 		
+		$ps = [
+			"Either you or someone requested a login link for this e-mail address.\n".
+			"If this wasn't you, ignore this message."
+		];
 		
-		$loginResult = $this->userModel->checkLogin( $this->username, $this->password );
-		if( $loginResult['success'] ) {
-			$actx->setSessionVariable('userId', $loginResult['userId']);
-			return $this->redirect(303, $actx->relativeUrl('/'));
-		} else {
-			return $this->redirectWithErrorMessage($actx->relativeUrl('/login'), $loginResult['message'], $actx);
-		}
+		$loginAction = $this->tokenModel->newTokenAction( [
+			'half user ID' => $user['ID'],
+			'action script' => 'log-in',
+			're-useable' => true,
+		] );
+		$ps[] =
+			"To log in without a password, use this link:\n".
+			$actx->absoluteUrl("/do-token?token={$loginAction['token']}");
+		
+		$newMessage = new Swift_Message();
+		$newMessage->setTo( $this->emailAddress );
+		$newMessage->setFrom( $this->registry->getSwiftAddress('registration') );
+		$newMessage->setSubject( "Login link" );
+		$newMessage->setBody( implode("\n\n", $ps) );
+		
+		$this->mailer->send( $newMessage );
+		
+		return Nife_Util::httpResponse(200, "Login link sent to {$this->emailAddress}");
 	}
 }

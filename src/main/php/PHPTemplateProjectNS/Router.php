@@ -74,7 +74,7 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		} else if( $path == '/send-login-link' ) {
 			switch( $method ) {
 			case 'POST':
-				return $this->createPageAction('SendLoginLink');
+				return $this->createPageAction('SendLoginLink', $req->getParams());
 			}
 		} else if( $path == '/forgot-password' ) {
 			switch( $method ) {
