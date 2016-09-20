@@ -180,6 +180,10 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 			return EarthIT_CMIPREST_RESTActionAuthorizer::AUTHORIZED_IF_RESULTS_VISIBLE;
 		}
 		
+		if( $act instanceof EarthIT_CMIPREST_RESTAction_PatchItemAction ) {
+			return $this->userCanDoBasicActionOnObject( $actx->getLoggedInUserId(), 'update', $act->getItemId(), $act->getResourceClass()->getName(), $notes);
+		}
+		
 		$notes[] = get_class($this)."#preAuthorizeSimpleAction doesn't know what to do with ".PHPTemplateProjectNS_Util::describe($act);
 		return false;
 	}

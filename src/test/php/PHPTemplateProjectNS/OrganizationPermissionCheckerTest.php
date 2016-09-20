@@ -6,7 +6,7 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 	// build/db/test-data/1003-acl-test-data.sql
 	
 	protected function makeAction( $meth, $path, $qs='', $contobj=null ) {
-		$contentBlob = $contobj ? EarthIT_JSON_PrettyPrintedJSONBlob($contobj) : null;
+		$contentBlob = $contobj ? new EarthIT_JSON_PrettyPrintedJSONBlob($contobj) : null;
 		return $this->router->apiRequestToAction($meth, $path, $qs, $contentBlob);
 	}
 	
@@ -64,24 +64,24 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 	const VISITOR_USER_ID    = '1000050';
 	const UNATTACHED_USER_ID = '1000051';
 	
-	protected function assertCantDoStuff($userId) {
+	protected function assertCannotDoStuff($userId) {
 		$this->assertUnallowed($userId, 'GET','/organizations');
 		$this->assertUnallowed($userId, 'GET','/organizations/1000041');
 	}
 	
-	public function testUninloggedUserCantDoStuff() {
-		$this->assertCantDoStuff(null);
+	public function testUninloggedUserCannotDoStuff() {
+		$this->assertCannotDoStuff(null);
 	}
 	
-	public function testUnattachedUserCantDoStuff() {
-		$this->assertCantDoStuff(self::UNATTACHED_USER_ID);
+	public function testUnattachedUserCannotDoStuff() {
+		$this->assertCannotDoStuff(self::UNATTACHED_USER_ID);
 	}
 	
 	public function testFacilityAdminCanSeeTheirOwnFacility() {
 		$this->assertAllowed(self::FACADMIN_USER_ID, 'GET', '/facilities/1000043');
 	}
 	
-	public function testFacilityAdminCantDoStuffToOtherFacilities() {
+	public function testFacilityAdminCannotDoStuffToOtherFacilities() {
 		$this->assertUnallowed(self::FACADMIN_USER_ID, 'GET', '/facilities/1000044');
 	}
 	
@@ -103,6 +103,17 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 			// But not cousins of the one you're at
 			$this->assertUnallowed(self::ORGADMIN_USER_ID, 'GET', '/organizations/'.$orgId, '', null,
 				"Org admin should NOT be able to see cousin org to the one he's attached to");
+		}
+	}
+	
+	public function testFacilityAdminCanChangeOwnCurtains() {
+		$this->assertAllowed(1000049, 'PATCH', "/facilities/1000043", '', array('curtainColor'=>'blorange'),
+			"Facility admin should be able to change his own facility's curtain color");
+	}
+	public function testFacilityAdminCannotChangeOthersCurtains() {
+		foreach( array(1000042,1000044) as $facilityId ) {
+			$this->assertUnallowed(1000049, 'PATCH', "/facilities/1000043", '', array('curtainColor'=>'grurple'),
+				"Facility admin should NOT be able to change others' facility's curtain colors");
 		}
 	}
 }
