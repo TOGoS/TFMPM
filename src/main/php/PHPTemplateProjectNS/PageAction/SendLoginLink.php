@@ -13,7 +13,7 @@ class PHPTemplateProjectNS_PageAction_SendLoginLink extends PHPTemplateProjectNS
 		$errors = [];
 		
 		$userId = $this->storageHelper->queryValue(
-			"SELECT id FROM phptemplateprojectns.user WHERE emailaddress = {ea}",
+			"SELECT id FROM phptemplateprojectdatabasenamespace.user WHERE emailaddress = {ea}",
 			['ea' => $this->emailAddress]
 		);
 		if( $userId === null ) {

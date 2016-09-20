@@ -79,7 +79,7 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		} else if( $path == '/forgot-password' ) {
 			switch( $method ) {
 			case 'POST':
-				return $this->createPageAction('SendPasswordResetEmail');
+				return $this->createPageAction('SendPasswordResetLink', $req->getParams());
 			}
 		} else if( $path == '/reset-password' ) {
 			switch( $method ) {

@@ -25,6 +25,8 @@ class PHPTemplateProjectNS_PageAction_Register extends PHPTemplateProjectNS_Page
 		}
 		
 		$okay = false;
+		// If anything goes wrong we'll roll it all back
+		// so that they can try again later with the same username
 		$this->storageHelper->beginTransaction();
 		try {
 			$existingUser = $this->storageHelper->getItem('user', ['e-mail address'=>$this->emailAddress]);

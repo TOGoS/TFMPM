@@ -10,10 +10,11 @@
 </style>
 
 <div class="login-stuffs">
-<div class="login-method">
-<h2>Log In</h2>
 
 <?php $PU->emitMessageBlock($params); ?>
+
+<div class="login-method">
+<h2>Log In</h2>
 
 <form method="POST" action="login" class="tabby">
 <div>
