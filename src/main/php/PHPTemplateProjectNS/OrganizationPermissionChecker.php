@@ -60,6 +60,7 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 				if( $urp['resource class name'] == $objectRcName and $urp['action class name'] == $actionName ) {
 					$userOrgId = $uoa['organization ID'];
 					$orgRlxn = $this->organizationModel->getOrganizationRelationship( $objectOrgId, $userOrgId );
+					$notes[] = "org $objectOrgId is $orgRlxn org $userOrgId";
 					if( $orgRlxn !== 'none' ) {
 						$checkApplicabilityFieldName = "applies {$orgRlxn} attachment point";
 						if( $urp[$checkApplicabilityFieldName] ) {
@@ -141,6 +142,7 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 		
 		$objectOrgIds = $this->getOwningOrganizationIds($objectId, $objectRcName);
 		foreach( $objectOrgIds as $objectOrgId ) {
+			$notes[] = "Checking for '$actionName' permission on '$objectRcName' records in org '$objectOrgId'";
 			if( $this->userCanDoBasicActionOnObjectInOrg($userId, $actionName, $objectOrgId, $objectRcName, $notes) ) return true;
 		}
 		

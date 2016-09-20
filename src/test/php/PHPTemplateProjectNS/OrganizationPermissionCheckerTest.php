@@ -25,7 +25,7 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 		));
 	}
 	
-	protected function assertAllowedness( $expected, $userId, $meth, $path, $qs='', $contobj=null ) {
+	protected function assertAllowedness( $expected, $userId, $meth, $path, $qs='', $contobj=null, $message=null ) {
 		$act = $this->makeAction($meth,$path,$qs,$contobj);
 		$actx = new PHPTemplateProjectNS_FakeActionContext($userId);
 		$notes = array();
@@ -41,7 +41,10 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 				$isAllowed = false;
 			}
 		}
-		$this->assertEquals( $expected, $isAllowed, var_export($isAllowed,true).' != '.var_export($expected,true)."\n".implode("\n", $notes) );
+		$this->assertEquals( $expected, $isAllowed,
+			($message ? $message."\n" : "").
+			var_export($isAllowed,true).' != '.var_export($expected,true)."\n".implode("\n", $notes)
+		);
 		/*
 		echo "Yay, ".($userId === null ? "unauthenticated user" : $userId)." ".
 						($isAllowed ? "may" : "mayn't")." $meth $path?$qs".
@@ -49,11 +52,11 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 		*/
 	}
 	
-	protected function assertAllowed( $userId, $meth, $path, $qs='', $contobj=null ) {
-		$this->assertAllowedness( true, $userId, $meth, $path, $qs, $contobj );
+	protected function assertAllowed( $userId, $meth, $path, $qs='', $contobj=null, $message=null ) {
+		$this->assertAllowedness( true, $userId, $meth, $path, $qs, $contobj, $message );
 	}
-	protected function assertUnallowed( $userId, $meth, $path, $qs='', $contobj=null ) {
-		$this->assertAllowedness( false, $userId, $meth, $path, $qs, $contobj );
+	protected function assertUnallowed( $userId, $meth, $path, $qs='', $contobj=null, $message=null ) {
+		$this->assertAllowedness( false, $userId, $meth, $path, $qs, $contobj, $message );
 	}
 	
 	const ORGADMIN_USER_ID   = '1000048';
@@ -80,5 +83,26 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 	
 	public function testFacilityAdminCantDoStuffToOtherFacilities() {
 		$this->assertUnallowed(self::FACADMIN_USER_ID, 'GET', '/facilities/1000044');
+	}
+	
+	public function testOrgAdminOrgVisibility() {
+		foreach( array(1000041) as $orgId ) {
+			$this->assertAllowed(self::ORGADMIN_USER_ID, 'GET', '/organizations/'.$orgId, '', null,
+				"Org admin should be able to see his own org");
+		}
+		foreach( array(1000042,1000043,1000044) as $orgId ) {
+			$this->assertAllowed(self::ORGADMIN_USER_ID, 'GET', '/organizations/'.$orgId, '', null,
+				"Org admin should be able to see orgs below his own");
+		}
+		foreach( array(1000052) as $orgId ) {
+			// You should always be able to see organizations above you, too
+			$this->assertAllowed(self::ORGADMIN_USER_ID, 'GET', '/organizations/'.$orgId, '', null,
+				"Org admin should be able to see ancestor orgs of the one he's attached to");
+		}
+		foreach( array(1000053) as $orgId ) {
+			// But not cousins of the one you're at
+			$this->assertUnallowed(self::ORGADMIN_USER_ID, 'GET', '/organizations/'.$orgId, '', null,
+				"Org admin should NOT be able to see cousin org to the one he's attached to");
+		}
 	}
 }
