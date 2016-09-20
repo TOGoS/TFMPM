@@ -39,6 +39,16 @@ class PHPTemplateProjectNS_Registry
 		return $c;
 	}
 	
+	/**
+	 * Returns a single-element e-mail address => name array
+	 * corresponding to the named entry in config/email-addresses.json,
+	 * suitable for passing to $message->setFrom(...)
+	 */
+	public function getSwiftAddress( $key ) {
+		$entry = $this->requireConfig("email-addresses/$key");
+		return array( $entry['address'] => $entry['name'] );
+	}
+	
 	public function requireConfig( $name ) {
 		$v = $this->getConfig($name);
 		if( $v === null ) throw new Exception("'$name' config variable not defined.");

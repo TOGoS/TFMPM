@@ -69,7 +69,7 @@ class PHPTemplateProjectNS_PageAction_Register extends PHPTemplateProjectNS_Page
 					$actx->absoluteUrl("/do-token?token={$loginAction['token']}");
 			}
 			
-			$newMessage->setFrom( array('fake-registrator@example.org' => 'PHP Template Project') );
+			$newMessage->setFrom( $this->registry->getSwiftAddress('registration') );
 			$newMessage->setSubject( "Thank you for registering!" );
 			$newMessage->setBody( implode("\n\n", $ps) );
 			

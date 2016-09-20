@@ -1,6 +1,7 @@
 config_files := \
 	config/ccouch-repos.lst \
 	config/dbc.json \
+	config/email-addresses.json \
 	config/email-transport.json
 
 generated_resources := \
@@ -20,6 +21,7 @@ build_resources := ${generated_resources} ${config_files}
 
 runtime_resources := \
 	config/dbc.json \
+	config/email-addresses.json \
 	config/email-transport.json \
 	schema/schema.php \
 	vendor

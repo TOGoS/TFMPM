@@ -33,7 +33,7 @@ class PHPTemplateProjectNS_PageAction_SendPasswordResetLink extends PHPTemplateP
 		
 		$newMessage = new Swift_Message();
 		$newMessage->setTo( $this->emailAddress );
-		$newMessage->setFrom( array('fake-registrator@example.org' => 'PHP Template Project') );
+		$newMessage->setFrom( $this->registry->getSwiftAddress('registration') );
 		$newMessage->setSubject( "Password reset link" );
 		$newMessage->setBody( implode("\n\n", $ps) );
 		
