@@ -1,9 +1,12 @@
 -- This test data uses entity IDs 1000041-1000050
 -- Can also use 1000051-59, since not using those for action classes after all.
+-- Next: 1000054
 
 INSERT INTO phptemplateprojectdatabasenamespace.organization
 (id, name, parentid) VALUES
-(1000041, 'ACL Test Org', NULL),
+(1000052, 'ACL Test Root Org', NULL),
+(1000053, 'ACL Test Cousin Org', 1000052),
+(1000041, 'ACL Test Org', 1000052),
 (1000042, 'ACL Test Facility West', 1000041),
 (1000043, 'ACL Test Facility East', 1000041),
 (1000044, 'ACL Test Facility East Garage', 1000043);
@@ -18,8 +21,8 @@ INSERT INTO phptemplateprojectdatabasenamespace.facility
 INSERT INTO phptemplateprojectdatabasenamespace.userrole
 (id, name) VALUES
 (1000045, 'Organization Administrator'),
-(1000046, 'Facilty Administrator'),
-(1000047, 'Facility Visitor');
+(1000046, 'East Facilty Administrator'),
+(1000047, 'East Facility Visitor');
 
 INSERT INTO phptemplateprojectdatabasenamespace.userrolepermission
 (roleid, resourceclassid, actionclassname, appliessystemwide, appliesatattachmentpoint, appliesaboveattachmentpoint, appliesbelowattachmentpoint) VALUES

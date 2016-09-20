@@ -28,6 +28,7 @@ class PHPTemplateProjectNS_OrganizationModel extends PHPTemplateProjectNS_Compon
 				'orgTable' => new EarthIT_DBC_SQLIdentifier(self::ORGANIZATION_TABLE_NAME),
 			]
 		);
+		foreach( $orgs as $org ) $this->orgCache[$org['ID']] = $org;
 		
 		$this->precacheOrgIds = array();
 	}
