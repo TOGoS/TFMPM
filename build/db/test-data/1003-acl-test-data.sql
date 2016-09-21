@@ -68,13 +68,12 @@ INSERT INTO phptemplateprojectdatabasenamespace.userrolepermission
 (1000046, 1000024, 'read'     , false,  true,  true, false),
 (1000046, 1000035, 'read'     , false,  true, false, false),
 (1000046, 1000035, 'update'   , false,  true, false, false),
--- Facility admins have full control over the facility's chairs
+-- Facility admins have full control over the facility's chairs,
+-- except to move chairs between facilities.
 (1000046, 1000056, 'create'   , false,  true, false, false),
 (1000046, 1000056, 'read'     , false,  true, false, false),
 (1000046, 1000056, 'update'   , false,  true, false, false),
 (1000046, 1000056, 'delete'   , false,  true, false, false),
-(1000046, 1000056, 'move-to'  , false,  true, false, false),
-(1000046, 1000056, 'move-from', false,  true, false, false),
 -- Visitors can look at stuff at their attachment point
 -- and see the organization structure above them
 (1000047, 1000024, 'read'     , false,  true,  true, false),

@@ -176,4 +176,20 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 			array(array('facilityId'=>1000044, 'color'=>'breen')),
 			"Facility admin should NOT be able to create chairs someone else's facility");
 	}
+	
+	/*
+	 * Stuff left to test:
+	 * Puts:
+	 * - some test that puts a brand new item acts like a post; needs to not have own ID
+	 * - facility admin can replace own chairs
+	 * - facility admin cannot replace others' chairs
+	 * - facility admin cannot replace own facility
+	 * Movement:
+	 * - chair movement between owned facilities is allowed for org admins
+	 * - chair movement between owned facilities is not allowed for facility admins
+	 * - chair movement to unowned facility is not allowed
+	 * - chair movement from unowned facility is not allowed
+	 * - facility movement between owned orgs is allowed for org admins
+	 * - facility movement is not allowed for facility admins
+	 */
 }
