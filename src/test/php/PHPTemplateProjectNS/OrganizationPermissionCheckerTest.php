@@ -112,7 +112,7 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 	}
 	public function testFacilityAdminCannotChangeOthersCurtains() {
 		foreach( array(1000042,1000044) as $facilityId ) {
-			$this->assertUnallowed(1000049, 'PATCH', "/facilities/1000043", '', array('curtainColor'=>'grurple'),
+			$this->assertUnallowed(1000049, 'PATCH', "/facilities/$facilityId", '', array('curtainColor'=>'grurple'),
 				"Facility admin should NOT be able to change others' facility's curtain colors");
 		}
 	}
