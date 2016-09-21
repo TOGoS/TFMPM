@@ -149,13 +149,35 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		};
 	}
 	
-	public function doAction($action, PHPTemplateProjectNS_ActionContext $actx) {
+	protected function actionNeedsTransaction($action) {
+		// In theory this could return false
+		// for really simple actions, especially ones
+		// that don't even hit the database.
+		return true;
+	}
+	
+	protected function doAction2($action, PHPTemplateProjectNS_ActionContext $actx) {
+		// TODO: Make it so all actions go through RESTer
+		// so that our special actions can be part of CompoundActions
 		if( is_callable($action) ) {
+			// TODO: Check if action is allowed
 			return call_user_func($action, $actx);
 		} else if( $action instanceof EarthIT_CMIPREST_RESTAction ) {
 			return $this->rester->doActionAndGetHttpResponse($action, $actx);
 		} else {
 			throw new Exception("I don't know how to run ".PHPTemplateProjectNS_Debug::describe($action)." as an action");
+		}
+	}
+	
+	public function doAction($action, PHPTemplateProjectNS_ActionContext $actx) {
+		$this->storageHelper->beginTransaction();
+		$success = false;
+		try {
+			$result = $this->doAction2($action, $actx);
+			$success = true;
+			return $result;
+		} finally {
+			$this->storageHelper->endTransaction($success);
 		}
 	}
 	

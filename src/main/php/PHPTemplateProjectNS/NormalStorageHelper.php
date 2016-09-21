@@ -57,15 +57,25 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 		}
 		return $map;
 	}
-	
+
+	protected $transactionLevel = 0;
+	protected $subTransactionsFailed = false;
 	public function beginTransaction() {
-		$this->sqlRunner->doRawQuery("START TRANSACTION");
+		if( $this->transactionLevel++ == 0 ) {
+			$this->sqlRunner->doRawQuery("START TRANSACTION");
+			$this->subTransactionsFailed = false;
+		}
 	}
 	public function endTransaction($success) {
-		if( $success ) {
-			$this->sqlRunner->doRawQuery("COMMIT TRANSACTION");
+		if( --$this->transactionLevel == 0 ) {
+			if( $this->subTransactionsFailed ) $success = false;
+			if( $success ) {
+				$this->sqlRunner->doRawQuery("COMMIT TRANSACTION");
+			} else {
+				$this->sqlRunner->doRawQuery("ROLLBACK TRANSACTION");
+			}
 		} else {
-			$this->sqlRunner->doRawQuery("ROLLBACK TRANSACTION");
+			if( !$success ) $this->subTransactionsFailed = true;
 		}
 	}
 	
@@ -167,6 +177,7 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 	 * Delete all items from the given class matching the given filters.
 	 */
 	public function deleteItems($rc, array $filters=[]) {
-		$this->storage->deleteItems(EarthIT_Storage_ItemFilters::parseMulti($filters), $this->rc($rc));
+		$rc = $this->rc($rc);
+		$this->storage->deleteItems($rc, EarthIT_Storage_ItemFilters::parseMulti($filters, $rc));
 	}
 }
