@@ -167,6 +167,7 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 	 * Delete all items from the given class matching the given filters.
 	 */
 	public function deleteItems($rc, array $filters=[]) {
-		$this->storage->deleteItems(EarthIT_Storage_ItemFilters::parseMulti($filters), $this->rc($rc));
+		$rc = $this->rc($rc);
+		$this->storage->deleteItems($rc, EarthIT_Storage_ItemFilters::parseMulti($filters, $rc));
 	}
 }
