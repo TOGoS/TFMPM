@@ -25,11 +25,27 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 		));
 	}
 	
+	protected function isAllowed( $act, $actx, array &$notes ) {
+		// We determine this by doing the action, ha ha.
+		// But we'll do it all in a transaction so we can cancel it at the end.
+		$this->storageHelper->beginTransaction();
+		try {
+			$this->testRester->doAction($act, $actx);
+			return true;
+		} catch( EarthIT_CMIPREST_ActionUnauthorized $e ) {
+			foreach( $e->getNotes() as $n ) $notes[] = $n;
+			return false;
+		} finally {
+			$this->storageHelper->endTransaction(false);
+		}
+	}
+	
 	protected function assertAllowedness( $expected, $userId, $meth, $path, $qs='', $contobj=null, $message=null ) {
 		$act = $this->makeAction($meth,$path,$qs,$contobj);
 		$actx = new PHPTemplateProjectNS_FakeActionContext($userId);
 		$notes = array();
-		$isAllowed = $this->organizationPermissionChecker->preAuthorizeSimpleAction( $act, $actx, $notes );
+		$isAllowed = $this->isAllowed($act, $actx, $notes);
+		/* $this->organizationPermissionChecker->preAuthorizeSimpleAction( $act, $actx, $notes );
 		if( $isAllowed === EarthIT_CMIPREST_RESTActionAuthorizer::AUTHORIZED_IF_RESULTS_VISIBLE ) {
 			$isAllowed = null;
 			try {
@@ -40,7 +56,7 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 				foreach( $e->getNotes() as $n ) $notes[] = $n;
 				$isAllowed = false;
 			}
-		}
+		} */
 		$this->assertEquals( $expected, $isAllowed,
 			($message ? $message."\n" : "").
 			var_export($isAllowed,true).' != '.var_export($expected,true)."\n".implode("\n", $notes)
@@ -130,5 +146,34 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 	public function testFacilityAdminCannotChangeOthersChairs() {
 		$this->assertUnallowed(1000049, 'PATCH', "/chairs/1000055", '', array('color'=>'orilver'),
 			"Facility admin should NOT be able to change others' facility's chair's colors");
+	}
+	
+	//// POST that's actually a PATCH
+	// If these pass we can probably assume that POSTS
+	// are being translated to PATCHes as needed, so more thorough
+	// tests can be done by regular PATCHing
+
+	public function testFacilityAdminCanUpdateOwnChairsViaPost() {
+		$this->assertAllowed(1000049, 'POST', "/chairs", '',
+			array(array('id'=>1000054, 'facilityId'=>1000043, 'color'=>'broon')),
+			"Facility should be able to update chairs at their own facility via a POST");
+	}
+	public function testFacilityAdminCanotUpdateOthersChairsViaPost() {
+		$this->assertUnallowed(1000049, 'POST', "/chairs", '',
+			array(array('id'=>1000055, 'facilityId'=>1000044, 'color'=>'broon')),
+			"Facility should NOT be able to update chairs at others' facilities via a POST");
+	}
+	
+	//// POST new items
+	
+	public function testFacilityAdminCanCreateNewChairsInOwnFacility() {
+		$this->assertAllowed(1000049, 'POST', "/chairs", '',
+			array(array('facilityId'=>1000043, 'color'=>'breen')),
+			"Facility admin should be able to create chairs in his own facility");
+	}
+	public function testFacilityAdminCannotCreateNewChairsInOthersFacility() {
+		$this->assertUnallowed(1000049, 'POST', "/chairs", '',
+			array(array('facilityId'=>1000044, 'color'=>'breen')),
+			"Facility admin should NOT be able to create chairs someone else's facility");
 	}
 }

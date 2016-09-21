@@ -85,19 +85,33 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 		return $this->itemCache[$rcName][$itemId] = $this->storageHelper->getItemById($rcName, $itemId);
 	}
 	
-	public function getOwningOrganizationIds( $itemId, $rcName ) {
+	/**
+	 * @param $itemOrItemId if scalar, this is treated as an item ID; if an array, it is the item's field values
+	 * @param $rcName name of the item's resource class
+	 */
+	public function getOwningOrganizationIds( $itemOrItemId, $rcName ) {
+		if( is_array($itemOrItemId) ) {
+			$itemId = null;
+			$item   = $itemOrItemId;
+		} else if( is_scalar($itemOrItemId) ) {
+			$item   = null;
+			$itemId = $itemOrItemId;
+		}
+		
 		// We could make this be a more generic 'get owner IDs'
 		// that returns all IDs of a set of RCs, not just organization.
 		// e.g. in case the user record itself owns something.
 		// Which isn't so far fetched
 		// (but then we could accomplish the same thing by just giving the user their own organization)
 		
-		if( $rcName == PHPTemplateProjectNS_OrganizationModel::ORGANIZATION_RC_NAME ) return array($itemId=>$itemId);
+		if( $itemId !== null && $rcName == PHPTemplateProjectNS_OrganizationModel::ORGANIZATION_RC_NAME ) {
+			return array($itemId=>$itemId);
+		}
 		$rc = $this->rc($rcName);
 		$owningOrgIds = array();
 		foreach( $rc->getReferences() as $ref ) {
 			if( $ref->getFirstPropertyValue("http://ns.nuke24.net/Schema/Application/indicatesOwner") ) {
-				$item = $this->getItem($itemId, $rcName);
+				if( $item === null ) $item = $this->getItem($itemId, $rcName);
 				if( $item === null ) {
 					throw new Exception("Oh no, $rcName $itemId is null!");
 				}
@@ -126,7 +140,7 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 		return $owningOrgIds;
 	}
 	
-	public function userCanDoBasicActionOnObject( $userId, $actionName, $objectId, $objectRcName, array &$notes=[] ) {
+	public function userCanDoBasicActionOnObject( $userId, $actionName, $objectOrObjectId, $objectRcName, array &$notes=[] ) {
 		$uoas = $this->getUserOrganizationAttachments( $userId );
 		
 		// Check for any system-wide permissions first,
@@ -151,7 +165,7 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 			return false;
 		}
 		
-		$objectOrgIds = $this->getOwningOrganizationIds($objectId, $objectRcName);
+		$objectOrgIds = $this->getOwningOrganizationIds($objectOrObjectId, $objectRcName);
 		foreach( $objectOrgIds as $objectOrgId ) {
 			$notes[] = "Checking for '$actionName' permission on '$objectRcName' records in org '$objectOrgId'";
 			if( $this->userCanDoBasicActionOnObjectInOrg($userId, $actionName, $objectOrgId, $objectRcName, $notes) ) return true;
@@ -182,7 +196,30 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 		$notes[] = "No items unreadable by $userId";
 		return true;
 	}
-	
+
+	/**
+	 * Authorize simplified actions
+	 * that have already been simplified/translated
+	 */
+	public function preAuthorizeSimplerAction( $act, PHPTemplateProjectNS_ActionContext $actx, array &$notes ) {
+		if( $act instanceof EarthIT_CMIPREST_RESTAction_PatchItemAction ) {
+			return $this->userCanDoBasicActionOnObject(
+				$actx->getLoggedInUserId(), 'update',
+				$act->getItemId(), $act->getResourceClass()->getName(),
+				$notes);
+		}
+		
+		if( $act instanceof EarthIT_CMIPREST_RESTAction_PostItemAction ) {
+			return $this->userCanDoBasicActionOnObject(
+				$actx->getLoggedInUserId(), 'create',
+				$act->getItemData(), $act->getResourceClass()->getName(),
+				$notes);
+		}
+		
+		$notes[] = get_class($this)."#preAuthorizeSimplerAction doesn't know what to do with ".PHPTemplateProjectNS_Util::describe($act);
+		return false;
+	}
+
 	public function preAuthorizeSimpleAction( $act, PHPTemplateProjectNS_ActionContext $actx, array &$notes ) {
 		if(
 			$act instanceof EarthIT_CMIPREST_RESTAction_SearchAction or
@@ -191,11 +228,21 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 			return EarthIT_CMIPREST_RESTActionAuthorizer::AUTHORIZED_IF_RESULTS_VISIBLE;
 		}
 		
-		if( $act instanceof EarthIT_CMIPREST_RESTAction_PatchItemAction ) {
-			return $this->userCanDoBasicActionOnObject( $actx->getLoggedInUserId(), 'update', $act->getItemId(), $act->getResourceClass()->getName(), $notes);
+		// POSTs to existing items are actually treated as PATCHes, so translate those:
+		if( $act instanceof EarthIT_CMIPREST_RESTAction_PostItemAction ) {
+			// Is it actually a patch?  Then translate it to one.
+			$item = $act->getItemData();
+			$rc = $act->getResourceClass();
+			$itemId = EarthIT_Storage_Util::itemId($item, $rc);
+			if( $itemId !== null ) {
+				$item = $this->storageHelper->getItemById($act->getResourceClass(), $itemId);
+				// It's a patch!
+				$act = new EarthIT_CMIPREST_RESTAction_PatchItemAction($rc, $itemId, $item, $act->getResultAssembler());
+			}
 		}
 		
-		$notes[] = get_class($this)."#preAuthorizeSimpleAction doesn't know what to do with ".PHPTemplateProjectNS_Util::describe($act);
-		return false;
+		// TODO: Translate PUTs to DELETE+POST for checking purposes
+		
+		return $this->preAuthorizeSimplerAction( $act, $actx, $notes );
 	}
 }
