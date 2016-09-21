@@ -18,6 +18,39 @@ class PHPTemplateProjectNS_StorageHelperTest extends PHPTemplateProjectNS_TestCa
 		);
 	}
 	
+	protected function _testNestedTransaction($success) {
+		$userId = $this->storageHelper->newEntityId();
+		$randoUsername = 'test'.rand(100000,999999).rand(100000,999999).rand(100000,999999);
+		$diffRandoUsername = 'best'.rand(100000,999999).rand(100000,999999).rand(100000,999999);
+		try {
+			$user = $this->storageHelper->postItem('user', array(
+				'ID' => $userId,
+				'username' => $randoUsername,
+			));
+			
+			$this->storageHelper->beginTransaction();
+			$this->storageHelper->beginTransaction();
+			$this->storageHelper->upsertItem('user', array(
+				'ID' => $userId,
+				'username' => $diffRandoUsername,
+			));
+			$this->storageHelper->endTransaction($success);
+			$this->storageHelper->endTransaction(true);
+			
+			$fetched = $this->storageHelper->getItem('user', array('ID'=>$userId));
+			$this->assertEquals( $success ? $diffRandoUsername : $randoUsername, $fetched['username'] );
+		} finally {
+			$this->storageHelper->deleteItems('user', array('ID'=>$userId));
+		}
+	}
+	
+	public function testSuccessfulNestedTransaction() {
+		$this->_testNestedTransaction(true);
+	}
+	public function testFailingNestedTransaction() {
+		$this->_testNestedTransaction(false);
+	}
+	
 	public function testUpsertExistingUser() {
 		$SH = $this->storageHelper;
 		
