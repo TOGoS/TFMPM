@@ -1,6 +1,18 @@
 -- This test data uses entity IDs 1000041-1000050
 -- Can also use 1000051-59, since not using those for action classes after all.
--- Next: 1000054
+-- Next: 1000057
+
+CREATE TABLE phptemplateprojectdatabasenamespace.chair (
+	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+	"facilityid" BIGINT NOT NULL,
+	"color" VARCHAR(126),
+	PRIMARY KEY ("id"),
+	FOREIGN KEY ("facilityid") REFERENCES phptemplateprojectdatabasenamespace.facility ("id")
+);
+
+INSERT INTO phptemplateprojectdatabasenamespace.resourceclass
+(id, name) VALUES
+(1000056, 'chair');
 
 INSERT INTO phptemplateprojectdatabasenamespace.organization
 (id, name, parentid) VALUES
@@ -17,6 +29,11 @@ INSERT INTO phptemplateprojectdatabasenamespace.facility
 (1000042, 'white'),
 (1000043, 'blue'),
 (1000044, 'brown');
+
+INSERT INTO phptemplateprojectdatabasenamespace.chair
+(id, facilityid, color) VALUES
+(1000054, 1000043, 'brown'),
+(1000055, 1000044, 'turquoise');
 
 INSERT INTO phptemplateprojectdatabasenamespace.userrole
 (id, name) VALUES
@@ -40,15 +57,29 @@ INSERT INTO phptemplateprojectdatabasenamespace.userrolepermission
 (1000045, 1000035, 'delete'   , false,  true, false,  true),
 (1000045, 1000035, 'move-to'  , false,  true, false,  true),
 (1000045, 1000035, 'move-from', false,  true, false,  true),
+(1000045, 1000056, 'create'   , false,  true, false,  true),
+(1000045, 1000056, 'read'     , false,  true, false,  true),
+(1000045, 1000056, 'update'   , false,  true, false,  true),
+(1000045, 1000056, 'delete'   , false,  true, false,  true),
+(1000045, 1000056, 'move-to'  , false,  true, false,  true),
+(1000045, 1000056, 'move-from', false,  true, false,  true),
 -- Facility admins manage the facility at their attachment point
 -- and see the organization structure above them
 (1000046, 1000024, 'read'     , false,  true,  true, false),
 (1000046, 1000035, 'read'     , false,  true, false, false),
 (1000046, 1000035, 'update'   , false,  true, false, false),
+-- Facility admins have full control over the facility's chairs
+(1000046, 1000056, 'create'   , false,  true, false, false),
+(1000046, 1000056, 'read'     , false,  true, false, false),
+(1000046, 1000056, 'update'   , false,  true, false, false),
+(1000046, 1000056, 'delete'   , false,  true, false, false),
+(1000046, 1000056, 'move-to'  , false,  true, false, false),
+(1000046, 1000056, 'move-from', false,  true, false, false),
 -- Visitors can look at stuff at their attachment point
 -- and see the organization structure above them
 (1000047, 1000024, 'read'     , false,  true,  true, false),
-(1000047, 1000035, 'read'     , false,  true, false, false);
+(1000047, 1000035, 'read'     , false,  true, false, false),
+(1000047, 1000056, 'read'     , false,  true, false, false);
 
 INSERT INTO phptemplateprojectdatabasenamespace.user
 (id, username) VALUES

@@ -116,4 +116,19 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 				"Facility admin should NOT be able to change others' facility's curtain colors");
 		}
 	}
+	
+	//// Chair stuff!
+	
+	public function testFacilityAdminCanSeeOwnChairs() {
+		$this->assertAllowed(1000049, 'GET', "/chairs/1000054", '', null,
+			"Facility admin should be able to read his own facility's chairs");
+	}
+	public function testFacilityAdminCanChangeOwnChairs() {
+		$this->assertAllowed(1000049, 'PATCH', "/chairs/1000054", '', array('color'=>'breen'),
+			"Facility admin should be able to change his own facility's chair's color");
+	}
+	public function testFacilityAdminCannotChangeOthersChairs() {
+		$this->assertUnallowed(1000049, 'PATCH', "/chairs/1000055", '', array('color'=>'orilver'),
+			"Facility admin should NOT be able to change others' facility's chair's colors");
+	}
 }

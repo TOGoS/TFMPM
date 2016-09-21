@@ -92,20 +92,31 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 		// Which isn't so far fetched
 		// (but then we could accomplish the same thing by just giving the user their own organization)
 		
-		if( $rcName == PHPTemplateProjectNS_OrganizationModel::ORGANIZATION_RC_NAME ) return array($itemId);
+		if( $rcName == PHPTemplateProjectNS_OrganizationModel::ORGANIZATION_RC_NAME ) return array($itemId=>$itemId);
 		$rc = $this->rc($rcName);
 		$owningOrgIds = array();
 		foreach( $rc->getReferences() as $ref ) {
 			if( $ref->getFirstPropertyValue("http://ns.nuke24.net/Schema/Application/indicatesOwner") ) {
 				$item = $this->getItem($itemId, $rcName);
+				if( $item === null ) {
+					throw new Exception("Oh no, $rcName $itemId is null!");
+				}
 				
-				$idFieldNames = $ref->getTargetFieldNames();
+				$refFieldNames = $ref->getOriginFieldNames();
 				$targetIdParts = [];
-				foreach( $idFieldNames as $idfn ) $targetIdParts[] = $item[$idfn];
-				$targetId = implode('-', $targetIdParts);
-				
-				foreach( $this->getOwningOrganizationIds($targetId, $ref->getTargetClassName()) as $id ) {
-					$owningOrgIds[$id] = $id;
+				$missingReferenceFieldNames = [];
+				foreach( $refFieldNames as $rfn ) {
+					$targetIdPart = $item[$rfn];
+					if( empty($targetIdPart) ) $missingReferenceFieldNames[] = $rfn;
+					$targetIdParts[] = $targetIdPart;
+				}
+				if( $missingReferenceFieldNames ) {
+					$notes[] = "$itemId ($rcName) has no ".$ref->getName()."; ".implode(',',$missingReferenceFieldNames)." are null";
+				} else {
+					$targetId = implode('-', $targetIdParts);
+					foreach( $this->getOwningOrganizationIds($targetId, $ref->getTargetClassName()) as $id ) {
+						$owningOrgIds[$id] = $id;
+					}
 				}
 			}
 			// TODO: May eventually also need to go through and check all tables for ownees
