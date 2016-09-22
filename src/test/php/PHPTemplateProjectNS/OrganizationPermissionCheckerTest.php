@@ -218,13 +218,31 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 			"Facility admin should NOT be allowed to replace their facility record");
 	}
 	
+	//// Movement
+
+	public function testOrgAdminCanMoveChairsBetweenOwnedFacilities() {
+		$this->assertAllowed(self::ORGADMIN_USER_ID, 'PATCH', '/chairs/1000054', '',
+			array('facilityId' => 1000042),
+			"Org admin should be allowed to move brown chair betweem east and west facilities");
+		$this->assertAllowed(self::ORGADMIN_USER_ID, 'PATCH', '/chairs/1000054', '',
+			array('facilityId' => 1000044),
+			"Org admin should be allowed to move brown chair betweem east facility to its garage");
+	}
+	public function testOrgAdminCannotMoveChairsToUnownedFacilities() {
+		$this->assertUnallowed(self::ORGADMIN_USER_ID, 'PATCH', '/chairs/1000054', '',
+			array('facilityId' => 1000053),
+			"Org admin should NOT be allowed to move brown chair to cousin org");
+	}
+	public function testOrgAdminCannotMoveChairsFromUnownedFacilities() {
+		$this->assertUnallowed(self::ORGADMIN_USER_ID, 'PATCH', '/chairs/1000058', '',
+			array('facilityId' => 1000042),
+			"Org admin should NOT be allowed to move orange chair from cousin facility");
+	}
+	
 	/*
 	 * Stuff left to test:
 	 * Movement:
-	 * - chair movement between owned facilities is allowed for org admins
 	 * - chair movement between owned facilities is not allowed for facility admins
-	 * - chair movement to unowned facility is not allowed
-	 * - chair movement from unowned facility is not allowed
 	 * - facility movement between owned orgs is allowed for org admins
 	 * - facility movement is not allowed for facility admins
 	 */

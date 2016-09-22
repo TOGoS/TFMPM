@@ -88,6 +88,7 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 	/**
 	 * @param $itemOrItemId if scalar, this is treated as an item ID; if an array, it is the item's field values
 	 * @param $rcName name of the item's resource class
+	 * @return a set (k=v) of owning organization IDs
 	 */
 	public function getOwningOrganizationIds( $itemOrItemId, $rcName ) {
 		if( is_array($itemOrItemId) ) {
@@ -140,6 +141,34 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 		return $owningOrgIds;
 	}
 	
+	/**
+	 * @return an 'ownership changes' array(
+	 *   remove from organization IDs => set of organization IDs an item is being removed from
+	 *   add to organization IDs      => set of organization IDs an item is being added to
+	 * )
+	 */
+	protected function figureOwnershipChanges( $oldItem, $newItem, $isPatch, $rcName ) {
+		if( is_scalar($oldItem) ) {
+			$oldItem = $this->getItem($oldItem, $rcName);
+		}
+		if( $isPatch ) $newItem += $oldItem;
+		$oldOrgIds = $oldItem === null ? array() : $this->getOwningOrganizationIds( $oldItem, $rcName );
+		$newOrgIds = $newItem === null ? array() : $this->getOwningOrganizationIds( $newItem, $rcName );
+		
+		$removals = array();
+		$additions = array();
+		foreach( $oldOrgIds as $orgId ) {
+			if( !isset($newOrgIds[$orgId]) ) $removals[$orgId]  = $orgId;
+		}
+		foreach( $newOrgIds as $orgId ) {
+			if( !isset($oldOrgIds[$orgId]) ) $additions[$orgId] = $orgId;
+		}
+		return array(
+			'remove from organization IDs' => $removals,
+			'add to organization IDs' => $additions,
+		);
+	}
+	
 	public function userCanDoBasicActionOnObject( $userId, $actionName, $objectOrObjectId, $objectRcName, array &$notes=[] ) {
 		$uoas = $this->getUserOrganizationAttachments( $userId );
 		
@@ -173,6 +202,17 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 		
 		return false;
 	}
+
+	protected function userCanChangeObjectOwnership( $userId, $ownershipChanges, $rcName, array &$notes=array() ) {
+		$allowed = 1;
+		foreach( $ownershipChanges['add to organization IDs'] as $orgId ) {
+			$allowed &= $this->userCanDoBasicActionOnObjectInOrg($userId, 'move-to', $orgId, $rcName, $notes);
+		}
+		foreach( $ownershipChanges['remove from organization IDs'] as $orgId ) {
+			$allowed &= $this->userCanDoBasicActionOnObjectInOrg($userId, 'move-from', $orgId, $rcName, $notes);
+		}
+		return (bool)$allowed;
+	}
 	
 	public function itemsVisible(
 		array $itemData,
@@ -202,6 +242,8 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 	 * that have already been simplified/translated
 	 */
 	public function preAuthorizeSimplerAction( $act, PHPTemplateProjectNS_ActionContext $actx, array &$notes ) {
+		$userId = $actx->getLoggedInUserId();
+		
 		if( $act instanceof EarthIT_CMIPREST_RESTAction_DeleteItemAction ) {
 			$itemId = $act->getItemId();
 			$rcName = $act->getResourceClass()->getName();
@@ -211,20 +253,31 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 				return true;
 			}
 			return $this->userCanDoBasicActionOnObject(
-				$actx->getLoggedInUserId(), 'delete',
+				$userId, 'delete',
 				$itemId, $rcName, $notes);
 		}
 		
 		if( $act instanceof EarthIT_CMIPREST_RESTAction_PatchItemAction ) {
-			return $this->userCanDoBasicActionOnObject(
-				$actx->getLoggedInUserId(), 'update',
-				$act->getItemId(), $act->getResourceClass()->getName(),
-				$notes);
+			$ownershipChanges = $this->figureOwnershipChanges(
+				$act->getItemId(), $act->getItemData(), true, $act->getResourceClass()->getName() );
+			return
+				$this->userCanChangeObjectOwnership( $userId, $ownershipChanges, $act->getResourceClass()->getName(), $notes ) &&
+				$this->userCanDoBasicActionOnObject(
+					$userId, 'update',
+					$act->getItemId(), $act->getResourceClass()->getName(),
+					$notes);
 		}
 		
 		if( $act instanceof EarthIT_CMIPREST_RESTAction_PostItemAction ) {
+			$ownershipChanges = $this->figureOwnershipChanges(
+				null, $act->getItemData(), false, $act->getResourceClass()->getName() );
+			foreach( $ownershipChanges['add to organization IDs'] as $addToOrgId ) {
+				if( !$this->userCanDoBasicActionOnObjectInOrg(
+					$userId, 'create', $addToOrgId, $act->getResourceClass()->getName(), $notes
+				) ) return false;
+			}
 			return $this->userCanDoBasicActionOnObject(
-				$actx->getLoggedInUserId(), 'create',
+				$userId, 'create',
 				$act->getItemData(), $act->getResourceClass()->getName(),
 				$notes);
 		}
