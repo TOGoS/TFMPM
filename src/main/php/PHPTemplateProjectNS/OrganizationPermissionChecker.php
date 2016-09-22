@@ -254,7 +254,15 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 			}
 		}
 		
-		// TODO: Translate PUTs to DELETE+POST for checking purposes
+		if( $act instanceof EarthIT_CMIPREST_RESTAction_PutItemAction ) {
+			return $this->preAuthorizeSimplerAction(
+				new EarthIT_CMIPREST_RESTAction_DeleteItemAction($act->getResourceClass(), $act->getItemId(), $act->getResultAssembler()),
+				$actx, $notes
+			) && $this->preAuthorizeSimplerAction(
+				new EarthIT_CMIPREST_RESTAction_PostItemAction($act->getResourceClass(), $act->getItemData(), $act->getResultAssembler()),
+				$actx, $notes
+			);
+		}
 		
 		return $this->preAuthorizeSimplerAction( $act, $actx, $notes );
 	}

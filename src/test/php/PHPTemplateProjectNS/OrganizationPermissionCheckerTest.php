@@ -177,6 +177,8 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 			"Facility admin should NOT be allowed to create chairs someone else's facility");
 	}
 	
+	//// Delete items
+	
 	public function testFacilityAdminCanDeleteNonexistentChairs() {
 		$this->assertAllowed(1000049, 'DELETE', "/chairs/1000057", '', null,
 			"Facility admin should be allowed to delete nonexistent chairs");
@@ -190,12 +192,34 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 			"Facility admin should be allowed to delete foreign chairs");
 	}
 	
+	//// Replace items using PUT
+	
+	public function testFacilityAdminCanReplaceNonexistentChairs() {
+		$this->assertAllowed(1000049, 'PUT', "/chairs/1000057", '',
+			array('facilityId' => 1000043, 'color' => 'invisible'),
+			"Facility admin should be allowed to replace nonexistent chairs");
+	}
+	public function testFacilityAdminCanReplaceOwnChairs() {
+		$this->assertAllowed(1000049, 'PUT', "/chairs/1000054", '',
+			array('facilityId' => 1000043, 'color' => 'crapple'),
+			"Facility admin should be allowed to replace chair records for his own facility");
+	}
+	public function testFacilityAdminCannotReplaceForeignChairs() {
+		$this->assertUnallowed(1000049, 'PUT', "/chairs/1000055", '',
+			array('facilityId' => 1000043, 'color' => 'smurple'),
+			"Facility admin should be allowed to replace foreign chairs, even when changing the facility ID to their own");
+		$this->assertUnallowed(1000049, 'PUT', "/chairs/1000055", '',
+			array('facilityId' => 1000044, 'color' => 'smurple'),
+			"Facility admin should be allowed to replace foreign chairs, even when not changing the facility ID");
+	}
+	public function testFacilityAdminCannotReplaceOwnFacility() {
+		$this->assertUnallowed(1000049, 'PUT', "/facilities/1000043", '',
+			array('id' => 1000043, 'curtainColor' => 'stapple'),
+			"Facility admin should NOT be allowed to replace their facility record");
+	}
+	
 	/*
 	 * Stuff left to test:
-	 * Puts: Should act like a delete+post as far as permission checking is concerned
-	 * - facility admin can replace own chairs
-	 * - facility admin cannot replace others' chairs
-	 * - facility admin cannot replace own facility
 	 * Movement:
 	 * - chair movement between owned facilities is allowed for org admins
 	 * - chair movement between owned facilities is not allowed for facility admins
