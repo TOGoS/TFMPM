@@ -18,37 +18,54 @@ class PHPTemplateProjectNS_StorageHelperTest extends PHPTemplateProjectNS_TestCa
 		);
 	}
 	
-	protected function _testNestedTransaction($success) {
+	protected function _testNestedTransaction($innerSuccess, $outerSuccess) {
 		$userId = $this->storageHelper->newEntityId();
-		$randoUsername = 'test'.rand(100000,999999).rand(100000,999999).rand(100000,999999);
-		$diffRandoUsername = 'best'.rand(100000,999999).rand(100000,999999).rand(100000,999999);
+		$randoUsername0 = 'test'.rand(100000,999999).rand(100000,999999).rand(100000,999999);
+		$randoUsername1 = 'uest'.rand(100000,999999).rand(100000,999999).rand(100000,999999);
+		$randoUsername2 = 'vest'.rand(100000,999999).rand(100000,999999).rand(100000,999999);
 		try {
 			$user = $this->storageHelper->postItem('user', array(
 				'ID' => $userId,
-				'username' => $randoUsername,
+				'username' => $randoUsername0,
 			));
 			
-			$this->storageHelper->beginTransaction();
 			$this->storageHelper->beginTransaction();
 			$this->storageHelper->upsertItem('user', array(
 				'ID' => $userId,
-				'username' => $diffRandoUsername,
+				'username' => $randoUsername1,
 			));
-			$this->storageHelper->endTransaction($success);
-			$this->storageHelper->endTransaction(true);
+			$this->storageHelper->beginTransaction();
+			$this->storageHelper->upsertItem('user', array(
+				'ID' => $userId,
+				'username' => $randoUsername2,
+			));
+			$this->storageHelper->endTransaction($innerSuccess);
+			$this->storageHelper->endTransaction($outerSuccess);
+			
+			if( $outerSuccess ) {
+				$expectedUsername = $innerSuccess ? $randoUsername2 : $randoUsername1;
+			} else {
+				$expectedUsername = $randoUsername0;
+			}
 			
 			$fetched = $this->storageHelper->getItem('user', array('ID'=>$userId));
-			$this->assertEquals( $success ? $diffRandoUsername : $randoUsername, $fetched['username'] );
+			$this->assertEquals( $expectedUsername, $fetched['username'] );
 		} finally {
 			$this->storageHelper->deleteItems('user', array('ID'=>$userId));
 		}
 	}
 	
 	public function testSuccessfulNestedTransaction() {
-		$this->_testNestedTransaction(true);
+		$this->_testNestedTransaction( true,  true);
 	}
 	public function testFailingNestedTransaction() {
-		$this->_testNestedTransaction(false);
+		$this->_testNestedTransaction(false,  true);
+	}
+	public function testFailingNestedTransactionInFailingOuterTransaction() {
+		$this->_testNestedTransaction(false, false);
+	}
+	public function testSuccessfulNestedTransactionInFailingOuterTransaction() {
+		$this->_testNestedTransaction( true, false);
 	}
 	
 	public function testUpsertExistingUser() {

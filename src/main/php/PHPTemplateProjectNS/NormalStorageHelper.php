@@ -64,9 +64,12 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 		if( $this->transactionLevel++ == 0 ) {
 			$this->sqlRunner->doRawQuery("START TRANSACTION");
 			$this->subTransactionsFailed = false;
+		} else {
+			$this->sqlRunner->doRawQuery("SAVEPOINT nest{$this->transactionLevel}");
 		}
 	}
 	public function endTransaction($success) {
+		$oldLevel = $this->transactionLevel;
 		if( --$this->transactionLevel == 0 ) {
 			if( $this->subTransactionsFailed ) $success = false;
 			if( $success ) {
@@ -75,7 +78,11 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 				$this->sqlRunner->doRawQuery("ROLLBACK TRANSACTION");
 			}
 		} else {
-			if( !$success ) $this->subTransactionsFailed = true;
+			if( $success ) {
+				$this->sqlRunner->doRawQuery("RELEASE SAVEPOINT nest{$oldLevel}");
+			} else {
+				$this->sqlRunner->doRawQuery("ROLLBACK TO SAVEPOINT nest{$oldLevel}");
+			}
 		}
 	}
 	
