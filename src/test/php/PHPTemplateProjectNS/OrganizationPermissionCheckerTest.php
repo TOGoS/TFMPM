@@ -104,32 +104,32 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 	public function testOrgAdminOrgVisibility() {
 		foreach( array(1000041) as $orgId ) {
 			$this->assertAllowed(self::ORGADMIN_USER_ID, 'GET', '/organizations/'.$orgId, '', null,
-				"Org admin should be able to see his own org");
+				"Org admin should be allowed to see his own org");
 		}
 		foreach( array(1000042,1000043,1000044) as $orgId ) {
 			$this->assertAllowed(self::ORGADMIN_USER_ID, 'GET', '/organizations/'.$orgId, '', null,
-				"Org admin should be able to see orgs below his own");
+				"Org admin should be allowed to see orgs below his own");
 		}
 		foreach( array(1000052) as $orgId ) {
-			// You should always be able to see organizations above you, too
+			// You should always be allowed to see organizations above you, too
 			$this->assertAllowed(self::ORGADMIN_USER_ID, 'GET', '/organizations/'.$orgId, '', null,
-				"Org admin should be able to see ancestor orgs of the one he's attached to");
+				"Org admin should be allowed to see ancestor orgs of the one he's attached to");
 		}
 		foreach( array(1000053) as $orgId ) {
 			// But not cousins of the one you're at
 			$this->assertUnallowed(self::ORGADMIN_USER_ID, 'GET', '/organizations/'.$orgId, '', null,
-				"Org admin should NOT be able to see cousin org to the one he's attached to");
+				"Org admin should NOT be allowed to see cousin org to the one he's attached to");
 		}
 	}
 	
 	public function testFacilityAdminCanChangeOwnCurtains() {
 		$this->assertAllowed(1000049, 'PATCH', "/facilities/1000043", '', array('curtainColor'=>'blorange'),
-			"Facility admin should be able to change his own facility's curtain color");
+			"Facility admin should be allowed to change his own facility's curtain color");
 	}
 	public function testFacilityAdminCannotChangeOthersCurtains() {
 		foreach( array(1000042,1000044) as $facilityId ) {
 			$this->assertUnallowed(1000049, 'PATCH', "/facilities/$facilityId", '', array('curtainColor'=>'grurple'),
-				"Facility admin should NOT be able to change others' facility's curtain colors");
+				"Facility admin should NOT be allowed to change others' facility's curtain colors");
 		}
 	}
 	
@@ -137,15 +137,15 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 	
 	public function testFacilityAdminCanSeeOwnChairs() {
 		$this->assertAllowed(1000049, 'GET', "/chairs/1000054", '', null,
-			"Facility admin should be able to read his own facility's chairs");
+			"Facility admin should be allowed to read his own facility's chairs");
 	}
 	public function testFacilityAdminCanChangeOwnChairs() {
 		$this->assertAllowed(1000049, 'PATCH', "/chairs/1000054", '', array('color'=>'breen'),
-			"Facility admin should be able to change his own facility's chair's color");
+			"Facility admin should be allowed to change his own facility's chair's color");
 	}
 	public function testFacilityAdminCannotChangeOthersChairs() {
 		$this->assertUnallowed(1000049, 'PATCH', "/chairs/1000055", '', array('color'=>'orilver'),
-			"Facility admin should NOT be able to change others' facility's chair's colors");
+			"Facility admin should NOT be allowed to change others' facility's chair's colors");
 	}
 	
 	//// POST that's actually a PATCH
@@ -156,12 +156,12 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 	public function testFacilityAdminCanUpdateOwnChairsViaPost() {
 		$this->assertAllowed(1000049, 'POST', "/chairs", '',
 			array(array('id'=>1000054, 'facilityId'=>1000043, 'color'=>'broon')),
-			"Facility should be able to update chairs at their own facility via a POST");
+			"Facility should be allowed to update chairs at their own facility via a POST");
 	}
 	public function testFacilityAdminCanotUpdateOthersChairsViaPost() {
 		$this->assertUnallowed(1000049, 'POST', "/chairs", '',
 			array(array('id'=>1000055, 'facilityId'=>1000044, 'color'=>'broon')),
-			"Facility should NOT be able to update chairs at others' facilities via a POST");
+			"Facility should NOT be allowed to update chairs at others' facilities via a POST");
 	}
 	
 	//// POST new items
@@ -169,18 +169,30 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 	public function testFacilityAdminCanCreateNewChairsInOwnFacility() {
 		$this->assertAllowed(1000049, 'POST', "/chairs", '',
 			array(array('facilityId'=>1000043, 'color'=>'breen')),
-			"Facility admin should be able to create chairs in his own facility");
+			"Facility admin should be allowed to create chairs in his own facility");
 	}
 	public function testFacilityAdminCannotCreateNewChairsInOthersFacility() {
 		$this->assertUnallowed(1000049, 'POST', "/chairs", '',
 			array(array('facilityId'=>1000044, 'color'=>'breen')),
-			"Facility admin should NOT be able to create chairs someone else's facility");
+			"Facility admin should NOT be allowed to create chairs someone else's facility");
+	}
+	
+	public function testFacilityAdminCanDeleteNonexistentChairs() {
+		$this->assertAllowed(1000049, 'DELETE', "/chairs/1000057", '', null,
+			"Facility admin should be allowed to delete nonexistent chairs");
+	}
+	public function testFacilityAdminCanDeleteOwnChairs() {
+		$this->assertAllowed(1000049, 'DELETE', "/chairs/1000054", '', null,
+			"Facility admin should be allowed to delete chair records for his own facility");
+	}
+	public function testFacilityAdminCannotDeleteForeignChairs() {
+		$this->assertUnallowed(1000049, 'DELETE', "/chairs/1000055", '', null,
+			"Facility admin should be allowed to delete foreign chairs");
 	}
 	
 	/*
 	 * Stuff left to test:
-	 * Puts:
-	 * - some test that puts a brand new item acts like a post; needs to not have own ID
+	 * Puts: Should act like a delete+post as far as permission checking is concerned
 	 * - facility admin can replace own chairs
 	 * - facility admin cannot replace others' chairs
 	 * - facility admin cannot replace own facility

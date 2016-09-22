@@ -202,6 +202,19 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 	 * that have already been simplified/translated
 	 */
 	public function preAuthorizeSimplerAction( $act, PHPTemplateProjectNS_ActionContext $actx, array &$notes ) {
+		if( $act instanceof EarthIT_CMIPREST_RESTAction_DeleteItemAction ) {
+			$itemId = $act->getItemId();
+			$rcName = $act->getResourceClass()->getName();
+			$item = $this->getItem($itemId, $rcName);
+			if( $item === null ) {
+				$notes[] = "$rcName $itemId doesn't exist anyway, so sure, you can 'delete' it.";
+				return true;
+			}
+			return $this->userCanDoBasicActionOnObject(
+				$actx->getLoggedInUserId(), 'delete',
+				$itemId, $rcName, $notes);
+		}
+		
 		if( $act instanceof EarthIT_CMIPREST_RESTAction_PatchItemAction ) {
 			return $this->userCanDoBasicActionOnObject(
 				$actx->getLoggedInUserId(), 'update',

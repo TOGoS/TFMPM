@@ -1,6 +1,6 @@
 -- This test data uses entity IDs 1000041-1000050
 -- Can also use 1000051-59, since not using those for action classes after all.
--- Next: 1000057
+-- Next: 1000058
 
 CREATE TABLE phptemplateprojectdatabasenamespace.chair (
 	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
@@ -34,6 +34,7 @@ INSERT INTO phptemplateprojectdatabasenamespace.chair
 (id, facilityid, color) VALUES
 (1000054, 1000043, 'brown'),
 (1000055, 1000044, 'turquoise');
+-- 1000057 represents a non-existent chair
 
 INSERT INTO phptemplateprojectdatabasenamespace.userrole
 (id, name) VALUES
