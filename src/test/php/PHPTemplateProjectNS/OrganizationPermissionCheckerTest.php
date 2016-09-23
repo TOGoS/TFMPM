@@ -15,7 +15,9 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 	 * for authorizing.
 	 */
 	protected $testRester;
-	
+	protected $orgRc;
+	protected $orgPathComponent;	
+
 	public function setUp() {
 		$this->testRester = new EarthIT_CMIPREST_RESTer( array(
 			'storage' => $this->storage,
@@ -23,6 +25,8 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 			'keyByIds' => true,
 			'authorizer' => $this->organizationPermissionChecker
 		));
+		$this->orgRc = $this->organizationModel->organizationResourceClass;
+		$this->orgPathComponent = EarthIT_CMIPREST_Util::collectionPathComponent($this->orgRc);
 	}
 	
 	protected function isAllowed( $act, $actx, array &$notes ) {
@@ -81,8 +85,8 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 	const UNATTACHED_USER_ID = '1000051';
 	
 	protected function assertCannotDoStuff($userId) {
-		$this->assertUnallowed($userId, 'GET','/organizations');
-		$this->assertUnallowed($userId, 'GET','/organizations/1000041');
+		$this->assertUnallowed($userId, 'GET',"/{$this->orgPathComponent}");
+		$this->assertUnallowed($userId, 'GET',"/{$this->orgPathComponent}/1000041");
 	}
 	
 	public function testUninloggedUserCannotDoStuff() {
@@ -103,21 +107,21 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 	
 	public function testOrgAdminOrgVisibility() {
 		foreach( array(1000041) as $orgId ) {
-			$this->assertAllowed(self::ORGADMIN_USER_ID, 'GET', '/organizations/'.$orgId, '', null,
+			$this->assertAllowed(self::ORGADMIN_USER_ID, 'GET', "/{$this->orgPathComponent}/".$orgId, '', null,
 				"Org admin should be allowed to see his own org");
 		}
 		foreach( array(1000042,1000043,1000044) as $orgId ) {
-			$this->assertAllowed(self::ORGADMIN_USER_ID, 'GET', '/organizations/'.$orgId, '', null,
+			$this->assertAllowed(self::ORGADMIN_USER_ID, 'GET', "/{$this->orgPathComponent}/".$orgId, '', null,
 				"Org admin should be allowed to see orgs below his own");
 		}
 		foreach( array(1000052) as $orgId ) {
 			// You should always be allowed to see organizations above you, too
-			$this->assertAllowed(self::ORGADMIN_USER_ID, 'GET', '/organizations/'.$orgId, '', null,
+			$this->assertAllowed(self::ORGADMIN_USER_ID, 'GET', "/{$this->orgPathComponent}/".$orgId, '', null,
 				"Org admin should be allowed to see ancestor orgs of the one he's attached to");
 		}
 		foreach( array(1000053) as $orgId ) {
 			// But not cousins of the one you're at
-			$this->assertUnallowed(self::ORGADMIN_USER_ID, 'GET', '/organizations/'.$orgId, '', null,
+			$this->assertUnallowed(self::ORGADMIN_USER_ID, 'GET', "/{$this->orgPathComponent}/".$orgId, '', null,
 				"Org admin should NOT be allowed to see cousin org to the one he's attached to");
 		}
 	}

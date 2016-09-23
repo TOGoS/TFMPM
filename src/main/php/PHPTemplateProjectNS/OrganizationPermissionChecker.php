@@ -105,7 +105,7 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 		// Which isn't so far fetched
 		// (but then we could accomplish the same thing by just giving the user their own organization)
 		
-		if( $itemId !== null && $rcName == PHPTemplateProjectNS_OrganizationModel::ORGANIZATION_RC_NAME ) {
+		if( $itemId !== null && $rcName == $this->organizationModel->organizationResourceClassName ) {
 			return array($itemId=>$itemId);
 		}
 		$rc = $this->rc($rcName);

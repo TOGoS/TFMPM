@@ -22,7 +22,7 @@ INSERT INTO phptemplateprojectdatabasenamespace.resourceclass
 (1000035, 'ACL test facility'),
 (1000056, 'ACL test chair');
 
-INSERT INTO phptemplateprojectdatabasenamespace.organization
+INSERT INTO phptemplateprojectdatabasenamespace."organization"
 (id, name, parentid) VALUES
 (1000052, 'ACL Test Root Org', NULL),
 (1000053, 'ACL Test Cousin Org', 1000052),
