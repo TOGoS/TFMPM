@@ -4,7 +4,6 @@ INSERT INTO phptemplateprojectdatabasenamespace.resourceclass
 (1000022, 'token action'),
 (1000023, 'postal address'),
 (1000024, 'organization'),
-(1000035, 'facility'),
 (1000025, 'entity postal address'),
 (1000026, 'user role'),
 (1000036, 'resource class'),

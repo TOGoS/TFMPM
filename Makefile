@@ -28,7 +28,7 @@ runtime_resources := \
 
 resources := ${build_resources} ${runtime_resources}
 
-schemaschemademo := java -jar util/SchemaSchemaDemo.jar schema/schema.txt
+schemaschemademo := java -jar util/SchemaSchemaDemo.jar
 
 fetch := vendor/bin/fetch -repo @config/ccouch-repos.lst
 
@@ -99,7 +99,9 @@ build/db/rc-inserts.sql: schema/schema.php
 	util/generate-rc-inserts >"$@"
 
 schema/schema.php: schema/schema.txt util/SchemaSchemaDemo.jar
-	${schemaschemademo} -o-schema-php "$@" -php-schema-class-namespace EarthIT_Schema
+	${schemaschemademo} schema/schema.txt -o-schema-php "$@" -php-schema-class-namespace EarthIT_Schema
+schema/test.schema.php: schema/test.schema.txt schema/schema.txt util/SchemaSchemaDemo.jar
+	${schemaschemademo} schema/schema.txt schema/test.schema.txt -o-schema-php "$@" -php-schema-class-namespace EarthIT_Schema
 
 .git-object-urns.txt: .git/HEAD
 	vendor/earthit/php-project-utils/bin/generate-git-urn-map -i "$@"
@@ -137,8 +139,8 @@ fix-entity-id-sequence: resources config/entity-id-sequence.json
 rebuild-database: empty-database upgrade-database
 rebuild-database-with-test-data: empty-database upgrade-database-with-test-data
 
-run-unit-tests: runtime-resources upgrade-database-with-test-data
-	vendor/bin/phpunit --bootstrap init-environment.php src/test/php
+run-unit-tests: runtime-resources schema/test.schema.php upgrade-database-with-test-data
+	vendor/bin/phpunit --bootstrap init-test-environment.php src/test/php
 
 run-tests: run-unit-tests
 

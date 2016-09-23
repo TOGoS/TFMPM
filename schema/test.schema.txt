@@ -1,0 +1,20 @@
+# If you call the organization class something else, change that here:
+alias 'orgish' = organization
+
+class 'ACL test facility' : SRC : entity ID @ 1000035 : collection name @ "ACL test facilities" : comment @ unindent @ «
+		A facility is an orgish.
+	» {
+	ID : EIPK
+	orgish : reference(orgish) : indicates owner : inverse name @ "facility" = ID
+	# This is here so we can have some facility-specific data
+	curtain color : string
+}
+
+class 'ACL test chair' : SRC : entity ID @ 1000056 : comment @ unindent @ «
+	For permission check testing.
+	Table is only created when upgrading with-test-data.
+» {
+	ID : EIPK
+	facility : reference(ACL test facility) : indicates owner = ID = facility ID
+	color : string : nullable
+}

@@ -10,14 +10,25 @@ class PHPTemplateProjectNS_OrganizationModel extends PHPTemplateProjectNS_Compon
 	const RLXN_BELOW = 'below';
 	const RLXN_NONE  = 'unrelated-to';
 	
-	const ORGANIZATION_RC_NAME = 'organization';
-	const ORGANIZATION_TABLE_NAME = 'phptemplateprojectdatabasenamespace.organization';
-
+	const ORGANIZATION_RC_ID = '1000024';
+	
+	public function __get($k) {
+		switch( $k ) {
+		case 'organizationResourceClass':
+			return $this->schema->getResourceClass(self::ORGANIZATION_RC_ID);
+		case 'organizationResourceClassName':
+			return $this->organizationResourceClass->getName();
+		case 'organizationTableName':
+			return $this->dbObjectNamer->getTableName($this->organizationResourceClass);
+		default: return parent::__get($k);
+		}
+	}
+	
 	/** Set of IDs that we want to cache next time we do an organization-fetching query */
 	protected $precacheOrgIds = array();
 	/** Org ID => schema-form organization record */
 	protected $orgCache = array();
-
+	
 	public function precacheOrgs( array $orgIds ) {
 		foreach( $orgIds as $orgId ) $this->precacheOrgIds[$orgId] = $orgId;
 	}
@@ -26,14 +37,14 @@ class PHPTemplateProjectNS_OrganizationModel extends PHPTemplateProjectNS_Compon
 		if( empty($this->precacheOrgIds) ) return;
 		
 		$orgs = $this->storageHelper->queryItems(
-			self::ORGANIZATION_RC_NAME,
+			self::ORGANIZATION_RC_ID,
 			"SELECT * FROM {orgTable}\n".
 			"WHERE id IN {orgIds}\n".
 			"   OR parentid IN {orgIds}\n".
 			"   OR id IN (SELECT parentid FROM {orgTable} WHERE id IN {orgIds})\n",
 			[
 				'orgIds' => $this->precacheOrgIds,
-				'orgTable' => new EarthIT_DBC_SQLIdentifier(self::ORGANIZATION_TABLE_NAME),
+				'orgTable' => new EarthIT_DBC_SQLIdentifier("phptemplateprojectdatabasenamespace.{$this->organizationTableName}"),
 			]
 		);
 		foreach( $orgs as $org ) $this->orgCache[$org['ID']] = $org;

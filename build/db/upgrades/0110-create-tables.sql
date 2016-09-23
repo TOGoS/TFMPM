@@ -32,12 +32,6 @@ CREATE TABLE "phptemplateprojectdatabasenamespace"."organization" (
 	PRIMARY KEY ("id"),
 	FOREIGN KEY ("parentid") REFERENCES "phptemplateprojectdatabasenamespace"."organization" ("id")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."facility" (
-	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
-	"curtaincolor" VARCHAR(126) NOT NULL,
-	PRIMARY KEY ("id"),
-	FOREIGN KEY ("id") REFERENCES "phptemplateprojectdatabasenamespace"."organization" ("id")
-);
 CREATE TABLE "phptemplateprojectdatabasenamespace"."entitypostaladdress" (
 	"entityid" BIGINT NOT NULL,
 	"postaladdressid" CHAR(32) NOT NULL,
