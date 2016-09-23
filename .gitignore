@@ -7,7 +7,7 @@
 /composer.lock
 /datastore
 /logs
-/schema/schema.php
+/schema/*schema.php
 /util/phptemplateprojectdatabase-pg_dump
 /util/phptemplateprojectdatabase-psql
 /util/SchemaSchemaDemo.jar

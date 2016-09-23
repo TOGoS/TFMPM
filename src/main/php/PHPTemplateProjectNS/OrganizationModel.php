@@ -10,14 +10,14 @@ class PHPTemplateProjectNS_OrganizationModel extends PHPTemplateProjectNS_Compon
 	const RLXN_BELOW = 'below';
 	const RLXN_NONE  = 'unrelated-to';
 	
-	const ORGANIZATION_RC_NAME = 'organization';
+	const ORGANIZATION_RC_NAME = 'organization'; // whatever class 1000024 is called
 	const ORGANIZATION_TABLE_NAME = 'phptemplateprojectdatabasenamespace.organization';
-
+	
 	/** Set of IDs that we want to cache next time we do an organization-fetching query */
 	protected $precacheOrgIds = array();
 	/** Org ID => schema-form organization record */
 	protected $orgCache = array();
-
+	
 	public function precacheOrgs( array $orgIds ) {
 		foreach( $orgIds as $orgId ) $this->precacheOrgIds[$orgId] = $orgId;
 	}

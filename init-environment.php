@@ -109,5 +109,6 @@ spl_autoload_register('eit_autoload_converted');
 // Make a global variable for cases where
 // we don't control how the output of this script is used,
 // e.g. PHPUnit tests.
+global $PHPTemplateProjectNS_Registry;
 $PHPTemplateProjectNS_Registry = new PHPTemplateProjectNS_Registry( PHPTemplateProjectNS_ROOT_DIR );
 return $PHPTemplateProjectNS_Registry;

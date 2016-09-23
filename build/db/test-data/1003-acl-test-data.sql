@@ -2,17 +2,25 @@
 -- Can also use 1000051-59, since not using those for action classes after all.
 -- Next: 1000059
 
-CREATE TABLE phptemplateprojectdatabasenamespace.chair (
+CREATE TABLE "phptemplateprojectdatabasenamespace"."acltestfacility" (
+	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+	"curtaincolor" VARCHAR(126) NOT NULL,
+	PRIMARY KEY ("id"),
+	FOREIGN KEY ("id") REFERENCES "phptemplateprojectdatabasenamespace"."organization" ("id")
+);
+
+CREATE TABLE phptemplateprojectdatabasenamespace.acltestchair (
 	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
 	"facilityid" BIGINT NOT NULL,
 	"color" VARCHAR(126),
 	PRIMARY KEY ("id"),
-	FOREIGN KEY ("facilityid") REFERENCES phptemplateprojectdatabasenamespace.facility ("id")
+	FOREIGN KEY ("facilityid") REFERENCES phptemplateprojectdatabasenamespace.acltestfacility ("id")
 );
 
 INSERT INTO phptemplateprojectdatabasenamespace.resourceclass
 (id, name) VALUES
-(1000056, 'chair');
+(1000035, 'ACL test facility'),
+(1000056, 'ACL test chair');
 
 INSERT INTO phptemplateprojectdatabasenamespace.organization
 (id, name, parentid) VALUES
@@ -23,7 +31,7 @@ INSERT INTO phptemplateprojectdatabasenamespace.organization
 (1000043, 'ACL Test Facility East', 1000041),
 (1000044, 'ACL Test Facility East Garage', 1000043);
 
-INSERT INTO phptemplateprojectdatabasenamespace.facility
+INSERT INTO phptemplateprojectdatabasenamespace.acltestfacility
 (id, curtaincolor) VALUES
 (1000053, 'orange'),
 (1000041, 'red'),
@@ -31,7 +39,7 @@ INSERT INTO phptemplateprojectdatabasenamespace.facility
 (1000043, 'blue'),
 (1000044, 'brown');
 
-INSERT INTO phptemplateprojectdatabasenamespace.chair
+INSERT INTO phptemplateprojectdatabasenamespace.acltestchair
 (id, facilityid, color) VALUES
 (1000054, 1000043, 'brown'),
 (1000055, 1000044, 'turquoise'),

@@ -165,24 +165,6 @@ class 'organization' : SRC : entity ID @ 1000024 {
 	parent : reference(organization) : indicates owner : nullable = ID = parent ID
 }
 
-class 'facility' : SRC : entity ID @ 1000035 : collection name @ "facilities" : comment @ unindent @ «
-		A facility is an organization.
-	» {
-	ID : EIPK
-	organization : reference(organization) : indicates owner : inverse name @ "facility" = ID
-	# This is here so we can have some facility-specific data
-	curtain color : string
-}
-
-class 'chair' : SRC : entity ID @ 1000056 : comment @ unindent @ «
-	For permission check testing.
-	Table is only created when upgrading with-test-data.
-» {
-	ID : EIPK
-	facility : reference(facility) : indicates owner = ID = facility ID
-	color : string : nullable
-}
-
 class 'entity postal address' : SRC : self-keyed : entity ID @ 1000025 {
 	entity ID : entity ID
 	entity : reference(entity) : indicates owner = ID = entity ID
