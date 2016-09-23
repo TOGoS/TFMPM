@@ -174,6 +174,15 @@ class 'facility' : SRC : entity ID @ 1000035 : collection name @ "facilities" : 
 	curtain color : string
 }
 
+class 'chair' : SRC : entity ID @ 1000056 : comment @ unindent @ «
+	For permission check testing.
+	Table is only created when upgrading with-test-data.
+» {
+	ID : EIPK
+	facility : reference(facility) : indicates owner = ID = facility ID
+	color : string : nullable
+}
+
 class 'entity postal address' : SRC : self-keyed : entity ID @ 1000025 {
 	entity ID : entity ID
 	entity : reference(entity) : indicates owner = ID = entity ID

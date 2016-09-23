@@ -2,6 +2,18 @@
 
 class PHPTemplateProjectNS_Util
 {
+	public static function describe( $thing ) {
+		if( $thing === null ) return 'null';
+		if( is_object($thing) ) {
+			return method_exists($thing,'__toString') ?
+				$thing->__toString() :
+				"a ".get_class($thing);
+		}
+		if( is_numeric($thing) ) return (string)$thing;
+		if( is_boolean($thing) ) return $thing ? 'true' : 'false';
+		return "a ".gettype($thing);
+	}
+	
 	/**
 	 * This is named to match PHP's built-in jsonSerialize method
 	 * and doesn't actually 'serialize', but turns a value

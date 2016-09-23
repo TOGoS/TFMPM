@@ -16,10 +16,17 @@ extends EarthIT_CMIPREST_RESTActionAuthorizer_DefaultRESTActionAuthorizer
 			return true;
 		}
 		
+		$orgCheckerSays = $this->organizationPermissionChecker->preAuthorizeSimpleAction($itemData, $rc, $ctx, $explanation);
+		if( $orgCheckerSays === true ) return true;
+		
+		// Could use PermissionUtil::max to make things more clearer,
+		// but since there's only 3 possible values we can be cleverer
+		// (and probably slightly more efficient).
+		// Will want to abstract this if there are more permission checkers going at it.
+		
 		if( $act instanceof EarthIT_CMIPREST_RESTAction_SearchAction ) return self::AUTHORIZED_IF_RESULTS_VISIBLE;
 		
-		// Anything not explicitly allowed is disallowed.
-		return false;
+		return $orgCheckerSays;
 	}
 	
 	/** @override */
@@ -30,6 +37,13 @@ extends EarthIT_CMIPREST_RESTActionAuthorizer_DefaultRESTActionAuthorizer
 		}
 		
 		if( $rc->membersArePublic() ) return true;
+		
+		if( $this->organizationPermissionChecker->itemsVisible($itemData, $rc, $ctx, $explanation) ) {
+			// Oh, but what if some of the items are visible according to it,
+			// and others according to some other rule?
+			// Let's not worry about that case for now.
+			return true;
+		}
 		
 		$visible = true;
 		
