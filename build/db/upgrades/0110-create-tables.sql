@@ -57,10 +57,10 @@ CREATE TABLE "phptemplateprojectdatabasenamespace"."userrolepermission" (
 	"roleid" BIGINT NOT NULL,
 	"resourceclassid" BIGINT NOT NULL,
 	"actionclassname" VARCHAR(126) NOT NULL,
-	"appliessystemwide" BOOLEAN NOT NULL,
-	"appliesatattachmentpoint" BOOLEAN NOT NULL,
-	"appliesaboveattachmentpoint" BOOLEAN NOT NULL,
-	"appliesbelowattachmentpoint" BOOLEAN NOT NULL,
+	"appliessystemwide" BOOLEAN NOT NULL DEFAULT FALSE,
+	"appliesatattachmentpoint" BOOLEAN NOT NULL DEFAULT FALSE,
+	"appliesaboveattachmentpoint" BOOLEAN NOT NULL DEFAULT FALSE,
+	"appliesbelowattachmentpoint" BOOLEAN NOT NULL DEFAULT FALSE,
 	PRIMARY KEY ("roleid", "resourceclassid", "actionclassname"),
 	FOREIGN KEY ("roleid") REFERENCES "phptemplateprojectdatabasenamespace"."userrole" ("id"),
 	FOREIGN KEY ("resourceclassid") REFERENCES "phptemplateprojectdatabasenamespace"."resourceclass" ("id"),
@@ -74,6 +74,12 @@ CREATE TABLE "phptemplateprojectdatabasenamespace"."userorganizationattachment" 
 	FOREIGN KEY ("userid") REFERENCES "phptemplateprojectdatabasenamespace"."user" ("id"),
 	FOREIGN KEY ("roleid") REFERENCES "phptemplateprojectdatabasenamespace"."userrole" ("id"),
 	FOREIGN KEY ("organizationid") REFERENCES "phptemplateprojectdatabasenamespace"."organization" ("id")
+);
+CREATE TABLE "phptemplateprojectdatabasenamespace"."defaultuserrole" (
+	"roleid" BIGINT NOT NULL,
+	"requirelogin" BOOLEAN NOT NULL,
+	PRIMARY KEY ("roleid"),
+	FOREIGN KEY ("roleid") REFERENCES "phptemplateprojectdatabasenamespace"."userrole" ("id")
 );
 CREATE TABLE "phptemplateprojectdatabasenamespace"."computationstatus" (
 	"statuscode" VARCHAR(126) NOT NULL,

@@ -84,17 +84,55 @@ class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplate
 	const VISITOR_USER_ID    = '1000050';
 	const UNATTACHED_USER_ID = '1000051';
 	
-	protected function assertCannotDoStuff($userId) {
+	//// Globally viewable things
+	
+	public function testUninloggedUserCanViewGloballyViewableThings() {
+		$this->assertAllowed(null, 'GET', "/globallyViewableThings/1000064");
+	}
+	public function testUninloggedUserCanViewGloballyEditableThings() {
+		$this->assertAllowed(null, 'GET', "/globallyEditableThings/1000065");
+	}
+	public function testUninloggedUserCannotEditGloballyViewableThings() {
+		$this->assertUnallowed(null, 'PATCH', "/globallyViewableThings/1000064", '', array(
+			'name' => 'glorblax'
+		));
+	}
+	public function testUninloggedUserCannotEditGloballyEditableThings() {
+		$this->assertUnallowed(null, 'PATCH', "/globallyEditableThings/1000065", '', array(
+			'name' => 'glorblax'
+		));
+	}
+	
+	public function testInloggedUserCanViewGloballyViewableThings() {
+		$this->assertAllowed(self::VISITOR_USER_ID, 'GET', "/globallyViewableThings/1000064");
+	}
+	public function testInloggedUserCanViewGloballyEditableThings() {
+		$this->assertAllowed(self::VISITOR_USER_ID, 'GET', "/globallyEditableThings/1000065");
+	}
+	public function testInloggedUserCannotEditGloballyViewableThings() {
+		$this->assertUnallowed(self::VISITOR_USER_ID, 'PATCH', "/globallyViewableThings/1000064", '', array(
+			'name' => 'glorblax'
+		));
+	}
+	public function testInloggedUserCanEditGloballyEditableThings() {
+		$this->assertAllowed(self::VISITOR_USER_ID, 'PATCH', "/globallyEditableThings/1000065", '', array(
+			'name' => 'glorblax'
+		));
+	}
+	
+	//// Org
+	
+	protected function assertCannotDoStuffWithOrgs($userId) {
 		$this->assertUnallowed($userId, 'GET',"/{$this->orgPathComponent}");
 		$this->assertUnallowed($userId, 'GET',"/{$this->orgPathComponent}/1000041");
 	}
 	
-	public function testUninloggedUserCannotDoStuff() {
-		$this->assertCannotDoStuff(null);
+	public function testUninloggedUserCannotDoStuffWithOrgs() {
+		$this->assertCannotDoStuffWithOrgs(null);
 	}
 	
-	public function testUnattachedUserCannotDoStuff() {
-		$this->assertCannotDoStuff(self::UNATTACHED_USER_ID);
+	public function testUnattachedUserCannotDoStuffWithOrgs() {
+		$this->assertCannotDoStuffWithOrgs(self::UNATTACHED_USER_ID);
 	}
 	
 	public function testFacilityAdminCanSeeTheirOwnFacility() {

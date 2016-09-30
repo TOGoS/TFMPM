@@ -16,3 +16,13 @@ the list depends on what your deployments are:
  [20000000000, 30000000000) : shared deployment 2
 
 ...etc
+
+Entity IDs below 100 are extra reserved
+and can only be defined in PHPTemplateProject/ENTITY-IDS.txt
+
+  0 = nil/empty/nothing
+  1 = true
+  2 = false
+   
+ 50 = this project's upgrade scripts
+ 51 = the universe (usually an organization hierarchy record for universal permissions)

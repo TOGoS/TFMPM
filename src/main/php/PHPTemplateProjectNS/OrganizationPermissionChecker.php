@@ -5,11 +5,11 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 	protected $uoaCache = array();
 	
 	public function getUserOrganizationAttachments( $userId ) {
-		if( isset($this->uoaCache[$userId]) ) return $this->uoaCache[$userId];
+		if( $userId === null ) $userId = '0';
 		
-		$rose = $this->storageHelper->queryRows(
-			"SELECT\n".
-			"\tuoa.userid, uoa.organizationid,\n".
+		if( isset($this->uoaCache[$userId]) ) return $this->uoaCache[$userId];
+
+		$roleSelects =
 			"\tur.id AS roleid, ur.name AS rolename,\n".
 			"\turp.resourceclassid,\n".
 			"\turp.actionclassname,\n".
@@ -17,12 +17,28 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 			"\turp.appliesatattachmentpoint,\n".
 			"\turp.appliesaboveattachmentpoint,\n".
 			"\turp.appliesbelowattachmentpoint,\n".
-			"\trc.name AS resourceclassname\n".
+			"\trc.name AS resourceclassname\n";
+
+		$rose = $this->storageHelper->queryRows(
+			"SELECT\n".
+			"\tuoa.userid, uoa.organizationid,\n".
+			$roleSelects.
 			"FROM phptemplateprojectdatabasenamespace.userorganizationattachment AS uoa\n".
 			"JOIN phptemplateprojectdatabasenamespace.userrole AS ur ON ur.id = uoa.roleid\n".
 			"JOIN phptemplateprojectdatabasenamespace.userrolepermission AS urp ON urp.roleid = uoa.roleid\n".
 			"JOIN phptemplateprojectdatabasenamespace.resourceclass AS rc ON rc.id = urp.resourceclassid\n".
-			"WHERE uoa.userid IN {userIds}",
+			"WHERE uoa.userid IN {userIds}\n".
+			"\n".
+			"UNION\n".
+			"\n".
+			"SELECT\n".
+			"\t0 AS userid, 51 AS organizationid,\n".
+			$roleSelects.
+			"FROM phptemplateprojectdatabasenamespace.defaultuserrole AS dr\n".
+			"JOIN phptemplateprojectdatabasenamespace.userrole AS ur ON ur.id = dr.roleid\n".
+			"JOIN phptemplateprojectdatabasenamespace.userrolepermission AS urp ON urp.roleid = dr.roleid\n".
+			"JOIN phptemplateprojectdatabasenamespace.resourceclass AS rc ON rc.id = urp.resourceclassid\n".
+			($userId === '0' ? "WHERE dr.requirelogin = FALSE\n" : ""),
 			['userIds' => [$userId]]
 		);
 		$uoas = [];
@@ -151,7 +167,7 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 		if( is_scalar($oldItem) ) {
 			$oldItem = $this->getItem($oldItem, $rcName);
 		}
-		if( $isPatch ) $newItem += $oldItem;
+		if( $isPatch && $oldItem !== null ) $newItem += $oldItem;
 		$oldOrgIds = $oldItem === null ? array() : $this->getOwningOrganizationIds( $oldItem, $rcName );
 		$newOrgIds = $newItem === null ? array() : $this->getOwningOrganizationIds( $newItem, $rcName );
 		
@@ -222,8 +238,7 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 	) {
 		$userId = $actx->getLoggedInUserId();
 		if( $userId === null ) {
-			$notes[] = "Not logged in; can't do anything as far as the OrganizationPermissionChecker is concerned";
-			return false;
+			$notes[] = "Not logged in";
 		}
 		
 		foreach( $itemData as $item ) {

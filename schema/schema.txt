@@ -207,6 +207,11 @@ class 'user organization attachment' : SRC : self-keyed : entity ID @ 1000029 {
 	organization : reference(organization) : indicates owner = ID = organization ID
 }
 
+class 'default user role' : SRC : self-keyed {
+	role : reference(user role) : key(primary) = ID = role ID
+	require login : boolean
+}
+
 # Actual enums are hard.
 # Best practice according to Dan is avoid defining enum types and just always use a table.
 class 'computation status' : SRC : members are public : entity ID @ 1000030 {

@@ -18,3 +18,12 @@ class 'ACL test chair' : SRC : entity ID @ 1000056 : comment @ unindent @ «
 	facility : reference(ACL test facility) : indicates owner = ID = facility ID
 	color : string : nullable
 }
+
+class 'globally viewable thing' : SRC : entity ID @ 1000061 {
+	ID : EIPK
+	name : string
+}
+class 'globally editable thing' : SRC : entity ID @ 1000062 {
+	ID : EIPK
+	name : string
+}

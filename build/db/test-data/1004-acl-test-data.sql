@@ -17,10 +17,23 @@ CREATE TABLE phptemplateprojectdatabasenamespace.acltestchair (
 	FOREIGN KEY ("facilityid") REFERENCES phptemplateprojectdatabasenamespace.acltestfacility ("id")
 );
 
+CREATE TABLE phptemplateprojectdatabasenamespace.globallyviewablething (
+	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+	"name" VARCHAR(126) NOT NULL,
+	PRIMARY KEY ("id")
+);
+CREATE TABLE phptemplateprojectdatabasenamespace.globallyeditablething (
+	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+	"name" VARCHAR(126) NOT NULL,
+	PRIMARY KEY ("id")
+);
+
 INSERT INTO phptemplateprojectdatabasenamespace.resourceclass
 (id, name) VALUES
 (1000035, 'ACL test facility'),
-(1000056, 'ACL test chair');
+(1000056, 'ACL test chair'),
+(1000061, 'globally viewable thing'),
+(1000062, 'globally editable thing');
 
 INSERT INTO phptemplateprojectdatabasenamespace."organization"
 (id, name, parentid) VALUES
@@ -89,7 +102,14 @@ INSERT INTO phptemplateprojectdatabasenamespace.userrolepermission
 -- and see the organization structure above them
 (1000047, 1000024, 'read'     , false,  true,  true, false),
 (1000047, 1000035, 'read'     , false,  true, false, false),
-(1000047, 1000056, 'read'     , false,  true, false, false);
+(1000047, 1000056, 'read'     , false,  true, false, false),
+-- Anyone can view the globally viewable/editable things,
+(1000060, 1000061, 'read'     ,  true, false, false, false),
+(1000060, 1000062, 'read'     ,  true, false, false, false),
+-- And any logged in user can create and update the editable things.
+(1000063, 1000062, 'create'   ,  true, false, false, false),
+(1000063, 1000062, 'update'   ,  true, false, false, false),
+(1000063, 1000062, 'delete'   ,  true, false, false, false);
 
 INSERT INTO phptemplateprojectdatabasenamespace.user
 (id, username) VALUES
@@ -103,3 +123,9 @@ INSERT INTO phptemplateprojectdatabasenamespace.userorganizationattachment
 (1000048, 1000045, 1000041),
 (1000049, 1000046, 1000043),
 (1000050, 1000047, 1000043);
+
+INSERT INTO phptemplateprojectdatabasenamespace.globallyviewablething
+(id, name) VALUES (1000064, 'everybody look at me!');
+
+INSERT INTO phptemplateprojectdatabasenamespace.globallyeditablething
+(id, name) VALUES (1000065, 'everybody poke me!');
