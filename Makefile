@@ -2,7 +2,8 @@ config_files := \
 	config/ccouch-repos.lst \
 	config/dbc.json \
 	config/email-addresses.json \
-	config/email-transport.json
+	config/email-transport.json \
+	www/.htaccess
 
 generated_resources := \
 	build/db/all-tables.sql \
