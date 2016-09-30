@@ -94,7 +94,7 @@ util/SchemaSchemaDemo.jar: \
 	${fetch} -o "$@" `cat "$<"`
 
 build/db/all-tables.sql: schema/schema.txt util/SchemaSchemaDemo.jar
-	${schemaschemademo} -o-create-tables-script "$@"
+	${schemaschemademo} -o-create-tables-script "$@" "$<"
 
 build/db/rc-inserts.sql: schema/schema.php
 	util/generate-rc-inserts >"$@"
