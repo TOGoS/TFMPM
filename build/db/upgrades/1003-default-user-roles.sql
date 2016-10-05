@@ -10,6 +10,9 @@ INSERT INTO phptemplateprojectdatabasenamespace.defaultuserrole
 
 INSERT INTO phptemplateprojectdatabasenamespace.userrolepermission
 (roleid, resourceclassid, actionclassname, appliessystemwide) VALUES
+(1000060, 1000026, 'read'     , true),
+(1000060, 1000027, 'read'     , true),
 (1000060, 1000030, 'read'     , true),
 (1000060, 1000031, 'read'     , true),
-(1000060, 1000032, 'read'     , true);
+(1000060, 1000032, 'read'     , true),
+(1000060, 1000036, 'read'     , true);
