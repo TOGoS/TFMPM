@@ -37,7 +37,7 @@ class PHPTemplateProjectNS_PageAction_ShowDataTable extends PHPTemplateProjectNS
 	}
 	
 	protected function getItems() {
-		return $this->items ?: $this->storageHelper->getItems($this->rc);
+		return $this->items !== null ? $this->items : $this->storageHelper->getItems($this->rc);
 	}
 	
 	public function getTemplateName() { return 'data-table'; }
