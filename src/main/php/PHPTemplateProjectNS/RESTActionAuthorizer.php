@@ -50,4 +50,14 @@ extends EarthIT_CMIPREST_RESTActionAuthorizer_DefaultRESTActionAuthorizer
 		
 		return false;
 	}
+	
+	/** @override */
+	public function sudoAllowed( $userId, $ctx, array &$explanation ) {
+		if( $this->registry->getConfig("auth/bypass") ) {
+			$explanation[] = "Normal authorization rules bypassed as per auth/bypass config setting.";
+			return true;
+		}
+		
+		return parent::sudoAllowed($userId, $ctx, $explanation);
+	}
 }
