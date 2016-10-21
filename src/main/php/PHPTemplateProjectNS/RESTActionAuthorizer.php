@@ -14,7 +14,7 @@ extends EarthIT_CMIPREST_RESTActionAuthorizer_DefaultRESTActionAuthorizer
 	/** @override */
 	public function preAuthorizeSimpleAction( EarthIT_CMIPREST_RESTAction $act, $ctx, array &$explanation ) {
 		if( $this->registry->getConfig("auth/bypass") ) {
-			$explanation[] = "Normal uuthorization rules bypassed as per auth/bypass config setting.";
+			$explanation[] = "Normal authorization rules bypassed as per auth/bypass config setting.";
 			return true;
 		}
 		
@@ -34,7 +34,7 @@ extends EarthIT_CMIPREST_RESTActionAuthorizer_DefaultRESTActionAuthorizer
 	/** @override */
 	protected function itemVisible( $item, EarthIT_Schema_ResourceClass $rc, $ctx, array &$explanation ) {
 		if( $this->registry->getConfig("auth/bypass") ) {
-			$explanation[] = "Normal uuthorization rules bypassed as per auth/bypass config setting.";
+			$explanation[] = "Normal authorization rules bypassed as per auth/bypass config setting.";
 			return true;
 		}
 		
