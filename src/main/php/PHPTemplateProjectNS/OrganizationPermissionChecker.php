@@ -315,8 +315,10 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 			$item = $act->getItemData();
 			$rc = $act->getResourceClass();
 			$itemId = EarthIT_Storage_Util::itemId($item, $rc);
-			if( $itemId !== null ) {
-				$item = $this->storageHelper->getItemById($act->getResourceClass(), $itemId);
+			if(
+				$itemId !== null and
+				($item = $this->storageHelper->getItemById($act->getResourceClass(), $itemId)) !== null
+			) {
 				// It's a patch!
 				$act = new EarthIT_CMIPREST_RESTAction_PatchItemAction($rc, $itemId, $item, $act->getResultAssembler());
 			}
