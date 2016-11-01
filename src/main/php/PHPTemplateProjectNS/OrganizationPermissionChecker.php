@@ -125,7 +125,8 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 		// Which isn't so far fetched
 		// (but then we could accomplish the same thing by just giving the user their own organization)
 		
-		if( $itemId !== null && $rcName == $this->organizationModel->organizationResourceClassName ) {
+		if( $rcName == $this->organizationModel->organizationResourceClassName ) {
+			if( $itemId === null ) $itemId = EarthIT_Storage_Util::itemId($item, $this->rc($rcName));
 			return array($itemId=>$itemId);
 		}
 		$rc = $this->rc($rcName);
@@ -248,7 +249,7 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 		foreach( $itemData as $item ) {
 			$itemId = EarthIT_Storage_Util::itemId($item, $itemRc);
 			$itemRcName = $itemRc->getName();
-			$notes[] = "Checking 'read' permission on $itemRcName $itemId...";
+			$notes[] = "Checking 'read' permission on ".($itemId ? "$itemRcName $itemId" : "some $itemRcName")."...";
 			if( !$this->userCanDoBasicActionOnObject($userId, 'read', $itemId, $itemRcName, $notes) ) return false;
 		}
 		
