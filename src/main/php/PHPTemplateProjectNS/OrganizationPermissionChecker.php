@@ -250,7 +250,7 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 			$itemId = EarthIT_Storage_Util::itemId($item, $itemRc);
 			$itemRcName = $itemRc->getName();
 			$notes[] = "Checking 'read' permission on ".($itemId ? "$itemRcName $itemId" : "some $itemRcName")."...";
-			if( !$this->userCanDoBasicActionOnObject($userId, 'read', $itemId, $itemRcName, $notes) ) return false;
+			if( !$this->userCanDoBasicActionOnObject($userId, 'read', $item, $itemRcName, $notes) ) return false;
 		}
 		
 		$notes[] = "No items unreadable by $userId";
