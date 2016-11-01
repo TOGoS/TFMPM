@@ -113,6 +113,10 @@ class PHPTemplateProjectNS_OrganizationPermissionChecker extends PHPTemplateProj
 		} else if( is_scalar($itemOrItemId) ) {
 			$item   = null;
 			$itemId = $itemOrItemId;
+		} else {
+			throw new Exception(
+				"Given ".PHPTemplateProjectNS_Util::describe($itemOrItemId)." instead of an item or an item ID ".
+				"when looking up owning organization IDs for a {$rcName}");
 		}
 		
 		// We could make this be a more generic 'get owner IDs'
