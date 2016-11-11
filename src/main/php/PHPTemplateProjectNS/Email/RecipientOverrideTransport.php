@@ -25,7 +25,12 @@ class PHPTemplateProjectNS_Email_RecipientOverrideTransport implements Swift_Tra
 		foreach( $message->getTo() as $k => $v ) {
 			$orecipnames[] = "$v <$k>";
 		}
-		$newBody = "Original recipient: ".implode(', ', $orecipnames)."\n\n".$message->getBody();
+		
+		$roHeader = "Original recipient: ".implode(', ', $orecipnames);
+		if( preg_match('#^text/html(;|$)#', $message->getContentType()) ) {
+			$roHeader = "<p>".htmlspecialchars($roHeader)."</p>";
+		}
+		$newBody = $roHeader."\n\n".$message->getBody();
 		
 		$newMessage = new Swift_Message();
 		$newMessage->setTo( array($this->recipient['address'] => $this->recipient['name']) );
