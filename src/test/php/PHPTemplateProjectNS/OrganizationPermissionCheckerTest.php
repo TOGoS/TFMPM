@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @group integration
+ */
 class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplateProjectNS_TestCase
 {
 	// For these tests wee'll assume things are set up as by

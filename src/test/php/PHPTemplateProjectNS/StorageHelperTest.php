@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @group integration
+ */
 class PHPTemplateProjectNS_StorageHelperTest extends PHPTemplateProjectNS_TestCase
 {
 	public function testQueryValueMap() {

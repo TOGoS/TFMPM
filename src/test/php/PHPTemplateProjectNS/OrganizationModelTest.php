@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @group integration
+ */
 class PHPTemplateProjectNS_OrganizationModelTest extends PHPTemplateProjectNS_TestCase
 {
 	protected function assertOrgRlxn( $expectedRlxn, $orgAId, $orgBId ) {

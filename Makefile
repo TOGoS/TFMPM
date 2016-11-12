@@ -54,6 +54,7 @@ default: redeploy
 	runtime-resources \
 	run-tests \
 	run-unit-tests \
+	run-integration-tests \
 	run-web-server \
 	test-db-connection \
 	upgrade-database \
@@ -140,10 +141,13 @@ fix-entity-id-sequence: resources config/entity-id-sequence.json
 rebuild-database: empty-database upgrade-database
 rebuild-database-with-test-data: empty-database upgrade-database-with-test-data
 
-run-unit-tests: runtime-resources schema/test.schema.php upgrade-database-with-test-data
-	vendor/bin/phpunit --bootstrap init-test-environment.php src/test/php
+run-unit-tests: runtime-resources schema/test.schema.php
+	vendor/bin/phpunit --bootstrap init-test-environment.php --exclude-group integration src/test/php
 
-run-tests: run-unit-tests
+run-integration-tests: runtime-resources schema/test.schema.php upgrade-database-with-test-data
+	vendor/bin/phpunit --bootstrap init-test-environment.php --group integration src/test/php
+
+run-tests: run-unit-tests run-integration-tests
 
 run-web-server:
 	cd www && php -S localhost:6061 bootstrap.php

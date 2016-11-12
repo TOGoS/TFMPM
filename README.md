@@ -73,6 +73,49 @@ should be able to run ```make rebuild-database```, which will empty
 the database and rebuild it from the upgrade scripts.
 
 
+
+### Rebuilding The Database
+
+Run ```make rebuild-database``` to empty the database and rebuild it from the upgrade scripts in ```build/db/upgrades/```.
+
+Run ```make rebuild-database-with-test-data``` to rebuild-database the database and also adddata from ```build/db/test-data/```.
+
+
+### Upgrading The Database
+
+Run ```make upgrade-database``` to run newly made upgrade scripts in ```build/db/upgrades/```.
+
+
+
+## Unit Testing
+
+All tests are in ```src/test/```
+
+The structure of ```src/test/``` should mimic that of ```src/main/```, where a single test file tests a single application file.
+
+To run PHPUnit tests, run ```make run-tests```.
+This will run both unit and integration tests.
+Run ```make run-unit-tests``` to just run unit tests and ```make run-integration-tests``` to just run integration tests.
+
+Integration tests are ones that use the database.
+
+
+### PHP Styles
+
+Follow the conventions used by existing Phrebar code.
+Namely, [tabs for leading indentation](http://www.nuke24.net/docs/2012/Tabs.html),
+opening brackets on the same line for functions and control structures.
+
+(It may be that 'tabs for leading indentation' and 'Smart Tabs'
+refer to the exact same practice.)
+
+
+## Deploying
+
+Deployment to the various environments is handled automatically by [CircleCI](https://circleci.com/).
+[Read these docs](https://github.com/EarthlingInteractive/EarthlingDocs/blob/master/CircleCI.md) about how Earthling has set up CircleCI.
+
+
 ## Web serving
 
 If you're using Vagrant,
