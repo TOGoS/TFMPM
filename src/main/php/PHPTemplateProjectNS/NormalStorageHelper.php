@@ -166,17 +166,28 @@ implements PHPTemplateProjectNS_StorageHelper, PHPTemplateProjectNS_QueryHelper
 	 * @param array $filters an array filters (see class documentation)
 	 * @param array $orderBy list of fields to order by, optionally prefixed with '+' or '-'
 	 */
-	public function getItems($rc, array $filters=[], array $orderBy=[]) {
+	public function getItems($rc, array $filters=[], array $orderBy=[], array $withs=[], $skip=0, $limit=null, array $options=array()) {
 		$rc = $this->rc($rc);
-		$sp = EarthIT_Storage_Util::makeSearch($rc, $filters, $orderBy);
-		return $this->storage->searchItems($sp, []);
+		$sp = EarthIT_Storage_Util::makeSearch($rc, $filters, $orderBy, $skip, $limit, [
+			EarthIT_Storage::SCHEMA => $this->schema,
+			EarthIT_Storage::FUZZY_MATCH => false,
+		]);
+		$namer = function($obj, $plural=false) {
+			$n = $obj->getName();
+			return $plural ? EarthIT_Schema_WordUtil::pluralize($n) : $n;
+		};
+		$johnBranches = EarthIT_CMIPREST_RequestParser_Util::withsToJohnBranches(
+			$this->schema, $rc, $withs, $namer);
+		$johnResults = $this->storage->johnlySearchItems($sp, $johnBranches, $options);
+		$johnCollections = PHPTemplateProjectNS_JohnResultAssemblyUtil::collectJohns($johnBranches, 'root');
+		return PHPTemplateProjectNS_JohnResultAssemblyUtil::assembleMultiItemResult($rc, $johnCollections, $johnResults);
 	}
 	
 	/**
 	 * Return the first item returned by getItems($rc, $filters, $orderBy);
 	 */
-	public function getItem($rc, array $filters=[], array $orderBy=[]) {
-		foreach( $this->getItems($rc, $filters, $orderBy) as $item ) return $item;
+	public function getItem($rc, array $filters=[], array $orderBy=[], array $withs=[], $skip=0, array $options=array()) {
+		foreach( $this->getItems($rc, $filters, $orderBy, $withs, $skip, 1, $options) as $item ) return $item;
 		return null;
 	}
 	

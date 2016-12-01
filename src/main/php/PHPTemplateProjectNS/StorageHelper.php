@@ -91,11 +91,11 @@ interface PHPTemplateProjectNS_StorageHelper
 	 * @param array $filters an array filters (see class documentation)
 	 * @param array $orderBy list of fields to order by, optionally prefixed with '+' or '-'
 	 */
-	public function getItems($rc, array $filters=[], array $orderBy=[]);
+	public function getItems($rc, array $filters=[], array $orderBy=[], array $withs=[], $skip=0, $limit=null, array $options=array());
 	/**
 	 * Return the first item returned by getItems($rc, $filters, $orderBy);
 	 */
-	public function getItem($rc, array $filters=[], array $orderBy=[]);
+	public function getItem($rc, array $filters=[], array $orderBy=[], array $withs=[], $skip=0, array $options=array());
 	/**
 	 * Delete all items from the given class matching the given filters.
 	 */

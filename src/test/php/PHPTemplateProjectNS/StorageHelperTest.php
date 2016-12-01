@@ -122,4 +122,45 @@ class PHPTemplateProjectNS_StorageHelperTest extends PHPTemplateProjectNS_TestCa
 			'e-mail address' => null
 		], $postedUser);
 	}
+	
+	public function testFetchOrderWithUser() {
+		$SH = $this->storageHelper;
+		
+		$userId = $SH->newEntityId();
+		$orderId = $SH->newEntityId();
+		$randoUsername = 'test'.rand(100000,999999).rand(100000,999999).rand(100000,999999);
+		$address = $SH->postItem('postal address', [
+			'street address' => '123 Floof Court',
+			'unit address' => '#401',
+			'city name' => 'Minneapolis',
+			'region code' => 'MN',
+			'postal code' => '55411',
+			'country code' => 'USA',
+		]);
+		
+		$user = [
+			'ID' => $userId,
+			'username' => $randoUsername,
+			'passhash' => null,
+			'e-mail address' => null,
+		];
+		$SH->postItem('user', $user);
+		$SH->postItem('order', [
+			'ID' => $orderId,
+			'user ID' => $userId,
+			'shipping address ID' => $address['ID'],
+			'billing address ID' => $address['ID'],
+		]);
+		
+		$order = $SH->getItem('order', ['ID'=>$orderId], [], ['user', 'shipping address', 'billing address']);
+		$this->assertEquals([
+			'ID' => $orderId,
+			'user ID' => $userId,
+			'shipping address ID' => $address['ID'],
+			'billing address ID' => $address['ID'],
+			'user' => $user,
+			'shipping address' => $address,
+			'billing address' => $address
+		], $order);
+	}
 }
