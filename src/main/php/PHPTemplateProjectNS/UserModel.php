@@ -2,18 +2,6 @@
 
 class PHPTemplateProjectNS_UserModel extends PHPTemplateProjectNS_Component
 {
-	const PASSWORD_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-	
-	public function generatePassword( $length=20 ) {
-		$rm = strlen(self::PASSWORD_CHARS)-1;
-		$pw = '';
-		for( $i=0; $i<$length; ++$i ) {
-			$idx = mt_rand(0, $rm);
-			$pw .= substr(self::PASSWORD_CHARS, $idx, 1);
-		}
-		return $pw;
-	}
-	
 	/**
 	 * @return array( 'success' => true|false, 'message'=>'Failed to log in because you are too tall', 'userId'=>123 )
 	 */
