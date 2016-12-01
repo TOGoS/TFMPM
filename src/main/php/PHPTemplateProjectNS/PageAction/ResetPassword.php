@@ -40,7 +40,7 @@ class PHPTemplateProjectNS_PageAction_ResetPassword extends PHPTemplateProjectNS
 				"WHERE id = {userId}",
 				[
 					'userId' => $tokenAction['half user ID'],
-					'passhash' => $this->userModel->hashPassword( $this->password )
+					'passhash' => $this->passwordModel->hashPassword( $this->password )
 				]
 			);
 			
