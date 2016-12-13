@@ -3,7 +3,7 @@
 class PHPTemplateProjectNS_PasswordModel extends PHPTemplateProjectNS_Component
 {
 	public function hashPassword($password) {
-		return hash_password($password, PASSWORD_BCRYPT, array(
+		return password_hash($password, PASSWORD_BCRYPT, array(
 			'cost' => 15,
 		));
 	}
