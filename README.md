@@ -17,6 +17,10 @@ See also:
 - ```composer.json``` - PHP package and dependency information, used by Composer.
 - ```package.json``` - Node package and dependency information, used by NPM.
 - ```init-*.php``` - Scripts to initialize global state in PHP.
+- ```build/db/``` - Database scripts
+  - ```upgrades/``` - Upgrades to be run in order to build the schema
+  - ```test-data/``` - Run interleaved with upgrades for additional unit test data
+  - miscellaneous handy scripts
 - ```src/``` - Source code for this project.
   - ```main/``` - Primary application code, broken down by language
   - ```test/``` - Unit tests
