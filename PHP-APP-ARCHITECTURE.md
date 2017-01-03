@@ -116,5 +116,7 @@ around rather than being hard-wired.)
 
 To summarize:
 
-- System components = machinery that does the processing
-- Data objects = the stuff being processed
+- System components = machinery that does the processing - think of these as
+  complex machines bolted in place but wired together to form larger machines
+- Data objects = the stuff being processed - think of these as
+  independent packets [of data] that move around between the complex machines
