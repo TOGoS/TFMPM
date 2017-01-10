@@ -1,3 +1,5 @@
+build_target_dir := target
+
 config_files := \
 	config/ccouch-repos.lst \
 	config/dbc.json \
@@ -12,7 +14,7 @@ generated_resources := \
 	util/phptemplateprojectdatabase-psql \
 	util/phptemplateprojectdatabase-pg_dump \
 	util/SchemaSchemaDemo.jar \
-	schema/schema.php \
+	${build_target_dir}/schema/schema.php \
 	vendor
 
 # Include .git-object-urns.txt in the above list if
@@ -24,7 +26,7 @@ runtime_resources := \
 	config/dbc.json \
 	config/email-addresses.json \
 	config/email-transport.json \
-	schema/schema.php \
+	${build_target_dir}/schema/schema.php \
 	vendor
 
 resources := ${build_resources} ${runtime_resources}
@@ -94,16 +96,16 @@ util/SchemaSchemaDemo.jar: \
 %: %.urn | vendor config/ccouch-repos.lst
 	${fetch} -o "$@" `cat "$<"`
 
-src/db-migrations/all-tables.sql: schema/schema.txt util/SchemaSchemaDemo.jar
+src/db-migrations/all-tables.sql: src/schema/schema.txt util/SchemaSchemaDemo.jar
 	${schemaschemademo} -o-create-tables-script "$@" "$<"
 
-src/db-migrations/rc-inserts.sql: schema/schema.php
+src/db-migrations/rc-inserts.sql: ${build_target_dir}/schema/schema.php
 	util/generate-rc-inserts >"$@"
 
-schema/schema.php: schema/schema.txt util/SchemaSchemaDemo.jar
-	${schemaschemademo} schema/schema.txt -o-schema-php "$@" -php-schema-class-namespace EarthIT_Schema
-schema/test.schema.php: schema/test.schema.txt schema/schema.txt util/SchemaSchemaDemo.jar
-	${schemaschemademo} schema/schema.txt schema/test.schema.txt -o-schema-php "$@" -php-schema-class-namespace EarthIT_Schema
+${build_target_dir}/schema/schema.php: src/schema/schema.txt util/SchemaSchemaDemo.jar
+	${schemaschemademo} src/schema/schema.txt -o-schema-php "$@" -php-schema-class-namespace EarthIT_Schema
+${build_target_dir}/schema/test.schema.php: src/schema/test.schema.txt src/schema/schema.txt util/SchemaSchemaDemo.jar
+	${schemaschemademo} src/schema/schema.txt src/schema/test.schema.txt -o-schema-php "$@" -php-schema-class-namespace EarthIT_Schema
 
 .git-object-urns.txt: .git/HEAD
 	vendor/earthit/php-project-utils/bin/generate-git-urn-map -i "$@"
@@ -142,10 +144,10 @@ fix-entity-id-sequence: resources config/entity-id-sequence.json
 rebuild-database: empty-database upgrade-database
 rebuild-database-with-test-data: empty-database upgrade-database-with-test-data
 
-run-unit-tests: runtime-resources schema/test.schema.php
+run-unit-tests: runtime-resources ${build_target_dir}/schema/test.schema.php
 	vendor/bin/phpunit --bootstrap init-test-environment.php --exclude-group integration src/test/php
 
-run-integration-tests: runtime-resources schema/test.schema.php upgrade-database-with-test-data
+run-integration-tests: runtime-resources ${build_target_dir}/schema/test.schema.php upgrade-database-with-test-data
 	vendor/bin/phpunit --bootstrap init-test-environment.php --group integration src/test/php
 
 run-tests: run-unit-tests run-integration-tests

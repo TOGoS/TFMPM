@@ -5,7 +5,6 @@
 /datastore
 /logs
 /node_modules
-/schema/*schema.php
 /src/db-migrations/all-tables.sql
 /src/db-migrations/create-database.sql
 /src/db-migrations/drop-database.sql

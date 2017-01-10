@@ -89,7 +89,7 @@ class PHPTemplateProjectNS_Registry
 	}
 	
 	public function loadSchema($name='') {
-		return require $this->projectRootDir.'/schema/'.($name?$name.'.':'').'schema.php';
+		return require $this->projectRootDir.'/target/schema/'.($name?$name.'.':'').'schema.php';
 	}
 
 	public function loadSqlRunner() {
