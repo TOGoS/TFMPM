@@ -5,8 +5,8 @@ machine:
 database:
   override:
     - cp config/dbc.json.circle config/dbc.json
-    - make build/db/create-database.sql
-    - psql -U ubuntu -v ON_ERROR_STOP=1 circle_test <build/db/enable-extensions.sql
+    - make src/db-migrations/create-database.sql
+    - psql -U ubuntu -v ON_ERROR_STOP=1 circle_test <src/db-migrations/enable-extensions.sql
     - touch .database-created
     - util/test-db-connection
 

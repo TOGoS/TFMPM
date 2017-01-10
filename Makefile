@@ -6,9 +6,9 @@ config_files := \
 	www/.htaccess
 
 generated_resources := \
-	build/db/all-tables.sql \
-	build/db/create-database.sql \
-	build/db/drop-database.sql \
+	src/db-migrations/all-tables.sql \
+	src/db-migrations/create-database.sql \
+	src/db-migrations/drop-database.sql \
 	util/phptemplateprojectdatabase-psql \
 	util/phptemplateprojectdatabase-pg_dump \
 	util/SchemaSchemaDemo.jar \
@@ -94,10 +94,10 @@ util/SchemaSchemaDemo.jar: \
 %: %.urn | vendor config/ccouch-repos.lst
 	${fetch} -o "$@" `cat "$<"`
 
-build/db/all-tables.sql: schema/schema.txt util/SchemaSchemaDemo.jar
+src/db-migrations/all-tables.sql: schema/schema.txt util/SchemaSchemaDemo.jar
 	${schemaschemademo} -o-create-tables-script "$@" "$<"
 
-build/db/rc-inserts.sql: schema/schema.php
+src/db-migrations/rc-inserts.sql: schema/schema.php
 	util/generate-rc-inserts >"$@"
 
 schema/schema.php: schema/schema.txt util/SchemaSchemaDemo.jar
@@ -108,32 +108,33 @@ schema/test.schema.php: schema/test.schema.txt schema/schema.txt util/SchemaSche
 .git-object-urns.txt: .git/HEAD
 	vendor/earthit/php-project-utils/bin/generate-git-urn-map -i "$@"
 
-build/db/create-database.sql: config/dbc.json vendor
+src/db-migrations/create-database.sql: config/dbc.json vendor
 	vendor/bin/generate-create-database-sql "$<" >"$@"
-build/db/drop-database.sql: config/dbc.json vendor
+src/db-migrations/drop-database.sql: config/dbc.json vendor
 	vendor/bin/generate-drop-database-sql "$<" >"$@"
 
 #www/images/head.png:
 #	${fetch} -o "$@" "urn:bitprint:HYWPXT25DHVRV4BXETMRZQY26E6AQCYW.33QDQ443KBXZB5F5UGYODRN2Y34DOZ4GILDI7ZA"
 
-create-database: build/db/create-database.sql
+create-database: src/db-migrations/create-database.sql
 	sudo -u postgres psql <"$<"
-	sudo -u postgres psql $$(util/get-db-name) <build/db/enable-extensions.sql
-drop-database: build/db/drop-database.sql
+	sudo -u postgres psql $$(util/get-db-name) <src/db-migrations/enable-extensions.sql
+drop-database: src/db-migrations/drop-database.sql
 	sudo -u postgres psql <"$<"
 
 test-db-connection: config/dbc.json
 	util/test-db-connection
 
-empty-database: build/db/empty-database.sql util/phptemplateprojectdatabase-psql
+empty-database: src/db-migrations/empty-database.sql util/phptemplateprojectdatabase-psql
 	cat "$<" | util/phptemplateprojectdatabase-psql
 
 upgrade-database: resources
-	vendor/bin/upgrade-database -upgrade-table 'phptemplateprojectdatabasenamespace.schemaupgrade'
+	vendor/bin/upgrade-database -upgrade-table 'phptemplateprojectdatabasenamespace.schemaupgrade' \
+		-upgrade-script-dir src/db-migrations/upgrades	
 upgrade-database-with-test-data: resources
 	vendor/bin/upgrade-database -upgrade-table 'phptemplateprojectdatabasenamespace.schemaupgrade' \
-		-upgrade-script-dir build/db/upgrades \
-		-upgrade-script-dir build/db/test-data
+		-upgrade-script-dir src/db-migrations/upgrades \
+		-upgrade-script-dir src/db-migrations/test-data
 
 fix-entity-id-sequence: resources config/entity-id-sequence.json
 	util/fix-entity-id-sequence

@@ -74,10 +74,10 @@ service apache2 restart
 
 ###E Create the database
 
-sudo -u vagrant make -C /vagrant build/db/create-database.sql
+sudo -u vagrant make -C /vagrant src/db-migrations/create-database.sql
 # Purposely leaving off the usual '-v ON_ERROR_STOP=1' for now
 # so that reprovisioning will not crash due to the database
 # already existing:
-sudo -u postgres psql </vagrant/build/db/create-database.sql
-sudo -u postgres psql $(util/get-db-name) </vagrant/build/db/enable-extensions.sql
+sudo -u postgres psql </vagrant/src/db-migrations/create-database.sql
+sudo -u postgres psql $(util/get-db-name) </vagrant/src/db-migrations/enable-extensions.sql
 sudo -u vagrant make -C /vagrant redeploy

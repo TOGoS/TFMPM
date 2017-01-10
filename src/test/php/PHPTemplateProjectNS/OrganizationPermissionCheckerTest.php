@@ -6,7 +6,7 @@
 class PHPTemplateProjectNS_OrganizationPermissionCheckerTest extends PHPTemplateProjectNS_TestCase
 {
 	// For these tests wee'll assume things are set up as by
-	// build/db/test-data/1003-acl-test-data.sql
+	// src/db-migrations/test-data/1003-acl-test-data.sql
 	
 	protected function makeAction( $meth, $path, $qs='', $contobj=null ) {
 		$contentBlob = $contobj ? new EarthIT_JSON_PrettyPrintedJSONBlob($contobj) : null;

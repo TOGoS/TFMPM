@@ -17,7 +17,7 @@ See also:
 - ```composer.json``` - PHP package and dependency information, used by Composer.
 - ```package.json``` - Node package and dependency information, used by NPM.
 - ```init-*.php``` - Scripts to initialize global state in PHP.
-- ```build/db/``` - Database scripts
+- ```src/db-migrations/``` - Database scripts
   - ```upgrades/``` - Upgrades to be run in order to build the schema
   - ```test-data/``` - Run interleaved with upgrades for additional unit test data
   - miscellaneous handy scripts
@@ -25,7 +25,7 @@ See also:
   - ```main/``` - Primary application code, broken down by language
   - ```test/``` - Unit tests
   - ```views/``` - View templates
-- ```target/``` - Compiled stuff.  Not checked in.
+- ```build/``` and/or ```target/``` - Compiled stuff.  Not checked in.
 - ```node_modules/``` - External node libraries, managed my NPM.
 - ```vendor/``` - External PHP libraries, managed by Composer.
 - ```config/``` - Deployment configuration.
@@ -40,6 +40,10 @@ Note that the ```src/<component>/<language>``` directory is a Maven
 convention.  It's verbose, but gives enough information to keep
 projects with multiple languages and components (unit tests, build
 system, runtime, etc) organized.
+
+```build/``` and ```target/``` are basically the same thing.
+Within one project you should probably pick one or the other and stick with it.
+```target``` is a Maven convention.  C and JavaScript people like to call it ```build```.
 
 
 ## Database
@@ -80,14 +84,14 @@ the database and rebuild it from the upgrade scripts.
 
 ### Rebuilding The Database
 
-Run ```make rebuild-database``` to empty the database and rebuild it from the upgrade scripts in ```build/db/upgrades/```.
+Run ```make rebuild-database``` to empty the database and rebuild it from the upgrade scripts in ```src/db-migrations/upgrades/```.
 
-Run ```make rebuild-database-with-test-data``` to rebuild-database the database and also adddata from ```build/db/test-data/```.
+Run ```make rebuild-database-with-test-data``` to rebuild-database the database and also adddata from ```src/db-migrations/test-data/```.
 
 
 ### Upgrading The Database
 
-Run ```make upgrade-database``` to run newly made upgrade scripts in ```build/db/upgrades/```.
+Run ```make upgrade-database``` to run newly made upgrade scripts in ```src/db-migrations/upgrades/```.
 
 
 
