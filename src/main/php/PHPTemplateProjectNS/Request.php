@@ -59,6 +59,7 @@ class PHPTemplateProjectNS_Request
 	}
 	
 	protected $requestMethod = null;
+	/** PATH_INFO, but not pre-URL-decoded; e.g. http://mysite/xyz%20123 -> pathInfo = '/xyz%20123' */
 	protected $pathInfo = null;
 	protected $queryString = null;
 	protected $userId = null;

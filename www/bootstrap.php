@@ -23,7 +23,11 @@ $router = $PHPTemplateProjectNS_Registry->router;
 // to just have separate bootstrap scripts.
 
 if( isset($_SERVER['PATH_INFO']) ) {
-	$path = $_SERVER['PATH_INFO'];
+	// Unfortunately PATH_INFO is URL-decoded before we get at it.
+	// Which means there's no way to e.g. encode a '/' as part of a single path component.
+	// :(
+	$path = str_replace('%','%25',$_SERVER['PATH_INFO']);
+	ezdie($path);
 } else {
 	preg_match('/^([^?]*)(?:\?(.*))?$/',$_SERVER['REQUEST_URI'],$bif);
 	$path = $bif[1];
