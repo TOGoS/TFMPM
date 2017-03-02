@@ -220,39 +220,4 @@ class PHPTemplateProjectNS_Request
 		$this->openSessionIfExists();
 		return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
 	}
-	
-	// Sometimes you want to show an error message on a page.  But you
-	// don't want that message to show because of something unrelated
-	// to the page, so you don't want to rely solely on a session
-	// variable, and you don't want it to show up just because the user
-	// uses the same URL to get to that page again (because maybe the
-	// error no longer applies), so you can't rely solely on URL parameters.
-	// 
-	// Solution: use a URL parameter (?error-id=...)  in combination
-	// with a session variable (errorMessage).  Only show the message
-	// when they match.
-	
-	/**
-	 * Set error message in the session and return an error message ID
-	 * to stick in an error-id parameter.
-	 */
-	public function setErrorMessage($message) {
-		$errorId = TOGoS_Base32::encode(hash('sha1',$message,true));
-		$this->setSessionVariable('errorMessage', $message);
-		return $errorId;
-	}
-	
-	/**
-	 * If the last message set by setErrorMessage matches the ID given,
-	 * (which defaults to that in the 'error-id' URL parameter) return
-	 * that message.  Otherwise return null, indicating no current
-	 * error message.
-	 */
-	public function getErrorMessage($messageId='current') {
-		if( $messageId == 'current' ) $messageId = $this->getParam('error-id');
-		$message = $this->getSessionVariable('errorMessage');
-		if( $message === null ) return null;
-		$hash = TOGoS_Base32::encode(hash('sha1',$message,true));
-		return $hash === $messageId ? $message : null;
-	}
 }
