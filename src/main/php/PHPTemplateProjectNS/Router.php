@@ -100,6 +100,13 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 			case 'GET':
 				return $this->createPageAction('ShowSchemaUpgrades', $req->getParam('mode', 'list'));
 			}
+		} else if( $path === '/blobs' && $req->requestMethod === 'POST' ) {
+			return $this->createPageAction('FileUpload', $req);
+		
+		//// Demonstration routes.
+		// These are here to show how actions can be defined.
+		// You probably want to remove these
+		
 		} else if( $path == '/computations' ) {
 			switch( $method ) {
 			case 'GET':
@@ -108,8 +115,19 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 				$input = (float)$req->getParam('square');
 				return $this->createPageAction('EnqueueComputation', "sqrt($input)");
 			}
-		} else if( $path === '/blobs' && $req->requestMethod === 'POST' ) {
-			return $this->createPageAction('FileUpload', $req);
+		} else if( $path == '/return-params' ) {
+			return $this->createPageAction('ReturnParams', $req->getParams());
+		} else if( $path == '/exception' ) {
+			return function(PHPTemplateProjectNS_ActionContext $actx) {
+				throw new Exception( "You asked for an exception and this is it." );
+			};
+		} else if( $path == '/error' ) {
+			return function(PHPTemplateProjectNS_ActionContext $actx) {
+				trigger_error( "An error occurred for demonstrative porpoises.", E_USER_ERROR );
+			};
+		
+		//// End of demonstration routes.
+		
 		} else if(
 			preg_match('#^/api([;/].*)#',$path,$bif) and
 			($restAction = $this->apiRequestToAction(
@@ -124,14 +142,6 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 			($rc = EarthIT_CMIPREST_Util::getResourceClassByCollectionName($this->schema, $bif[1])) !== null
 		) {
 			return new PHPTemplateProjectNS_PageAction_PostToDataTable($this->registry, $rc, $req->getParams());
-		} else if( $path == '/exception' ) {
-			return function(PHPTemplateProjectNS_ActionContext $actx) {
-				throw new Exception( "You asked for an exception and this is it." );
-			};
-		} else if( $path == '/error' ) {
-			return function(PHPTemplateProjectNS_ActionContext $actx) {
-				trigger_error( "An error occurred for demonstrative porpoises.", E_USER_ERROR );
-			};
 		} else if(
 			($restAction = $this->restPageRequestToAction(
 				$method,
