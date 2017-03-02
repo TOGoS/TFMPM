@@ -64,6 +64,7 @@ class PHPTemplateProjectNS_Request
 	protected $queryString = null;
 	protected $userId = null;
 	protected $requestContentFuture = null;
+	protected $requestContent = null;
 	
 	protected function set( array $updates ) {
 		foreach( $updates as $k => $v ) {
@@ -102,10 +103,20 @@ class PHPTemplateProjectNS_Request
 	public function withUserId($userId) { return $this->with('userId', $userId); }
 	public function getUserId() { return $this->userId; }
 	
+	// Request content is complicated because it can be represented a lot of different ways:
+	// - as a future or not
+	// - as a blob, a string, or an object to be encoded
+	// For consistency's sake we should probably change to simply storing
+	// - blob future
+	// since that can easily handle all other cases.
+	
 	public function withRequestContentFuture(callable $rcf) {
 		return $this->with('requestContentFuture', $rcf);
 	}
 	public function getRequestContent() {
+		if( $this->requestContent ) {
+			return $this->requestContent;
+		}
 		if( $this->requestContentObject !== null ) {
 			// I guess JSON-encode it?  Usually things go the other way.
 			return EarthIT_JSON::prettyEncode($this->requestContentObject);
@@ -163,6 +174,14 @@ class PHPTemplateProjectNS_Request
 		return $this->requestContentObject;
 	}
 	
+	/**
+	 * As with other set* methods, don't use this directly; use with(...) to construct a new Request object
+	 */
+	public function setRequestContent( $content ) {
+		$this->requestContent = (string)$content;
+	}
+	
+	
 	public function getRequestHeaderValue( $k, $default=null ) {
 		$k = str_replace('-','_',strtoupper($k));
 		return isset($this->SERVER["HTTP_{$k}"]) ? $this->SERVER["HTTP_{$k}"] : $default;
@@ -179,7 +198,8 @@ class PHPTemplateProjectNS_Request
 	}
 	
 	public function getParams() {
-		return $this->GET + $this->POST;
+		$rco = $this->getRequestContentObject() or $rco = array();
+		return $this->GET + $this->POST + $rco;
 	}
 	
 	public function getQueryString() {
@@ -190,6 +210,9 @@ class PHPTemplateProjectNS_Request
 	public function getParam($name,$default=null) {
 		foreach( ['POST','GET'] as $l ) {
 			if( isset($this->superGlobals[$l][$name]) ) return $this->superGlobals[$l][$name];
+		}
+		if( ($rco = $this->getRequestContentObject()) and isset($rco[$name]) ) {
+			return $rco[$name];
 		}
 		return $default;
 	}
