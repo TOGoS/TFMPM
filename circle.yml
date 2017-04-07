@@ -1,6 +1,9 @@
+# We need PHP at least 5.4 for []-syntax, 5.5 for 'finally' blocks;
+# 7.0.4 is the first version that's available both for Circle's
+# Precise (14.04) and Trusty (12.04) configurations.
 machine:
   php:
-    version: 5.4.4
+    version: 7.0.4
 
 database:
   override:
