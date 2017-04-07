@@ -1,5 +1,6 @@
 machine:
-  php: {} # Don't care; use Circle's default.
+  php:
+    version: 5.4.4
 
 database:
   override:
