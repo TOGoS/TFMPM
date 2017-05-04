@@ -7,6 +7,11 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 	 * Otherwise return null.
 	 */
 	public function apiRequestToAction( $method, $path, $queryString, Nife_Blob $content=null ) {
+		if( $method === 'GET' and $path == '/systemCommitHash' ) {
+			$act = $this->createRestAction('GetSystemCommitHash');
+			if( $act !== null ) return $act;
+		}
+
 		$requestParser = EarthIT_CMIPREST_RequestParser_FancyRequestParser::buildStandardFancyParser(
 			$this->schema, $this->restSchemaObjectNamer, 'cmip');
 
@@ -29,6 +34,15 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 		}
 		
 		return null;
+	}
+	
+	protected function createRestAction( $actionName /* followed by action-specific arguments */ ) {
+		$args = func_get_args();
+		/* $actionName = */ array_shift($args);
+		array_unshift($args, $this->registry);
+		$className = "PHPTemplateProjectNS_RESTAction_{$actionName}";
+		$rc = new ReflectionClass($className);
+		return $rc->newInstanceArgs($args);
 	}
 	
 	protected function createPageAction( $actionName /* followed by action-specific arguments */ ) {
