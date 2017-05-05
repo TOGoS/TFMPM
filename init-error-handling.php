@@ -68,8 +68,8 @@ class PHPTemplateProjectNS_ErrorTraceBlob implements Nife_Blob {
 			
 			call_user_func($callback, "Caused by...\n");
 			$text = $cause->getMessage();
-			$backtrace = array_merge( array(array('file'=>$ex->getFile(), 'line'=>$ex->getLine())), $ex->getTrace());
-			$cause = $ex->getPrevious();
+			$backtrace = array_merge( array(array('file'=>$cause->getFile(), 'line'=>$cause->getLine())), $cause->getTrace());
+			$cause = $cause->getPrevious();
 		}
 	}
 	
