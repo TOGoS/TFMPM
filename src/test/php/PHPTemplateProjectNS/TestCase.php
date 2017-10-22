@@ -1,6 +1,6 @@
 <?php
 
-abstract class PHPTemplateProjectNS_TestCase extends PHPUnit_Framework_TestCase
+abstract class PHPTemplateProjectNS_TestCase extends TOGoS_SimplerTest_TestCase
 {
 	protected $registry;
 	public function __construct() {

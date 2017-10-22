@@ -144,11 +144,13 @@ fix-entity-id-sequence: resources config/entity-id-sequence.json
 rebuild-database: empty-database upgrade-database
 rebuild-database-with-test-data: empty-database upgrade-database-with-test-data
 
+# PHPSimplerTest doesn't know about groups!  D:
 run-unit-tests: runtime-resources ${build_target_dir}/schema/test.schema.php
-	vendor/bin/phpunit --bootstrap init-test-environment.php --exclude-group integration src/test/php
+	vendor/bin/phpsimplertest --bootstrap init-test-environment.php src/test/php --colorful-output
 
-run-integration-tests: runtime-resources ${build_target_dir}/schema/test.schema.php upgrade-database-with-test-data
-	vendor/bin/phpunit --bootstrap init-test-environment.php --group integration src/test/php
+run-integration-tests: run-unit-tests
+#run-integration-tests: runtime-resources ${build_target_dir}/schema/test.schema.php upgrade-database-with-test-data
+#	vendor/bin/phpsimplertest --bootstrap init-test-environment.php --group integration src/test/php
 
 run-tests: run-unit-tests run-integration-tests
 

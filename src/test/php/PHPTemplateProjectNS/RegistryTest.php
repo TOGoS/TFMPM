@@ -1,6 +1,6 @@
 <?php
 
-class PHPTemplateProjectNS_RegistryTest extends PHPUnit_Framework_TestCase
+class PHPTemplateProjectNS_RegistryTest extends PHPTemplateProjectNS_TestCase
 {
 	public function testRegistryRegistered() {
 		global $PHPTemplateProjectNS_Registry;

@@ -1,7 +1,7 @@
 <?php
 
 class PHPTemplateProjectNS_Email_RecipientOverrideTransportTest
-extends PHPUnit_Framework_TestCase
+extends PHPTemplateProjectNS_TestCase
 {
 	protected $cTransport;
 	protected $roTransport;
