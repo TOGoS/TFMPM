@@ -3,10 +3,14 @@
 class PHPTemplateProjectNS_PageAction_FileUpload extends PHPTemplateProjectNS_PageAction
 {
 	protected $req;
+	protected $sector;
+	protected $allowSectorOverride;
 	
-	public function __construct( PHPTemplateProjectNS_Registry $reg, PHPTemplateProjectNS_Request $req ) {
+	public function __construct( PHPTemplateProjectNS_Registry $reg, PHPTemplateProjectNS_Request $req, array $options=array() ) {
 		parent::__construct($reg);
 		$this->req = $req;
+		$this->sector = isset($options['sector']) ? $options['sector'] : null;
+		$this->allowSectorOverride = !empty($options['allowSectorOverride']);
 	}
 	
 	public function isAllowed( PHPTemplateProjectNS_ActionContext $actx, &$status, array &$notes=[] ) {
@@ -45,6 +49,14 @@ class PHPTemplateProjectNS_PageAction_FileUpload extends PHPTemplateProjectNS_Pa
 		$uploaded = array();
 		$notes = array();
 		$errors = array();
+		$sector = $this->sector;
+		if(
+			$this->allowSectorOverride &&
+			isset($this->req->SERVER['HTTP_X_CCOUCH_SECTOR']) &&
+			preg_match('/^[a-zA-Z0-9-]+$/', $this->req->SERVER['HTTP_X_CCOUCH_SECTOR'])
+		) {
+			$sector = $this->req->SERVER['HTTP_X_CCOUCH_SECTOR'];
+		}
 		if( $this->isMultipart() ) {
 			foreach( $this->getFiles() as $k=>$f ) {
 				try {
@@ -56,7 +68,7 @@ class PHPTemplateProjectNS_PageAction_FileUpload extends PHPTemplateProjectNS_Pa
 					}
 					
 					$size = filesize($tempFile);
-					$urn = $repo->putTempFile( $tempFile );
+					$urn = $repo->putTempFile( $tempFile, $sector );
 					$blobId = PHPTemplateProjectNS_BlobIDUtil::urnToBasename($urn);
 					
 					$filenameHint = $f['name'];
@@ -75,7 +87,7 @@ class PHPTemplateProjectNS_PageAction_FileUpload extends PHPTemplateProjectNS_Pa
 		} else {
 			$stream = fopen('php://input', 'rb');
 			try {
-				$urn = $this->primaryBlobRepository->putStream( $stream, 'uploaded' );
+				$urn = $this->primaryBlobRepository->putStream( $stream, $sector );
 			} catch( TOGoS_PHPN2R_IdentifierFormatException $e ) {
 				return Nife_Util::httpResponse(409, $e->getMessage());
 			}

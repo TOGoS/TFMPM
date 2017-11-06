@@ -8,6 +8,10 @@ class PHPTemplateProjectNS_Registry
 	public function __construct( $projectRootDir ) {
 		$this->projectRootDir = $projectRootDir;
 	}
+
+	public function getProjectRootDir() {
+		return $this->projectRootDir;
+	}
 	
 	protected function loadConfigFile($file) {
 		$c = EarthIT_JSON::decode(file_get_contents($file), true);

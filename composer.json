@@ -3,7 +3,7 @@
 	"description": "PHP Template Project",
 	"license": "MIT",
 	"require-dev": {
-		"togos/simpler-test": "^1.1.0"
+		"togos/simpler-test": "^1.1.1"
 	},
 	"require": {
 		"php": ">=5.5",

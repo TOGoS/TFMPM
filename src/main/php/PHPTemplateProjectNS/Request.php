@@ -127,7 +127,7 @@ class PHPTemplateProjectNS_Request
 		throw new Exception("No requestContentObject or requestContentFuture provided.");
 	}
 	public function getRequestContentType() {
-		return $this->SERVER['CONTENT_TYPE'];
+		return isset($this->SERVER['CONTENT_TYPE']) ? $this->SERVER['CONTENT_TYPE'] : null;
 	}
 	public function getRequestContentBlob() {
 		return new Nife_StringBlob($this->getRequestContent());

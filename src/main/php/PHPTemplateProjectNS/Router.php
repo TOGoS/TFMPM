@@ -116,6 +116,8 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 			}
 		} else if( $path === '/blobs' && $req->requestMethod === 'POST' ) {
 			return $this->createPageAction('FileUpload', $req);
+		} else if( $path === '/logoBlobs' && $req->requestMethod === 'POST' ) {
+			return $this->createPageAction('FileUpload', $req, array('sector'=>'logos'));
 		
 		//// Demonstration routes.
 		// These are here to show how actions can be defined.
