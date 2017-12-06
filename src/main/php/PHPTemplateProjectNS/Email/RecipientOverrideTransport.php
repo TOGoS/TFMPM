@@ -3,11 +3,15 @@
 class PHPTemplateProjectNS_Email_RecipientOverrideTransport implements Swift_Transport
 {
 	protected $transport;
-	protected $recipient;
+	protected $recipients;
 	
-	public function __construct( Swift_Transport $transport, $recipient ) {
+	public function __construct( Swift_Transport $transport, $recipients ) {
 		$this->transport = $transport;
-		$this->recipient = PHPTemplateProjectNS_Email_Util::parseEndpoint($recipient);
+		if( !is_array($recipients) ) $recipients = array($recipients);
+		$this->recipients = array();
+		foreach( $recipients as $recip ) {
+			$this->recipients[] = PHPTemplateProjectNS_Email_Util::parseEndpoint($recip);
+		}
 	}
 	
 	public function isStarted() {
@@ -31,9 +35,14 @@ class PHPTemplateProjectNS_Email_RecipientOverrideTransport implements Swift_Tra
 			$roHeader = "<p>".htmlspecialchars($roHeader)."</p>";
 		}
 		$newBody = $roHeader."\n\n".$message->getBody();
+
+		$swiftRecipients = array();
+		foreach( $this->recipients as $recip ) {
+			$swiftRecipients[$recip['address']] = $recip['name'];
+		}
 		
 		$newMessage = new Swift_Message();
-		$newMessage->setTo( array($this->recipient['address'] => $this->recipient['name']) );
+		$newMessage->setTo( $swiftRecipients );
 		$newMessage->setFrom( $message->getFrom() );
 		$newMessage->setSubject( $message->getSubject() );
 		$newMessage->setCharset( $message->getCharset() );
