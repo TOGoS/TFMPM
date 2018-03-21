@@ -109,16 +109,16 @@ reference property 'indicates ownee' :
 		for permission checking purposes.
 	»
 
-schema 'phptemplateprojectdatabasenamespace'
+schema 'tfmpm'
 
-sequence 'new entity ID' : initial value @ 1001 : is in namespace @ 'phptemplateprojectdatabasenamespace' :
+sequence 'new entity ID' : initial value @ 1001 : is in namespace @ 'tfmpm' :
 	long name @ "urn:x-the-new-entity-id-sequence" # Meaningless long name for schema.php
 
 field modifier 'AIPK' = normal ID : is auto-incremented : key(primary)
 field modifier 'EIPK' = entity ID : default value sequence @ new entity ID : key(primary)
 field modifier 'HJPK' = blob ID : is content hash-based ID : key(primary) : comment @ "ID = base32encode(sha1(json(canonocalize(record))))"
 # SRC = 'standard resource class'
-field modifier 'SRC' = has a database table : has a REST service : is in namespace @ 'phptemplateprojectdatabasenamespace'
+field modifier 'SRC' = has a database table : has a REST service : is in namespace @ 'tfmpm'
 
 field modifier UTCR = uses user text canonicalization rules
 
@@ -138,7 +138,7 @@ class 'user' : SRC : entity ID @ 1000021 {
 	e-mail address : e-mail address : nullable
 }
 
-class 'token action' : has a database table : is in namespace @ 'phptemplateprojectdatabasenamespace' : entity ID @ 1000022 {
+class 'token action' : has a database table : is in namespace @ 'tfmpm' : entity ID @ 1000022 {
 	token hash : hash : key(primary)
 	half user : reference(user) : comment @ unindent @ «
 		User on whose beHALF the action will be done.

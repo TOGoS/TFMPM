@@ -11,8 +11,8 @@ generated_resources := \
 	src/db-migrations/all-tables.sql \
 	src/db-migrations/create-database.sql \
 	src/db-migrations/drop-database.sql \
-	util/phptemplateprojectdatabase-psql \
-	util/phptemplateprojectdatabase-pg_dump \
+	util/tfmpm-psql \
+	util/tfmpm-pg_dump \
 	util/SchemaSchemaDemo.jar \
 	${build_target_dir}/schema/schema.php \
 	vendor
@@ -85,10 +85,10 @@ ${config_files}: %: | %.example
 composer.lock: | composer.json
 	composer install
 
-util/phptemplateprojectdatabase-psql: config/dbc.json
+util/tfmpm-psql: config/dbc.json
 	vendor/bin/generate-psql-script -psql-exe psql "$<" >"$@"
 	chmod +x "$@"
-util/phptemplateprojectdatabase-pg_dump: config/dbc.json
+util/tfmpm-pg_dump: config/dbc.json
 	vendor/bin/generate-psql-script -psql-exe pg_dump "$<" >"$@"
 	chmod +x "$@"
 
@@ -127,14 +127,14 @@ drop-database: src/db-migrations/drop-database.sql
 test-db-connection: config/dbc.json
 	util/test-db-connection
 
-empty-database: src/db-migrations/empty-database.sql util/phptemplateprojectdatabase-psql
-	cat "$<" | util/phptemplateprojectdatabase-psql
+empty-database: src/db-migrations/empty-database.sql util/tfmpm-psql
+	cat "$<" | util/tfmpm-psql
 
 upgrade-database: resources
-	vendor/bin/upgrade-database -upgrade-table 'phptemplateprojectdatabasenamespace.schemaupgrade' \
+	vendor/bin/upgrade-database -upgrade-table 'tfmpm.schemaupgrade' \
 		-upgrade-script-dir src/db-migrations/upgrades	
 upgrade-database-with-test-data: resources
-	vendor/bin/upgrade-database -upgrade-table 'phptemplateprojectdatabasenamespace.schemaupgrade' \
+	vendor/bin/upgrade-database -upgrade-table 'tfmpm.schemaupgrade' \
 		-upgrade-script-dir src/db-migrations/upgrades \
 		-upgrade-script-dir src/db-migrations/test-data
 

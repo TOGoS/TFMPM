@@ -3,10 +3,10 @@
 
 require_once __DIR__.'/../init-environment.php';
 
-$dbcConfig = $PHPTemplateProjectNS_Registry->getConfig('dbc');
+$dbcConfig = $TFMPM_Registry->getConfig('dbc');
 echo __FILE__.": DBC Config:", print_r($dbcConfig,true), "\n";
 
-$sqlRunner = $PHPTemplateProjectNS_Registry->sqlRunner;
+$sqlRunner = $TFMPM_Registry->sqlRunner;
 
 $ftRows = $sqlRunner->fetchRows("SELECT 42 AS ft");
 if( $ftRows != array(array('ft'=>42)) ) {

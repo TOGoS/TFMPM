@@ -1,6 +1,6 @@
-CREATE SCHEMA IF NOT EXISTS phptemplateprojectdatabasenamespace;
+CREATE SCHEMA IF NOT EXISTS tfmpm;
 
-CREATE TABLE "phptemplateprojectdatabasenamespace"."schemaupgrade" (
+CREATE TABLE "tfmpm"."schemaupgrade" (
 	"time" TIMESTAMP,
 	"scriptfilename" VARCHAR(255),
 	"scriptfilehash" CHAR(40)

@@ -1,11 +1,11 @@
-CREATE TABLE "phptemplateprojectdatabasenamespace"."user" (
-	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+CREATE TABLE "tfmpm"."user" (
+	"id" BIGINT NOT NULL DEFAULT nextval('tfmpm.newentityid'),
 	"username" VARCHAR(126) NOT NULL,
 	"passhash" VARCHAR(126),
 	"emailaddress" VARCHAR(126),
 	PRIMARY KEY ("id")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."tokenaction" (
+CREATE TABLE "tfmpm"."tokenaction" (
 	"tokenhash" VARCHAR(126) NOT NULL,
 	"halfuserid" BIGINT NOT NULL,
 	"actionscript" TEXT NOT NULL,
@@ -13,9 +13,9 @@ CREATE TABLE "phptemplateprojectdatabasenamespace"."tokenaction" (
 	"expirationtime" TIMESTAMP,
 	"usagetime" TIMESTAMP,
 	PRIMARY KEY ("tokenhash"),
-	FOREIGN KEY ("halfuserid") REFERENCES "phptemplateprojectdatabasenamespace"."user" ("id")
+	FOREIGN KEY ("halfuserid") REFERENCES "tfmpm"."user" ("id")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."postaladdress" (
+CREATE TABLE "tfmpm"."postaladdress" (
 	"id" CHAR(32) NOT NULL,
 	"streetaddress" VARCHAR(126),
 	"unitaddress" VARCHAR(126),
@@ -25,35 +25,35 @@ CREATE TABLE "phptemplateprojectdatabasenamespace"."postaladdress" (
 	"countrycode" CHAR(3),
 	PRIMARY KEY ("id")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."organization" (
-	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+CREATE TABLE "tfmpm"."organization" (
+	"id" BIGINT NOT NULL DEFAULT nextval('tfmpm.newentityid'),
 	"name" VARCHAR(126) NOT NULL,
 	"parentid" BIGINT,
 	PRIMARY KEY ("id"),
-	FOREIGN KEY ("parentid") REFERENCES "phptemplateprojectdatabasenamespace"."organization" ("id")
+	FOREIGN KEY ("parentid") REFERENCES "tfmpm"."organization" ("id")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."entitypostaladdress" (
+CREATE TABLE "tfmpm"."entitypostaladdress" (
 	"entityid" BIGINT NOT NULL,
 	"postaladdressid" CHAR(32) NOT NULL,
 	PRIMARY KEY ("entityid", "postaladdressid"),
-	FOREIGN KEY ("postaladdressid") REFERENCES "phptemplateprojectdatabasenamespace"."postaladdress" ("id")
+	FOREIGN KEY ("postaladdressid") REFERENCES "tfmpm"."postaladdress" ("id")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."userrole" (
-	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+CREATE TABLE "tfmpm"."userrole" (
+	"id" BIGINT NOT NULL DEFAULT nextval('tfmpm.newentityid'),
 	"name" VARCHAR(126) NOT NULL,
 	PRIMARY KEY ("id")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."resourceclass" (
-	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+CREATE TABLE "tfmpm"."resourceclass" (
+	"id" BIGINT NOT NULL DEFAULT nextval('tfmpm.newentityid'),
 	"name" VARCHAR(126) NOT NULL,
 	PRIMARY KEY ("id")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."actionclass" (
+CREATE TABLE "tfmpm"."actionclass" (
 	"name" VARCHAR(126) NOT NULL,
 	"description" TEXT,
 	PRIMARY KEY ("name")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."userrolepermission" (
+CREATE TABLE "tfmpm"."userrolepermission" (
 	"roleid" BIGINT NOT NULL,
 	"resourceclassid" BIGINT NOT NULL,
 	"actionclassname" VARCHAR(126) NOT NULL,
@@ -62,57 +62,57 @@ CREATE TABLE "phptemplateprojectdatabasenamespace"."userrolepermission" (
 	"appliesaboveattachmentpoint" BOOLEAN NOT NULL DEFAULT FALSE,
 	"appliesbelowattachmentpoint" BOOLEAN NOT NULL DEFAULT FALSE,
 	PRIMARY KEY ("roleid", "resourceclassid", "actionclassname"),
-	FOREIGN KEY ("roleid") REFERENCES "phptemplateprojectdatabasenamespace"."userrole" ("id"),
-	FOREIGN KEY ("resourceclassid") REFERENCES "phptemplateprojectdatabasenamespace"."resourceclass" ("id"),
-	FOREIGN KEY ("actionclassname") REFERENCES "phptemplateprojectdatabasenamespace"."actionclass" ("name")
+	FOREIGN KEY ("roleid") REFERENCES "tfmpm"."userrole" ("id"),
+	FOREIGN KEY ("resourceclassid") REFERENCES "tfmpm"."resourceclass" ("id"),
+	FOREIGN KEY ("actionclassname") REFERENCES "tfmpm"."actionclass" ("name")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."userorganizationattachment" (
+CREATE TABLE "tfmpm"."userorganizationattachment" (
 	"userid" BIGINT NOT NULL,
 	"roleid" BIGINT NOT NULL,
 	"organizationid" BIGINT NOT NULL,
 	PRIMARY KEY ("userid", "roleid", "organizationid"),
-	FOREIGN KEY ("userid") REFERENCES "phptemplateprojectdatabasenamespace"."user" ("id"),
-	FOREIGN KEY ("roleid") REFERENCES "phptemplateprojectdatabasenamespace"."userrole" ("id"),
-	FOREIGN KEY ("organizationid") REFERENCES "phptemplateprojectdatabasenamespace"."organization" ("id")
+	FOREIGN KEY ("userid") REFERENCES "tfmpm"."user" ("id"),
+	FOREIGN KEY ("roleid") REFERENCES "tfmpm"."userrole" ("id"),
+	FOREIGN KEY ("organizationid") REFERENCES "tfmpm"."organization" ("id")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."defaultuserrole" (
+CREATE TABLE "tfmpm"."defaultuserrole" (
 	"roleid" BIGINT NOT NULL,
 	"requirelogin" BOOLEAN NOT NULL,
 	PRIMARY KEY ("roleid"),
-	FOREIGN KEY ("roleid") REFERENCES "phptemplateprojectdatabasenamespace"."userrole" ("id")
+	FOREIGN KEY ("roleid") REFERENCES "tfmpm"."userrole" ("id")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."computationstatus" (
+CREATE TABLE "tfmpm"."computationstatus" (
 	"statuscode" VARCHAR(126) NOT NULL,
 	PRIMARY KEY ("statuscode")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."computation" (
+CREATE TABLE "tfmpm"."computation" (
 	"expression" VARCHAR(126) NOT NULL,
 	"statuscode" VARCHAR(126) NOT NULL,
 	"result" VARCHAR(126),
 	PRIMARY KEY ("expression"),
-	FOREIGN KEY ("statuscode") REFERENCES "phptemplateprojectdatabasenamespace"."computationstatus" ("statuscode")
+	FOREIGN KEY ("statuscode") REFERENCES "tfmpm"."computationstatus" ("statuscode")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."product" (
-	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+CREATE TABLE "tfmpm"."product" (
+	"id" BIGINT NOT NULL DEFAULT nextval('tfmpm.newentityid'),
 	"upc" VARCHAR(126) NOT NULL,
 	"title" VARCHAR(126) NOT NULL,
 	"descriptionhtml" TEXT NOT NULL,
 	PRIMARY KEY ("id")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."order" (
-	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+CREATE TABLE "tfmpm"."order" (
+	"id" BIGINT NOT NULL DEFAULT nextval('tfmpm.newentityid'),
 	"userid" BIGINT NOT NULL,
 	"shippingaddressid" CHAR(32) NOT NULL,
 	"billingaddressid" CHAR(32) NOT NULL,
 	PRIMARY KEY ("id"),
-	FOREIGN KEY ("userid") REFERENCES "phptemplateprojectdatabasenamespace"."user" ("id"),
-	FOREIGN KEY ("shippingaddressid") REFERENCES "phptemplateprojectdatabasenamespace"."postaladdress" ("id"),
-	FOREIGN KEY ("billingaddressid") REFERENCES "phptemplateprojectdatabasenamespace"."postaladdress" ("id")
+	FOREIGN KEY ("userid") REFERENCES "tfmpm"."user" ("id"),
+	FOREIGN KEY ("shippingaddressid") REFERENCES "tfmpm"."postaladdress" ("id"),
+	FOREIGN KEY ("billingaddressid") REFERENCES "tfmpm"."postaladdress" ("id")
 );
-CREATE TABLE "phptemplateprojectdatabasenamespace"."orderitem" (
+CREATE TABLE "tfmpm"."orderitem" (
 	"orderid" BIGINT NOT NULL,
 	"productid" BIGINT NOT NULL,
 	"quantity" INT NOT NULL,
-	FOREIGN KEY ("orderid") REFERENCES "phptemplateprojectdatabasenamespace"."order" ("id"),
-	FOREIGN KEY ("productid") REFERENCES "phptemplateprojectdatabasenamespace"."product" ("id")
+	FOREIGN KEY ("orderid") REFERENCES "tfmpm"."order" ("id"),
+	FOREIGN KEY ("productid") REFERENCES "tfmpm"."product" ("id")
 );

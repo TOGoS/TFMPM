@@ -1,8 +1,8 @@
 {
-    "dbname": "phptemplateprojectdatabase",
-    "host": "phptemplateprojectdatabasehost",
-    "user": "phptemplateprojectdatabaseuser",
-    "password": "phptemplateprojectdatabasepassword",
+    "dbname": "tfmpm",
+    "host": "localhost",
+    "user": "tfmpm",
+    "password": "tfmpm",
     "driver": "pdo_pgsql",
     "charset": "UTF-8"
 }

@@ -17,7 +17,7 @@ if( !class_exists('Nife_Blob', false) ) {
 }
 
 /** A string collector */
-class PHPTemplateProjectNS_Thneed {
+class TFMPM_Thneed {
 	protected $items;
 	public function __invoke($item) {
 		$this->items[] = $item;
@@ -27,7 +27,7 @@ class PHPTemplateProjectNS_Thneed {
 	}
 }
 
-class PHPTemplateProjectNS_StreamWriter {
+class TFMPM_StreamWriter {
 	protected $stream;
 	public function __construct($stream) {
 		$this->stream = $stream;
@@ -37,7 +37,7 @@ class PHPTemplateProjectNS_StreamWriter {
 	}
 }
 
-class PHPTemplateProjectNS_ErrorTraceBlob implements Nife_Blob {
+class TFMPM_ErrorTraceBlob implements Nife_Blob {
 	protected $text;
 	protected $backtrace;
 	protected $cause;
@@ -74,7 +74,7 @@ class PHPTemplateProjectNS_ErrorTraceBlob implements Nife_Blob {
 	}
 	
 	public function __toString() {
-		$thneed = new PHPTemplateProjectNS_Thneed();
+		$thneed = new TFMPM_Thneed();
 		$this->writeTo($thneed);
 		return (string)$thneed;
 	}
@@ -92,7 +92,7 @@ class PHPTemplateProjectNS_ErrorTraceBlob implements Nife_Blob {
 	}
 }
 
-class PHPTemplateProjectNS_Error_Handler {
+class TFMPM_Error_Handler {
 	public $dumpStream;
 	public $bypassOnShutdown = false;
 	/** A map of log filename => error message */
@@ -112,7 +112,7 @@ class PHPTemplateProjectNS_Error_Handler {
 		if( is_scalar($thing) ) {
 			fwrite($stream, $thing);
 		} else if( $thing instanceof Nife_Blob ) {
-			$thing->writeTo( new PHPTemplateProjectNS_StreamWriter($stream) );
+			$thing->writeTo( new TFMPM_StreamWriter($stream) );
 		} else {
 			fwrite($stream, "<weird error text value: ".gettype($thing).">");
 		}
@@ -165,7 +165,7 @@ class PHPTemplateProjectNS_Error_Handler {
 	
 	public function onException( $ex ) {
 		$this->sendErrorHeaders( "500 Uncaught Exception" );
-		$this->logAndDump( PHPTemplateProjectNS_ErrorTraceBlob::forException($ex) );
+		$this->logAndDump( TFMPM_ErrorTraceBlob::forException($ex) );
 		$this->bypassOnShutdown = true;
 		exit(1);
 	}
@@ -173,7 +173,7 @@ class PHPTemplateProjectNS_Error_Handler {
 	public function onPhpError($errno, $errstr, $errfile=null, $errline=null, $errcontext=null) {
 		if( (error_reporting() & $errno) == 0 ) return; // @fopen, etc.
 		$this->sendErrorHeaders( "500 PHP Error" );
-		$this->logAndDump( PHPTemplateProjectNS_ErrorTraceBlob::forPhpError(
+		$this->logAndDump( TFMPM_ErrorTraceBlob::forPhpError(
 			$errno, $errstr, $errfile, $errline, $errcontext, debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS)
 		));
 		$this->bypassOnShutdown = true;
@@ -202,6 +202,6 @@ class PHPTemplateProjectNS_Error_Handler {
 	}
 }
 
-global $PHPTemplateProjectNS_ErrorHandler;
-$PHPTemplateProjectNS_ErrorHandler = PHPTemplateProjectNS_Error_Handler::create();
-$PHPTemplateProjectNS_ErrorHandler->register();
+global $TFMPM_ErrorHandler;
+$TFMPM_ErrorHandler = TFMPM_Error_Handler::create();
+$TFMPM_ErrorHandler->register();

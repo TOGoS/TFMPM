@@ -10,8 +10,8 @@
 /src/db-migrations/drop-database.sql
 /src/db-migrations/rc-inserts.sql
 /target
-/util/phptemplateprojectdatabase-pg_dump
-/util/phptemplateprojectdatabase-psql
+/util/tfmpm-pg_dump
+/util/tfmpm-psql
 /util/SchemaSchemaDemo.jar
 /vendor
 /www/.htaccess

@@ -1,1 +1,1 @@
-DROP SCHEMA IF EXISTS "phptemplateprojectdatabasenamespace" CASCADE;
+DROP SCHEMA IF EXISTS "tfmpm" CASCADE;

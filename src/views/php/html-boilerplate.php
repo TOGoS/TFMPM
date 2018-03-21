@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title><?php echo htmlspecialchars("{$title} - PHP Template Project"); ?></title>
+<title><?php echo htmlspecialchars("{$title} - TOGoS's Factorio Map Preview Manager"); ?></title>
 <link rel="stylesheet" type="text/css" href="<?php eht($PU->relativeUrl('/basek.css')); ?>"/>
 <script>
 var footerClickCount = 0;

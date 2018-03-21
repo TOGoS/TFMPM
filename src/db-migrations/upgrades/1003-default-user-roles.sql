@@ -1,14 +1,14 @@
-INSERT INTO phptemplateprojectdatabasenamespace.userrole
+INSERT INTO tfmpm.userrole
 ("id", "name") VALUES
 (1000060, 'user (not necessarily logged-in)'),
 (1000063, 'logged-in user');
 
-INSERT INTO phptemplateprojectdatabasenamespace.defaultuserrole
+INSERT INTO tfmpm.defaultuserrole
 ("roleid", "requirelogin") VALUES
 (1000060, FALSE),
 (1000063, TRUE);
 
-INSERT INTO phptemplateprojectdatabasenamespace.userrolepermission
+INSERT INTO tfmpm.userrolepermission
 (roleid, resourceclassid, actionclassname, appliessystemwide) VALUES
 (1000060, 1000026, 'read'     , true),
 (1000060, 1000027, 'read'     , true),

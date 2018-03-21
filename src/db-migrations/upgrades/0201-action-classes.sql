@@ -1,7 +1,7 @@
 -- Allocated entity IDs 1151 to 1159 for these,
 -- but then I decided not to use entity IDs.
 
-INSERT INTO phptemplateprojectdatabasenamespace.actionclass
+INSERT INTO tfmpm.actionclass
 (name, description) VALUES
 ('create'   , 'allows creation of new records'),
 ('read'     , 'allows reding of records'),

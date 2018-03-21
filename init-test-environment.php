@@ -1,5 +1,5 @@
 <?php
 
-global $PHPTemplateProjectNS_Registry;
+global $TFMPM_Registry;
 require __DIR__.'/init-environment.php';
-$PHPTemplateProjectNS_Registry = $PHPTemplateProjectNS_Registry->withNamedSchema('test');
+$TFMPM_Registry = $TFMPM_Registry->withNamedSchema('test');

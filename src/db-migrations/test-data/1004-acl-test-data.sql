@@ -2,40 +2,40 @@
 -- Can also use 1000051-59, since not using those for action classes after all.
 -- Next: 1000059
 
-CREATE TABLE "phptemplateprojectdatabasenamespace"."acltestfacility" (
-	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+CREATE TABLE "tfmpm"."acltestfacility" (
+	"id" BIGINT NOT NULL DEFAULT nextval('tfmpm.newentityid'),
 	"curtaincolor" VARCHAR(126) NOT NULL,
 	PRIMARY KEY ("id"),
-	FOREIGN KEY ("id") REFERENCES "phptemplateprojectdatabasenamespace"."organization" ("id")
+	FOREIGN KEY ("id") REFERENCES "tfmpm"."organization" ("id")
 );
 
-CREATE TABLE phptemplateprojectdatabasenamespace.acltestchair (
-	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+CREATE TABLE tfmpm.acltestchair (
+	"id" BIGINT NOT NULL DEFAULT nextval('tfmpm.newentityid'),
 	"facilityid" BIGINT NOT NULL,
 	"color" VARCHAR(126),
 	PRIMARY KEY ("id"),
-	FOREIGN KEY ("facilityid") REFERENCES phptemplateprojectdatabasenamespace.acltestfacility ("id")
+	FOREIGN KEY ("facilityid") REFERENCES tfmpm.acltestfacility ("id")
 );
 
-CREATE TABLE phptemplateprojectdatabasenamespace.globallyviewablething (
-	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+CREATE TABLE tfmpm.globallyviewablething (
+	"id" BIGINT NOT NULL DEFAULT nextval('tfmpm.newentityid'),
 	"name" VARCHAR(126) NOT NULL,
 	PRIMARY KEY ("id")
 );
-CREATE TABLE phptemplateprojectdatabasenamespace.globallyeditablething (
-	"id" BIGINT NOT NULL DEFAULT nextval('phptemplateprojectdatabasenamespace.newentityid'),
+CREATE TABLE tfmpm.globallyeditablething (
+	"id" BIGINT NOT NULL DEFAULT nextval('tfmpm.newentityid'),
 	"name" VARCHAR(126) NOT NULL,
 	PRIMARY KEY ("id")
 );
 
-INSERT INTO phptemplateprojectdatabasenamespace.resourceclass
+INSERT INTO tfmpm.resourceclass
 (id, name) VALUES
 (1000035, 'ACL test facility'),
 (1000056, 'ACL test chair'),
 (1000061, 'globally viewable thing'),
 (1000062, 'globally editable thing');
 
-INSERT INTO phptemplateprojectdatabasenamespace."organization"
+INSERT INTO tfmpm."organization"
 (id, name, parentid) VALUES
 (1000052, 'ACL Test Root Org', NULL),
 (1000053, 'ACL Test Cousin Org', 1000052),
@@ -44,7 +44,7 @@ INSERT INTO phptemplateprojectdatabasenamespace."organization"
 (1000043, 'ACL Test Facility East', 1000041),
 (1000044, 'ACL Test Facility East Garage', 1000043);
 
-INSERT INTO phptemplateprojectdatabasenamespace.acltestfacility
+INSERT INTO tfmpm.acltestfacility
 (id, curtaincolor) VALUES
 (1000053, 'orange'),
 (1000041, 'red'),
@@ -52,20 +52,20 @@ INSERT INTO phptemplateprojectdatabasenamespace.acltestfacility
 (1000043, 'blue'),
 (1000044, 'brown');
 
-INSERT INTO phptemplateprojectdatabasenamespace.acltestchair
+INSERT INTO tfmpm.acltestchair
 (id, facilityid, color) VALUES
 (1000054, 1000043, 'brown'),
 (1000055, 1000044, 'turquoise'),
 -- 1000057 represents a non-existent chair
 (1000058, 1000053, 'different orange');
 
-INSERT INTO phptemplateprojectdatabasenamespace.userrole
+INSERT INTO tfmpm.userrole
 (id, name) VALUES
 (1000045, 'Organization Administrator'),
 (1000046, 'East Facilty Administrator'),
 (1000047, 'East Facility Visitor');
 
-INSERT INTO phptemplateprojectdatabasenamespace.userrolepermission
+INSERT INTO tfmpm.userrolepermission
 (roleid, resourceclassid, actionclassname, appliessystemwide, appliesatattachmentpoint, appliesaboveattachmentpoint, appliesbelowattachmentpoint) VALUES
 -- Org admins can do anything to everything at and below their attachment point
 -- and see the organization structure above them
@@ -111,21 +111,21 @@ INSERT INTO phptemplateprojectdatabasenamespace.userrolepermission
 (1000063, 1000062, 'update'   ,  true, false, false, false),
 (1000063, 1000062, 'delete'   ,  true, false, false, false);
 
-INSERT INTO phptemplateprojectdatabasenamespace.user
+INSERT INTO tfmpm.user
 (id, username) VALUES
 (1000048, 'Test Organization Administrator'),
 (1000049, 'Test Facility Administrator'),
 (1000050, 'Test Some Visitor'),
 (1000051, 'Test Unattached User');
 
-INSERT INTO phptemplateprojectdatabasenamespace.userorganizationattachment
+INSERT INTO tfmpm.userorganizationattachment
 (userid, roleid, organizationid) VALUES
 (1000048, 1000045, 1000041),
 (1000049, 1000046, 1000043),
 (1000050, 1000047, 1000043);
 
-INSERT INTO phptemplateprojectdatabasenamespace.globallyviewablething
+INSERT INTO tfmpm.globallyviewablething
 (id, name) VALUES (1000064, 'everybody look at me!');
 
-INSERT INTO phptemplateprojectdatabasenamespace.globallyeditablething
+INSERT INTO tfmpm.globallyeditablething
 (id, name) VALUES (1000065, 'everybody poke me!');

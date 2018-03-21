@@ -1,5 +1,5 @@
 {
-   "project-name": "PHP Template Project",
+   "project-name": "TOGoS's Factorio Map Preview Manager",
    "project-type-name": "phrebar",
    "external-dependencies": {
       "postgres": "^9.3",

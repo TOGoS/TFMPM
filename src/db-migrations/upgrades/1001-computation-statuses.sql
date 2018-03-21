@@ -1,2 +1,2 @@
-INSERT INTO "phptemplateprojectdatabasenamespace"."computationstatus" VALUES
+INSERT INTO "tfmpm"."computationstatus" VALUES
 ('queued'),('processing'), ('complete'), ('errored');

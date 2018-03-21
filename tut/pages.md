@@ -46,14 +46,14 @@ but we'll have to define ```$currentTime``` ourselves.
 
 ### The PageAction
 
-Create a new PHP class, ```src/main/php/PHPTemplateProjectNS/PageAction/ShowMyNewPage.php```:
+Create a new PHP class, ```src/main/php/TFMPM/PageAction/ShowMyNewPage.php```:
 
 ```php
 <?php
 
-class PHPTemplateProjectNS_PageAction_ShowMyNewPage extends PHPTemplateProjectNS_PageAction
+class TFMPM_PageAction_ShowMyNewPage extends TFMPM_PageAction
 {
-	public function __invoke( PHPTemplateProjectNS_ActionContext $actx ) {
+	public function __invoke( TFMPM_ActionContext $actx ) {
 		return $this->templateResponse( 200, 'my-new-page', [
 			'currentTime' => time()
 		], null, $actx);
@@ -85,7 +85,7 @@ and access to session (as in ```$_SESSION```) variables.
 
 ### Router
 
-We need to add a couple of lines to ```src/main/php/PHPTemplateProjectNS/Router.php```
+We need to add a couple of lines to ```src/main/php/TFMPM/Router.php```
 so that our action gets used when a certain URL is requested.
 
 Add this somewhere in the big if-else chain

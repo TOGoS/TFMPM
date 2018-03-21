@@ -55,7 +55,7 @@ $sqlRunner = $reg->sqlRunner;
 
 /*
 
-phptemplateprojectdatabase=> SELECT * FROM phptemplateprojectdatabasenamespace.newentityid;
+tfmpm=> SELECT * FROM tfmpm.newentityid;
  sequence_name | last_value | start_value | increment_by |      max_value      | min_value | cache_value | log_cnt | is_cycled | is_called 
 ---------------+------------+-------------+--------------+---------------------+-----------+-------------+---------+-----------+-----------
  newentityid   |       1014 |        1001 |            1 | 9223372036854775807 |         1 |           1 |      30 | f         | t
@@ -65,7 +65,7 @@ phptemplateprojectdatabase=> SELECT * FROM phptemplateprojectdatabasenamespace.n
 
 $fetchSql =
 	"SELECT min_value, max_value, start_value, last_value\n".
-	"FROM phptemplateprojectdatabasenamespace.newentityid";
+	"FROM tfmpm.newentityid";
 
 $crs = $sqlRunner->fetchRows($fetchSql);
 $cr = null;
@@ -112,7 +112,7 @@ if( count($alterations) == 0 ) {
 }
 
 $sql =
-	"ALTER SEQUENCE phptemplateprojectdatabasenamespace.newentityid\n".
+	"ALTER SEQUENCE tfmpm.newentityid\n".
 	implode("\n", $alterations);
 
 if( $verbosity >= 200 ) {

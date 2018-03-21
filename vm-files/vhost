@@ -1,6 +1,6 @@
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
-    ServerName phptemplateprojecthost.dev
+    ServerName togossfactoriomappreviewmanager.localhost
     
     DocumentRoot /vagrant/www
     <Directory /vagrant/www>
@@ -16,7 +16,7 @@
     SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown
 
     ServerAdmin webmaster@localhost
-    ServerName phptemplateprojecthost.dev
+    ServerName togossfactoriomappreviewmanager.localhost
     DocumentRoot /vagrant/www
     <Directory /vagrant/www>
         Options Indexes FollowSymLinks Includes

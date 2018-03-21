@@ -1,4 +1,4 @@
-INSERT INTO phptemplateprojectdatabasenamespace.resourceclass
+INSERT INTO tfmpm.resourceclass
 (id, name) VALUES
 (1000021, 'user'),
 (1000022, 'token action'),

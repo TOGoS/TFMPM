@@ -3,17 +3,17 @@
 // This file
 // - Initializes autoloaders
 // - Initializes some global functions
-// - Creates and returns a new PHPTemplateProjectNS_Registry
+// - Creates and returns a new TFMPM_Registry
 
 require __DIR__.'/vendor/autoload.php';
 
-define('PHPTemplateProjectNS_ROOT_DIR', __DIR__);
+define('TFMPM_ROOT_DIR', __DIR__);
 
-global $PHPTemplateProjectNS_script_start_time;
-$PHPTemplateProjectNS_script_start_time = microtime(true);
-function PHPTemplateProjectNS_time_since_script_start() {
-	global $PHPTemplateProjectNS_script_start_time;
-	return microtime(true) - $PHPTemplateProjectNS_script_start_time;
+global $TFMPM_script_start_time;
+$TFMPM_script_start_time = microtime(true);
+function TFMPM_time_since_script_start() {
+	global $TFMPM_script_start_time;
+	return microtime(true) - $TFMPM_script_start_time;
 }
 
 /** 'Emit HTML text' */
@@ -109,6 +109,6 @@ spl_autoload_register('eit_autoload_converted');
 // Make a global variable for cases where
 // we don't control how the output of this script is used,
 // e.g. PHPUnit tests.
-global $PHPTemplateProjectNS_Registry;
-$PHPTemplateProjectNS_Registry = new PHPTemplateProjectNS_Registry( PHPTemplateProjectNS_ROOT_DIR );
-return $PHPTemplateProjectNS_Registry;
+global $TFMPM_Registry;
+$TFMPM_Registry = new TFMPM_Registry( TFMPM_ROOT_DIR );
+return $TFMPM_Registry;

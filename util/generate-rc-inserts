@@ -12,9 +12,9 @@ foreach( $rcs as $rc ) {
 		$insertRows[] = $sqlRunner->quoteParams("({eid}, {name})", ['eid'=>$entityId, 'name'=>$rc->getName()]);
 	}
 }
-echo "DELETE FROM phptemplateprojectdatabasenamespace.resourceclass;\n";
+echo "DELETE FROM tfmpm.resourceclass;\n";
 if( count($insertRows) > 0 ) {
-	echo "INSERT INTO phptemplateprojectdatabasenamespace.resourceclass\n";
+	echo "INSERT INTO tfmpm.resourceclass\n";
 	echo "(id, name) VALUES\n";
 	echo implode(",\n", $insertRows), ";\n";
 }

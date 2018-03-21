@@ -1,6 +1,6 @@
 {
 	"name": "earthit/php-template-project",
-	"description": "PHP Template Project",
+	"description": "TOGoS's Factorio Map Preview Manager",
 	"license": "MIT",
 	"require-dev": {
 		"togos/simpler-test": "^1.1.1"
@@ -24,12 +24,12 @@
 	},
 	"autoload": {
 		"psr-0": {
-			"PHPTemplateProjectNS_": "src/test/php/"
+			"TFMPM_": "src/test/php/"
 		}
 	},
 	"autoload-dev": {
 		"psr-0": {
-			"PHPTemplateProjectNS_": "src/main/php/"
+			"TFMPM_": "src/main/php/"
 		}
 	}
 }
