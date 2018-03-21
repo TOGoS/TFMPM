@@ -3,6 +3,8 @@
 /build
 /composer.lock
 /datastore
+/factorio-checkouts
+/factorio-data-checkouts
 /logs
 /node_modules
 /src/db-migrations/all-tables.sql
