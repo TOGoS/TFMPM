@@ -10,18 +10,18 @@ $blobRepoDir = getenv('HOME')."/.ccouch";
 $metalogDir = "$selfDir/logs";
 if( !is_dir($metalogDir) ) mkdir($metalogDir, 0777, true);
 
-$repo = new TOGoS_PHPN2R_FSSHA1Repository($blobRepoDir);
-$runner = new TFMPM_FactorioRunner($repo);
+$runner = $TFMPM_Registry->factorioRunner;
+$systemUtil = $TFMPM_Registry->systemUtil;
 
 $selfCommitShellCmd = "git --git-dir=".escapeshellarg($selfGitDir)." rev-parse HEAD";
 $selfCommitId = `$selfCommitShellCmd`;
 
 $metalogFile = $metalogDir."/".date('Y_m_d').".jsonl";
-TFMPM_SystemUtils::mkparentDirs($metalogFile);
+$systemUtil->mkparentDirs($metalogFile);
 
 $params = array(
 	'mapSeed' => 1234,
-	'factorioCommitId' => 'bed13417c5e1ac9e8408ec0e75043bff71e85f32',
+	'factorioCommitId' => '22b5f2227efb4cca3b8f356cd5f7f21470f682c5',
 	'mapScale' => 1,
 	'slopeShading' => '0.3',
 	'mapOffset' => array(0,0),
@@ -44,4 +44,3 @@ fwrite($metalogStream, json_encode($metalogRecord)."\n");
 fclose($metalogStream);
 
 echo json_encode($metalogRecord,JSON_PRETTY_PRINT), "\n";
-echo "Recorded in $metalogFile\n";

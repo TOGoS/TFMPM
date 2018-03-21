@@ -1,20 +1,20 @@
 <?php
 
-class TFMPM_SystemUtils
+class TFMPM_SystemUtil
 {
-	public static function mkdir($dir, $mode=0755) {
+	public function mkdir($dir, $mode=0755) {
 		if( is_dir($dir) ) return;
 		if( @mkdir($dir, $mode, true) === false ) {
 			$errInfo = error_get_last();
 			throw new Exception("Mkdir ‹{$dir}› failed: {$errInfo['message']}");
 		}
 	}
-	public static function mkParentDirs($file) {
+	public function mkParentDirs($file) {
 		$dir = dirname($file);
 		if( $dir == '' ) return;
 		self::mkdir($dir);
 	}
-	public static function buildShellCommand(array $argv, array $options=array()) {
+	public function buildShellCommand(array $argv, array $options=array()) {
 		$cmdString = implode(" ", array_map('escapeshellarg', $argv));
 		if( isset($options['outputFile']) ) {
 			$cmdString .= " >".escapeshellarg($options['outputFile']);
@@ -29,7 +29,7 @@ class TFMPM_SystemUtils
 		}
 		return $cmdString;
 	}
-	public static function runCommand($args, array $options=array()) {
+	public function runCommand($args, array $options=array()) {
 		$cmdString = is_array($args) ? self::buildShellCommand($args, $options) : '';
 		system($cmdString, $status);
 		$onNz = isset($options['onNz']) ? $options['onNz'] : 'error';
