@@ -12,7 +12,7 @@ class TFMPM_GitCheckoutUtil
 		$sparsenessConfig = isset($options['sparsenessConfig']) ? $options['sparsenessConfig'] : '';
 		$paths = isset($options['paths']) ? $options['paths'] : null;
 		
-		$checkoutGitDir = $checkoutDir.".git";
+		$checkoutGitDir = $checkoutDir."/.git";
 		$this->systemUtil->mkdir($checkoutDir);
 		$this->systemUtil->runCommand("cp -al ".escapeshellarg($sourceGitDir)." ".escapeshellarg($checkoutGitDir));
 		$git = "git --git-dir=".escapeshellarg($checkoutGitDir)." --work-tree=".escapeshellarg($checkoutDir);
