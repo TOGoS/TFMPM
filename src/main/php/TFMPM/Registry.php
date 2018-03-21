@@ -157,6 +157,15 @@ class TFMPM_Registry
 		}
 		return $rez;
 	}
+
+	protected function loadFactorioBuilder() {
+		return new TFMPM_FactorioBuilder(
+			$this->requireConfig('factorio/git-dir'),
+			$this->projectRootDir,
+			new TFMPM_GitCheckoutUtil($this->systemUtil),
+			$this->systemUtil
+		);
+	}
 	
 	protected function getBlobRepositoryDirs() {
 		$repoListFile = "{$this->projectRootDir}/config/local-ccouch-repos.lst";

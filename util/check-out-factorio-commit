@@ -1,0 +1,37 @@
+#!/usr/bin/env php
+<?php
+
+$selfDir = dirname(__DIR__);
+require_once "$selfDir/init-environment.php";
+require_once "$selfDir/init-error-handling.php";
+
+$factorioGitDir = null;
+$commitId = null;
+$mode = 'full';
+for( $i=1; $i<count($argv); ++$i ) {
+	$arg = $argv[$i];
+	if( $arg === '--data-only' ) {
+		$mode = 'data-only';
+	} else if( $arg === '--headless' ) {
+		$mode = 'headless';
+	} else if( preg_match('/^[^-].*$/', $arg) ) {
+		$commitId = $arg;
+	}
+}
+
+if( !$commitId ) {
+	throw new Exception("No commit ID specified");
+}
+
+switch( $mode ) {
+case 'data-only':
+	$dir = $TFMPM_Registry->factorioBuilder->checkOutFactorioDataOnly($commitId);
+	break;
+case 'headless':
+	$dir = $TFMPM_Registry->factorioBuilder->checkOutFactorioHeadless($commitId);
+	break;
+default:
+	throw new Exception("Unsupported checkout mode '$mode'");
+}
+
+echo $dir, "\n";

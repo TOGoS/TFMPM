@@ -2,6 +2,18 @@
 
 class TFMPM_SystemUtil
 {
+	public function unlink($whatever) {
+		if( @unlink($whatever) === false ) {
+			$errInfo = error_get_last();
+			throw new Exception("unlink(‹$whatever›) failed: {$errInfo['message']}");
+		}
+	}
+	public function symlink($src,$dest) {
+		if( @symlink($src, $dest) === false ) {
+			$errInfo = error_get_last();
+			throw new Exception("symlink(‹$src›, ‹$dest›) failed: {$errInfo['message']}");
+		}
+	}
 	public function mkdir($dir, $mode=0755) {
 		if( is_dir($dir) ) return;
 		if( @mkdir($dir, $mode, true) === false ) {
@@ -30,7 +42,7 @@ class TFMPM_SystemUtil
 		return $cmdString;
 	}
 	public function runCommand($args, array $options=array()) {
-		$cmdString = is_array($args) ? self::buildShellCommand($args, $options) : '';
+		$cmdString = is_array($args) ? self::buildShellCommand($args, $options) : $args;
 		system($cmdString, $status);
 		$onNz = isset($options['onNz']) ? $options['onNz'] : 'error';
 		if( $status != 0 && $onNz == 'error' ) {

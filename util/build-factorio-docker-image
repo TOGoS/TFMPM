@@ -1,0 +1,34 @@
+#!/usr/bin/env php
+<?php
+
+$selfDir = dirname(__DIR__);
+require_once "$selfDir/init-environment.php";
+require_once "$selfDir/init-error-handling.php";
+
+$factorioGitDir = null;
+$commitId = null;
+$mode = 'full';
+for( $i=1; $i<count($argv); ++$i ) {
+	$arg = $argv[$i];
+	if( $arg === '--headless' ) {
+		$mode = 'headless';
+	} else if( preg_match('/^[^-].*$/', $arg) ) {
+		$commitId = $arg;
+	}
+}
+
+if( !$commitId ) {
+	throw new Exception("No commit ID specified");
+}
+
+switch( $mode ) {
+case 'headless':
+	$imageInfo = $TFMPM_Registry->factorioBuilder->buildFactorioHeadlessDockerImage($commitId);
+	break;
+default:
+	throw new Exception("Unsupported checkout mode '$mode'");
+}
+
+echo $imageInfo['id'], "\n";
+echo $imageInfo['tag'], "\n";
+

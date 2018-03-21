@@ -1,20 +1,14 @@
 <?php
 
-class TFMPM_FactorioRunner
+class TFMPM_FactorioRunner extends TFMPM_Component
 {
-	protected $repository;
-	protected $factorioGitDir;
 	protected $storeSector = 'factorio-map-previews';
-
+	
 	protected static function requireParam(array $params, $key) {
 		if( !isset($params[$key]) ) {
 			throw new Exception("Required parameter '$key' not provided: ".print_r($params,true));
 		}
 		return $params[$key];
-	}
-
-	public function __construct(TOGoS_PHPN2R_Repository $repository) {
-		$this->repository = $repository;
 	}
 
 	public static function normalizeParams(array $params) {
@@ -29,17 +23,7 @@ class TFMPM_FactorioRunner
 		}
 		return $params;
 	}
-	
-	public function checkoutDataDir($commitId) {
-		$checkoutDir = "factorio-data-checkouts/$commitId";
-		$checkoutConfirmationFile = "{$checkoutDir}/.checkout-completed";
-		if( file_exists($checkoutConfirmationFile) ) return;
-		
-		if( !is_dir($checkoutDir) ) mkdir($checkoutDir, 0755, true);
-		
-		//TODOsystem("cp -al ".escapeshellarg($this->or
-	}
-	
+
 	/**
 	 * @param $params array of
 	 *   factorioCommitId
@@ -56,8 +40,8 @@ class TFMPM_FactorioRunner
 	 */
 	public function generateMapPreview( array $params ) {
 		$storeOptions = array(TOGoS_PHPN2R_Repository::OPT_SECTOR => $this->storeSector);
-		$logFile = $this->repository->newTempFile($storeOptions);
-		$mapFile = $this->repository->newTempFile($storeOptions + array(
+		$logFile = $this->primaryBlobRepository->newTempFile($storeOptions);
+		$mapFile = $this->primaryBlobRepository->newTempFile($storeOptions + array(
 			'postfix' => '.png'
 		));
 		if( !preg_match('/\.png$/', $mapFile) ) {
@@ -78,7 +62,7 @@ class TFMPM_FactorioRunner
 			throw new Exception("Dat acommit that's != factorio commit not supported: $dataCommitId != $factorioCommitId");
 		}
 
-		$factorioDockerImageId = "factorio/factorio:$factorioCommitId";
+		$factorioDockerImageId = "factorio/factorio:{$factorioCommitId}-headless";
 
 		# To checkout a data directory...
 		# git --git-dir=/home/tog/proj/Factorio/.git --work-tree=/home/tog/proj/TFMPM/factorio-checkouts/7bf41f085f84dca934d0e00e824de29260d854d6 checkout 7bf41f085f84dca934d0e00e824de29260d854d6 data
@@ -100,7 +84,7 @@ class TFMPM_FactorioRunner
 		}
 		$cmdArgs[] = "--slope-shading=$slopeShading";
 
-		TFMPM_SystemUtils::runCommand($cmdArgs, array(
+		$this->systemUtil->runCommand($cmdArgs, array(
 			'outputFile' => $logFile,
 			'errorFd' => '1',
 		));
@@ -108,7 +92,7 @@ class TFMPM_FactorioRunner
 		$result = array();
 		foreach( $files as $k => $file ) {
 			if( file_exists($file) ) {
-				$result[$k] = $this->repository->putTempFile($file, $this->storeSector);
+				$result[$k] = $this->primaryBlobRepository->putTempFile($file, $this->storeSector);
 			}
 		}
 		return $result;
