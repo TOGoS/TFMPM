@@ -28,9 +28,13 @@ class TFMPM_Router extends TFMPM_Component
 	public function restPageRequestToAction( $method, $path, $queryString, Nife_Blob $content=null ) {
 		$requestParser = new EarthIT_CMIPREST_RequestParser_CMIPRequestParser(
 			$this->schema, $this->restSchemaObjectNamer, $this->dataTableResultAssemblerFactory );
-		
-		if( ($request = $requestParser->parse( $method, $path, $queryString, $content )) !== null ) {
-			return $requestParser->toAction($request);
+
+		try {
+			if( ($request = $requestParser->parse( $method, $path, $queryString, $content )) !== null ) {
+				return $requestParser->toAction($request);
+			}
+		} catch( EarthIT_Schema_NoSuchResourceClass $e ) {
+			// Treat this as 'not found' and return null
 		}
 		
 		return null;
@@ -167,7 +171,12 @@ class TFMPM_Router extends TFMPM_Component
 		) {
 			return $restAction;
 		}
-		
+
+		return null;
+	}
+
+	protected function make404Action( TFMPM_Request $req ) {
+		$path = $req->getPathInfo();
 		return function(TFMPM_ActionContext $actx) use ($req, $path) {
 			return Nife_Util::httpResponse( 404, "I don't know about $path!" );
 		};
@@ -194,6 +203,9 @@ class TFMPM_Router extends TFMPM_Component
 	}
 	
 	public function doAction($action, TFMPM_ActionContext $actx) {
+		$needTransaction = method_exists($action,'needsImplicitTransaction') ? $action->needsImplicitTransaction($actx) : false;
+		if( !$needTransaction ) return $this->doAction2($action, $actx);
+											
 		$this->storageHelper->beginTransaction();
 		$success = false;
 		try {
@@ -238,6 +250,7 @@ class TFMPM_Router extends TFMPM_Component
 		}
 		
 		$action = $this->requestToAction($req);
+		if( $action === null ) $action = $this->make404Action($req);
 		return $this->doAction($action, $actx);
 	}
 }

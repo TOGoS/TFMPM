@@ -67,7 +67,7 @@ class TFMPM_ErrorTraceBlob implements Nife_Blob {
 			if( $cause == null ) return;
 			
 			call_user_func($callback, "Caused by...\n");
-			$text = $cause->getMessage();
+			$text = get_class($cause).": ".$cause->getMessage();
 			$backtrace = array_merge( array(array('file'=>$cause->getFile(), 'line'=>$cause->getLine())), $cause->getTrace());
 			$cause = $cause->getPrevious();
 		}
@@ -85,7 +85,7 @@ class TFMPM_ErrorTraceBlob implements Nife_Blob {
 	
 	public static function forException( $ex ) {
 		return new self(
-			$ex->getMessage(),
+			get_class($ex).": ".$ex->getMessage(),
 			array_merge( array(array('file'=>$ex->getFile(), 'line'=>$ex->getLine())), $ex->getTrace()),
 			$ex->getPrevious()
 		);
