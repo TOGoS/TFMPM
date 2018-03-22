@@ -1,4 +1,5 @@
 build_target_dir := target
+dev_www_host := localhost:6061
 
 config_files := \
 	config/ccouch-repos.lst \
@@ -157,8 +158,8 @@ rebuild-database-with-test-data: empty-database upgrade-database-with-test-data
 run-tests run-unit-tests run-integration-tests: runtime-resources ${build_target_dir}/schema/test.schema.php upgrade-database-with-test-data
 	vendor/bin/phpsimplertest --colorful-output --bootstrap init-test-environment.php src/test/php
 
-run-web-server:
-	php -S localhost:6061 -t www bootstrap.php
+run-web-server: runtime-resources upgrade-database-with-test-data
+	php -S ${dev_www_host} -t www bootstrap.php
 
 redeploy-without-upgrading-the-database: runtime-resources
 
