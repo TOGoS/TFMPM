@@ -76,6 +76,7 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 			$factorioDockerImageId
 		);
 		$cmdArgs[] = "--generate-map-preview=map-previews/{$mapBasename}";
+		$cmdArgs[] = "--map-gen-seed=".self::requireParam($params,'mapSeed');
 		$cmdArgs[] = "--map-preview-scale=".self::requireParam($params,'mapScale');
 		$cmdArgs[] = "--map-preview-offset=$mapOffset";
 		$cmdArgs[] = "--map-preview-size=$mapWidth";
