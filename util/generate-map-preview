@@ -83,7 +83,11 @@ $runner = $TFMPM_Registry->factorioRunner;
 $systemUtil = $TFMPM_Registry->systemUtil;
 
 $selfCommitShellCmd = "git --git-dir=".escapeshellarg($selfGitDir)." rev-parse HEAD";
-$selfCommitId = `$selfCommitShellCmd`;
+$selfCommitId = trim(`$selfCommitShellCmd`);
+if( $selfCommitId === '' ) {
+	fwrite(STDERR, "Warning: Unable to determine own commit ID\n");
+	$selfCommitId = null;
+}
 
 $metalogFile = $metalogDir."/".date('Y_m_d').".jsonl";
 $systemUtil->mkparentDirs($metalogFile);
