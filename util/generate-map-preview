@@ -90,9 +90,12 @@ $systemUtil->mkparentDirs($metalogFile);
 
 $params = TFMPM_FactorioRunner::normalizeParams($params);
 
+$startTime = date('c');
 $result = $runner->generateMapPreview($params);
+$endTime = date('c');
 $metalogRecord = array(
-	'date' => date('c'),
+	'startTime' => $startTime,
+	'endTime' => $endTime,
 	'tfmpmCommitId' => $selfCommitId,
 	'generationParams' => $params,
 	'generationResult' => $result,
