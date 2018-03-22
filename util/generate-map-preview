@@ -5,6 +5,64 @@ $selfDir = dirname(__DIR__);
 require_once "$selfDir/init-environment.php";
 require_once "$selfDir/init-error-handling.php";
 
+
+$paramMetadata = array(
+	'map seed' => array(),
+	'factorio commit ID' => array(),
+	'map scale' => array(
+		'defaultValue' => 1,
+	),
+	'slope shading' => array(
+		'defaultValue' => '0.3'
+	),
+	'map offset' => array(
+		'defaultValue' => '0,0'
+	),
+);
+$paramReMap = array();
+foreach( $paramMetadata as $k=>&$info ) {
+	$info['name'] = EarthIT_Schema_WordUtil::toCamelCase($k);
+	$argRoot = "--".EarthIT_Schema_WordUtil::toKebabCase($k);
+	$info['argRoot'] = $argRoot;
+	$re = "/^$argRoot=(.*)$/";
+	$paramReMap[$re] = $info;
+}; unset($info);
+
+$params = array();
+for( $i=1; $i<count($argv); ++$i ) {
+	$arg = $argv[$i];
+	foreach( $paramReMap as $regex=>$paramInfo ) {
+		if( preg_match($regex, $arg, $bif) ) {
+			$params[$paramInfo['name']] = $bif[1];
+			continue 2;
+		}
+	}
+	if( $arg == '--help' ) {
+		echo "Options:\n";
+		foreach( $paramMetadata as $param ) {
+			echo "  {$param['argRoot']}=...";
+			if( isset($param['defaultValue']) ) echo " (default: {$param['defaultValue']})";
+			echo "\n";
+		}
+		exit(0);
+	}
+	fwrite(STDERR, "Error: Unrecognized argument: ${arg}\nTry --help for help.\n");
+}
+$unspecifiedParams = array();
+foreach( $paramMetadata as $param ) {
+	if( !isset($params[$param['name']]) ) {
+		if( isset($param['defaultValue']) ) {
+			$params[$param['name']] = $param['defaultValue'];
+		} else {
+			$unspecifiedParams[] = $param['name'];
+		}
+	}
+}
+if( count($unspecifiedParams) ) {
+	fwrite(STDERR, "Error: No values given (and no defaults) for the following parameters: ".implode(", ", $unspecifiedParams)."\n");
+	exit(1);
+}
+
 $selfGitDir = "$selfDir/.git";
 $blobRepoDir = getenv('HOME')."/.ccouch";
 $metalogDir = "$selfDir/logs";
@@ -19,13 +77,6 @@ $selfCommitId = `$selfCommitShellCmd`;
 $metalogFile = $metalogDir."/".date('Y_m_d').".jsonl";
 $systemUtil->mkparentDirs($metalogFile);
 
-$params = array(
-	'mapSeed' => 1234,
-	'factorioCommitId' => '22b5f2227efb4cca3b8f356cd5f7f21470f682c5',
-	'mapScale' => 1,
-	'slopeShading' => '0.3',
-	'mapOffset' => array(0,0),
-);
 $params = TFMPM_FactorioRunner::normalizeParams($params);
 
 $result = $runner->generateMapPreview($params);
