@@ -203,6 +203,9 @@ class PHPTemplateProjectNS_Router extends PHPTemplateProjectNS_Component
 	}
 	
 	public function doAction($action, PHPTemplateProjectNS_ActionContext $actx) {
+		$needTransaction = method_exists($action,'needsImplicitTransaction') ? $action->needsImplicitTransaction($actx) : false;
+		if( !$needTransaction ) return $this->doAction2($action, $actx);
+											
 		$this->storageHelper->beginTransaction();
 		$success = false;
 		try {

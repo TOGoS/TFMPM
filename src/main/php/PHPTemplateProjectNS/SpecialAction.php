@@ -69,6 +69,14 @@ abstract class PHPTemplateProjectNS_SpecialAction extends PHPTemplateProjectNS_C
 		$messageHash = hash('sha1', $message);
 		return $this->redirect(303, "{$location}?error-message-id={$messageHash}");
 	}
+
+	/**
+	 * Should router wrap calls to isAllowed, __invoke, etc in a transaction?
+	 * Actions that don't depend on the database at all can return false.
+	 */
+	public function needsImplicitTransaction( PHPTemplateProjectNS_ActionContext $actx ) {
+		return true;
+	}
 	
 	public function isAllowed( PHPTemplateProjectNS_ActionContext $actx, &$status, array &$notes=[] ) {
 		return true;
