@@ -1,0 +1,4 @@
+{
+   "git-dir": "/path/to/your/Factorio/.fit",
+   "_comment": "Ideally this will be on the same drive as this project, so that files can be linked"
+}
