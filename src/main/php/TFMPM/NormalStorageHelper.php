@@ -62,7 +62,7 @@ implements TFMPM_StorageHelper, TFMPM_QueryHelper
 	protected $subTransactionsFailed = false;
 	public function beginTransaction() {
 		if( $this->transactionLevel++ == 0 ) {
-			$this->sqlRunner->doRawQuery("START TRANSACTION");
+			$this->sqlRunner->doRawQuery("BEGIN TRANSACTION");
 			$this->subTransactionsFailed = false;
 		} else {
 			$this->sqlRunner->doRawQuery("SAVEPOINT nest{$this->transactionLevel}");
