@@ -11,8 +11,6 @@ generated_resources := \
 	src/db-migrations/all-tables.sql \
 	src/db-migrations/create-database.sql \
 	src/db-migrations/drop-database.sql \
-	util/tfmpm-psql \
-	util/tfmpm-pg_dump \
 	util/SchemaSchemaDemo.jar \
 	${build_target_dir}/schema/schema.php \
 	vendor
@@ -84,13 +82,6 @@ ${config_files}: %: | %.example
 # package updates or apply changes to composer.json.
 composer.lock: | composer.json
 	composer install
-
-util/tfmpm-psql: config/dbc.json
-	vendor/bin/generate-psql-script -psql-exe psql "$<" >"$@"
-	chmod +x "$@"
-util/tfmpm-pg_dump: config/dbc.json
-	vendor/bin/generate-psql-script -psql-exe pg_dump "$<" >"$@"
-	chmod +x "$@"
 
 util/SchemaSchemaDemo.jar: \
 %: %.urn | vendor config/ccouch-repos.lst

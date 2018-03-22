@@ -15,8 +15,15 @@ $paramMetadata = array(
 	'slope shading' => array(
 		'defaultValue' => '0.3'
 	),
+	'map width' => array(
+		'defaultValue' => 1024
+	),
 	'map offset' => array(
 		'defaultValue' => '0,0'
+	),
+	'report quantities' => array(
+		'description' => 'List of names of prototype to report placement statistics about',
+		'defaultValue' => '',
 	),
 );
 $paramReMap = array();

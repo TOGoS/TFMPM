@@ -1,0 +1,22 @@
+#!//usr/bin/env php
+<?php
+
+$selfDir = dirname(__DIR__);
+require_once "$selfDir/init-environment.php";
+
+$dbcConfig = $TFMPM_Registry->getConfig('dbc');
+$dbFile = $dbcConfig['path'];
+$TFMPM_Registry->systemUtil->unlink($dbFile);
+
+$sqlRunner = $TFMPM_Registry->sqlRunner;
+
+$upgradesDir = "$selfDir/src/db-migrations/upgrades";
+$upgradeFiles = scandir($upgradesDir);
+foreach( $upgradeFiles as $f ) {
+	if( $f[0] == '.' ) continue; // e.g. . and ..
+	$file = "$upgradesDir/$f";
+	echo "Running $file...\n";
+	$sqlRunner->doRawQuery(file_get_contents($file));
+}
+
+// TODO: Scan log files, insert rex

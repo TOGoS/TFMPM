@@ -4,6 +4,10 @@ class TFMPM_SystemUtil
 {
 	public function unlink($whatever) {
 		if( @unlink($whatever) === false ) {
+			if( !file_exists($whatever) ) {
+				// lol it's fine
+				return;
+			}
 			$errInfo = error_get_last();
 			throw new Exception("unlink(‹$whatever›) failed: {$errInfo['message']}");
 		}
