@@ -136,17 +136,20 @@ rebuild-database: empty-database upgrade-database
 rebuild-database-with-test-data: empty-database upgrade-database-with-test-data
 
 # PHPSimplerTest doesn't know about groups!  D:
-run-unit-tests: runtime-resources ${build_target_dir}/schema/test.schema.php
-	vendor/bin/phpsimplertest --bootstrap init-test-environment.php src/test/php --colorful-output
-
-run-integration-tests: run-unit-tests
+#run-unit-tests: runtime-resources ${build_target_dir}/schema/test.schema.php
+#	vendor/bin/phpsimplertest --bootstrap init-test-environment.php src/test/php --colorful-output
+#
+# run-integration-tests: run-unit-tests
 #run-integration-tests: runtime-resources ${build_target_dir}/schema/test.schema.php upgrade-database-with-test-data
 #	vendor/bin/phpsimplertest --bootstrap init-test-environment.php --group integration src/test/php
-
-run-tests: run-unit-tests run-integration-tests
+#
+#run-tests: run-unit-tests run-integration-tests
+# So for now all the tests are combined:
+run-tests run-unit-tests run-integration-tests: runtime-resources ${build_target_dir}/schema/test.schema.php upgrade-database-with-test-data
+	vendor/bin/phpsimplertest --colorful-output --bootstrap init-test-environment.php src/test/php
 
 run-web-server:
-	cd www && php -S localhost:6061 bootstrap.php
+	php -S localhost:6061 -t www bootstrap.php
 
 redeploy-without-upgrading-the-database: runtime-resources
 
