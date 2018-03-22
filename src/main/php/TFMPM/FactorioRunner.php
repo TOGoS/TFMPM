@@ -62,7 +62,7 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 			throw new Exception("Dat acommit that's != factorio commit not supported: $dataCommitId != $factorioCommitId");
 		}
 
-		$factorioDockerImageId = "factorio/factorio:{$factorioCommitId}-headless";
+		$factorioDockerImageId = $this->factorioBuilder->ensureFactorioHeadlessDockerImageExists($factorioCommitId);
 
 		# To checkout a data directory...
 		# git --git-dir=/home/tog/proj/Factorio/.git --work-tree=/home/tog/proj/TFMPM/factorio-checkouts/7bf41f085f84dca934d0e00e824de29260d854d6 checkout 7bf41f085f84dca934d0e00e824de29260d854d6 data

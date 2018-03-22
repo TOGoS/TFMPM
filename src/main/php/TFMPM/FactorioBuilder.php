@@ -1,6 +1,6 @@
 <?php
 
-class TFMPM_FactorioBuilder
+class TFMPM_FactorioBuilder extends TFMPM_Component
 {
 	protected $factorioGitDir;
 	protected $checkoutsRootDir;
@@ -39,16 +39,9 @@ class TFMPM_FactorioBuilder
 		return $checkoutDir;
 	}
 
-	// to build factorio
-	// make regenerate_build_version_file
-	// ...some other stuff
-	// is there a docker/factorio-headless?  Use that.
-
 	public function buildFactorioHeadlessDockerImage($commitId) {
 		$dir = $this->checkOutFactorioHeadless($commitId);
-		$this->systemUtil->symlink($this->factorioGitDir,"$dir/.git"); // Needed to regenerate the build version file
-		$this->systemUtil->runCommand(array('make','-C',$dir,'regenerate_build_version_file'));
-		$this->systemUtil->unlink("$dir/.git"); // Make sure it doesn't get abused
+		$this->systemUtil->runCommand(array('make', '-C', $dir, 'regenerate_build_version_file'));
 		if( !is_dir($dir."/docker/factorio-headless") ) {
 			throw new Exception("Version $commitId doesn't have a docker/factorio-headless directory; we'll need some extra smarts in order to build it...");
 		}
@@ -57,5 +50,26 @@ class TFMPM_FactorioBuilder
 			'id' => trim(file_get_contents($dir."/docker/factorio-headless/docker-image-id")),
 			'tag' => "factorio/factorio:{$commitId}-headless"
 		);
+	}
+
+	protected $dockerImageExistenceCache = array();
+	public function doesDockerImageExist($tag) {
+		if( isset($this->dockerImageExistenceCache[$tag]) ) return true;
+		
+		if( $this->systemUtil->runCommand(array('docker','inspect',$tag), array(
+			'outputFile'=>'/dev/null', 'onNz'=>'return'
+		)) == 0 ) {
+			return $this->dockerImageExistenceCache[$tag] = true;
+		}
+		return false;
+	}
+
+	public function ensureFactorioHeadlessDockerImageExists($commitId) {
+		$tag = "factorio/factorio:{$commitId}-headless";
+		if( $this->doesDockerImageExist($tag) ) return $tag;
+		// TODO: I suppose we could try pulling from dockerhub
+		$this->log("Oh no, $tag doesn't seem to exist.  I'll have to build it...");
+		$this->buildFactorioHeadlessDockerImage($commitId);
+		return $tag;
 	}
 }
