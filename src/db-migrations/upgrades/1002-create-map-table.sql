@@ -1,6 +1,7 @@
 CREATE TABLE map_generation (
 	generation_id text, -- probably a uuid
 	generation_start_time timestamp,
+	tfmpm_commit_id text,
 	generator_node_name text, -- e.g. togos-fbs
 	factorio_commit_id text,
 	data_commit_id text,
@@ -10,9 +11,11 @@ CREATE TABLE map_generation (
 	map_offset_x integer,
 	map_offset_y integer,
 	map_image_urn text,
+	log_file_urn text,
 	generation_end_time timestamp,
 	compilation_reported_elapsed_time real, -- number of seconds generator compilation took, according to factorio
-	generation_reported_elapsed_time real -- number of seconds generation took
+	generation_reported_elapsed_time real, -- number of seconds generation took
+	PRIMARY KEY ( generation_id )
 );
 
 CREATE TABLE resource_stats (
@@ -22,5 +25,6 @@ CREATE TABLE resource_stats (
        average_quantity real,
        max_unclamped_probability real,
        max_richness real,
-       average_richness real
+       average_richness real,
+       PRIMARY KEY ( generation_id, resource_name )
 );

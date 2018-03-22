@@ -8,15 +8,188 @@ $dbcConfig = $TFMPM_Registry->getConfig('dbc');
 $dbFile = $dbcConfig['path'];
 $TFMPM_Registry->systemUtil->unlink($dbFile);
 
-$sqlRunner = $TFMPM_Registry->sqlRunner;
-
-$upgradesDir = "$selfDir/src/db-migrations/upgrades";
-$upgradeFiles = scandir($upgradesDir);
-foreach( $upgradeFiles as $f ) {
-	if( $f[0] == '.' ) continue; // e.g. . and ..
-	$file = "$upgradesDir/$f";
-	echo "Running $file...\n";
-	$sqlRunner->doRawQuery(file_get_contents($file));
+class TFMPM_DatabaseUpgrader extends TFMPM_Component
+{
+	public function runUpgrades() {
+		$upgradesDir = "{$this->registry->projectRootDir}/src/db-migrations/upgrades";
+		$upgradeFiles = scandir($upgradesDir);
+		foreach( $upgradeFiles as $f ) {
+			if( $f[0] == '.' ) continue; // e.g. . and ..
+			$file = "$upgradesDir/$f";
+			$this->log("Running $file...");
+			$this->sqlRunner->doRawQuery(file_get_contents($file));
+		}
+	}
 }
 
+class TFMPM_MapRecordInserter extends TFMPM_Component
+{
+	protected function buildInsertQuery( $tableName, $values ) {
+		$params = array();
+		$columnNames = array();
+		$valueTemplates = array();
+		foreach($values as $k=>$v) {
+			if( $k[0] == '$' ) continue;
+			$columnNames[] = $k;
+			$valueTemplates[] = "{{$k}}";
+			$params[$k] = $v;
+		}
+		$sql = "INSERT INTO $tableName (".implode(', ',$columnNames).") VALUES (".implode(', ',$valueTemplates).")";
+		return EarthIT_DBC_SQLExpressionUtil::expression($sql, $params);
+	}
+
+	protected function buildInsertQueries( $things ) {
+		$z = array();
+		foreach( $things as $t ) {
+			if( !isset($t['$table']) ) throw new Exception("Knead uh doll hair tae bull: ".print_r($t, true));
+			$z[] = $this->buildInsertQuery($t['$table'], $t);
+		}
+		return $z;
+	}
+
+	protected static function normalize( $value ) {
+		if( is_array($value) ) {
+			ksort($value);
+			foreach( $value as $k=>$v ) {
+				$v = self::normalize($v);
+				if( $v == null ) unset($value[$k]);
+				else $value[$k] = $v;
+			}
+		}
+		return $value;
+	}
+
+	protected static function findValue($arr, $keys) {
+		if( !is_array($keys) ) $keys = array($keys);
+		foreach( $keys as $k ) if(isset($arr[$k])) return $arr[$k];
+		return null;
+	}
+	
+	protected function munge( array $info, array $metadata ) {
+		$encoded = json_encode(self::normalize($info));
+		$id = hash('sha1', $encoded);
+		$genParams = $info['generationParams'];
+		$genResult = $info['generationResult'];
+		$mapScale = self::findValue($genParams, 'mapScale');
+		$mapWidth = self::findValue($genParams, 'mapWidth');
+		$mapOffset = self::findValue($genParams, 'mapOffset');
+		if( $mapOffset === null ) $mapOffset = array(0,0);
+		if( is_string($mapOffset) ) $mapOffset = explode(',',$mapOffset);
+		$logFileUrn = self::findValue($genResult, 'logFile');
+		$compilationReportedElapsedTime = null;
+		$generationReportedElapsedTime = null;
+		$resourceStats = array();
+		if( $logFileUrn ) {
+			$log = $this->blobRepository->getBlob($logFileUrn);
+			if( $log !== null ) {
+				$lines = explode("\n", (string)$log);
+				foreach( $lines as $line ) {
+					if( preg_match('/MapGenSettings compilation took (\d+(?:\.\d+)?) seconds/', $line, $bif) ) {
+						$compilationReportedElapsedTime = $bif[1];
+					} else if( preg_match('/(\S+): (total:\d.*)$/', $line, $bif) ) {
+						$resourceName = $bif[1];
+						$stats = array();
+						foreach( preg_split('/,\s*/', $bif[2]) as $thing ) {
+							$kv = explode(':',$thing,2);
+							if( count($kv) < 2 ) continue;
+							$stats[trim($kv[0])] = trim($kv[1]);
+						}
+						$resourceStats[$resourceName] = $stats;
+					} else if( preg_match('/Map preview generation time: (\d+(?:\.\d+)?) seconds/', $line, $bif) ) {
+						$generationReportedElapsedTime = $bif[1];
+					}
+				}
+			}
+		}
+		$inserts = array(
+			array(
+				'$table' => 'map_generation',
+				'generation_id' => $id,
+				'generation_start_time' => self::findValue($info, array('startTime','date')),
+				'tfmpm_commit_id' => self::findValue($info, 'tfmpmCommitId'),
+				'generator_node_name' => self::findValue($info, 'generatorNodeName'),
+				'factorio_commit_id' => self::findValue($genParams, 'factorioCommitId'),
+				'data_commit_id' => self::findValue($genParams, 'dataCommitId'),
+				'map_seed' => self::findValue($genParams, 'mapSeed'),
+				'map_scale' => $mapScale,
+				'map_width' => $mapWidth,
+				'map_offset_x' => $mapOffset[0],
+				'map_offset_y' => $mapOffset[1],
+				'map_image_urn' => self::findValue($genResult, 'mapFile'),
+				'log_file_urn' => $logFileUrn,
+				'generation_end_time' => self::findValue($info, 'endTime'),
+				'compilation_reported_elapsed_time' => $compilationReportedElapsedTime,
+				'generation_reported_elapsed_time' => $generationReportedElapsedTime,
+			)
+		);
+		foreach( $resourceStats as $resourceName=>$stats ) {
+			$totalQuantity = self::findValue($stats, 'total');
+			$averageQuantity = self::findValue($stats, 'averageQuantity');
+			if( $averageQuantity === null and $totalQuantity !== null ) {
+				$mapRealWidth = $mapScale * $mapWidth;
+				$mapRealArea = $mapRealWidth * $mapRealWidth;
+				$averageQuantity = $totalQuantity / $mapRealArea;
+			}
+			$inserts[] = array(
+				'$table' => 'resource_stats',
+				'generation_id' => $id,
+				'resource_name' => $resourceName,
+				'total_quantity' => $totalQuantity,
+				'average_quantity' => $averageQuantity,
+				'max_unclamped_probability' => self::findValue($stats, 'maxUnclampedProbability'),
+				'max_richness' => self::findValue($stats, 'maxRichness'),
+				'average_richness' => self::findValue($stats, 'averageRichness'),
+			);
+		}
+		return $inserts;
+	}
+	
+	public function item($rec, array $metadata) {
+		$tabVals = $this->munge($rec, $metadata);
+		$inserts = $this->buildInsertQueries($tabVals);
+		foreach( $inserts as $insert ) {
+			$this->sqlRunner->doQuery($insert);
+		}
+	}
+}
+
+$TFMPM_Registry->databaseUpgrader->runUpgrades();
+$inserter = $TFMPM_Registry->mapRecordInserter;
+
+$errors = array();
+$logFiles = glob("logs/*.jsonl");
+foreach( $logFiles as $logFile ) {
+	$fh = fopen( $logFile, "rb" );
+	if( $fh === false ) {
+		$errors[] = array('message'=>"Failed to open $logFile");
+		continue;
+	}
+	$lineNumber = 1;
+	while( ($line = fgets($fh)) ) {
+		$lineMd = array(
+			'fileName' => $logFile,
+			'lineNumber' => $lineNumber
+		);
+		$line = trim($line);
+		if( $line == '' or $line[0] == '#' ) continue;
+		$info = json_decode($line, true);
+		if( $info === null && $line !== 'null' ) {
+			$errors[] = array('message'=>"Error decoding JSON at $logFile:$lineNumber");
+			continue;
+		}
+		$inserter->item($info, $lineMd);
+		++$lineNumber;
+	}
+	fclose($fh);
+}
+
+if( count($errors) > 0 ) {
+	fwrite(STDERR, "Oh no there were problems\n");
+	foreach( $errors as $err ) {
+		if( isset($err['filename']) and isset($err['lineNumber']) ) {
+			$pfx = "at {$err['filename']}:{$err['lineNumber']}: ";
+		} else $pfx = '';
+		fwrite(STDERR, "  $pfx{$err['message']}\n");
+	}
+}
 // TODO: Scan log files, insert rex
