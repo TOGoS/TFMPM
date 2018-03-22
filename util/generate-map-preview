@@ -9,6 +9,9 @@ require_once "$selfDir/init-error-handling.php";
 $paramMetadata = array(
 	'map seed' => array(),
 	'factorio commit ID' => array(),
+	'data commit ID' => array(
+		'requiresValue' => false
+	),
 	'map scale' => array(
 		'defaultValue' => 1,
 	),
@@ -58,9 +61,10 @@ for( $i=1; $i<count($argv); ++$i ) {
 $unspecifiedParams = array();
 foreach( $paramMetadata as $param ) {
 	if( !isset($params[$param['name']]) ) {
+		$requiresValue = isset($param['requiresValue']) ? $param['requiresValue'] : true;
 		if( isset($param['defaultValue']) ) {
 			$params[$param['name']] = $param['defaultValue'];
-		} else {
+		} else if( $requiresValue ) {
 			$unspecifiedParams[] = $param['name'];
 		}
 	}
