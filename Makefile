@@ -155,7 +155,7 @@ run-integration-tests: run-unit-tests
 run-tests: run-unit-tests run-integration-tests
 
 run-web-server:
-	cd www && php -S localhost:6061 bootstrap.php
+	php -S localhost:6061 -t www bootstrap.php
 
 redeploy-without-upgrading-the-database: runtime-resources
 
