@@ -66,6 +66,8 @@ class TFMPM_MapRecordInserter extends TFMPM_Component
 	}
 	
 	protected function munge( array $info, array $metadata ) {
+		// Old generator recorded a \n after its own commit ID :P
+		if( isset($info['tfmpmCommitId']) ) $info['tfmpmCommitId'] = trim($info['tfmpmCommitId']);
 		$encoded = json_encode(self::normalize($info));
 		$id = hash('sha1', $encoded);
 		$genParams = $info['generationParams'];
@@ -109,7 +111,7 @@ class TFMPM_MapRecordInserter extends TFMPM_Component
 				'tfmpm_commit_id' => self::findValue($info, 'tfmpmCommitId'),
 				'generator_node_name' => self::findValue($info, 'generatorNodeName'),
 				'factorio_commit_id' => self::findValue($genParams, 'factorioCommitId'),
-				'data_commit_id' => self::findValue($genParams, 'dataCommitId'),
+				'data_commit_id' => self::findValue($genParams, array('dataCommitId', 'factorioCommitId')),
 				'map_seed' => self::findValue($genParams, 'mapSeed'),
 				'map_scale' => $mapScale,
 				'map_width' => $mapWidth,

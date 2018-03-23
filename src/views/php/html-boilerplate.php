@@ -17,16 +17,9 @@ function footerClicked() {
 <ul class="nav">
 <li><?php echo $PU->linkHtml('/','Home'); ?></li>
 <li class="devtool" style="display:none">Hi there!</li>
+<?php if(isset($extra)) echo "<li>".htmlspecialchars($extra)."</li>"; ?>
 </ul>
 
-<ul class="nav">
-<?php if( $loggedInUser ): ?>
-<li>Logged in as <?php eht($loggedInUser['username']); ?> <?php echo $PU->linkHtml('./logout','Log Out'); ?></li>
-<?php else: ?>
-<li><?php echo $PU->linkHtml('/login','Log In'); ?></li>
-<li><?php echo $PU->linkHtml('/register','Register'); ?></li>
-<?php endif; ?>
-</ul>
 </div>
 
 <div class="content">

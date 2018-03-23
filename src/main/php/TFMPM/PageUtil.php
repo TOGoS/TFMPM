@@ -68,10 +68,11 @@ class TFMPM_PageUtil extends TFMPM_Component
 		include $this->templateFile($viewName);;
 	}
 	
-	public function emitSelectOptions( array $options, $selectedValue ) {
+	public function emitSelectOptions( array $options, $selectedValues ) {
+		$selectedValues = TFMPM_Util::toSet($selectedValues);
 		foreach( $options as $k => $v ) {
 			echo "<option value=\"", htmlspecialchars($k), "\"",
-				($selectedValue == $k ? ' selected' : ''), ">",
+				(isset($set[$k]) ? ' selected' : ''), ">",
 				htmlspecialchars($v), "</option>\n";
 		}
 	}

@@ -1,0 +1,3 @@
+- List commits nicely
+  - include message, date
+  - order by number of parent commits, I guess?

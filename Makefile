@@ -57,9 +57,7 @@ default: redeploy
 	run-unit-tests \
 	run-integration-tests \
 	run-web-server \
-	test-db-connection \
-	upgrade-database \
-	upgrade-database-with-test-data
+	test-db-connection
 
 build-resources: ${build_resources}
 runtime-resources: ${runtime_resources}
@@ -122,17 +120,6 @@ test-db-connection: config/dbc.json
 empty-database: src/db-migrations/empty-database.sql util/tfmpm-psql
 	cat "$<" | util/tfmpm-psql
 
-upgrade-database: resources
-	vendor/bin/upgrade-database -upgrade-table 'tfmpm.schemaupgrade' \
-		-upgrade-script-dir src/db-migrations/upgrades	
-upgrade-database-with-test-data: resources
-	vendor/bin/upgrade-database -upgrade-table 'tfmpm.schemaupgrade' \
-		-upgrade-script-dir src/db-migrations/upgrades \
-		-upgrade-script-dir src/db-migrations/test-data
-
-fix-entity-id-sequence: resources config/entity-id-sequence.json
-	util/fix-entity-id-sequence
-
 rebuild-database:
 	util/rebuild-database
 
@@ -154,7 +141,7 @@ run-web-server: runtime-resources
 
 redeploy-without-upgrading-the-database: runtime-resources
 
-redeploy: redeploy-without-upgrading-the-database upgrade-database fix-entity-id-sequence
+redeploy: redeploy-without-upgrading-the-database
 
 everything: \
 	config/dbc.json \

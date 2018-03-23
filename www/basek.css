@@ -1,3 +1,30 @@
+/* Mah colors */
+
+h1, h2, h3, h4, h5 {
+	color: #ddd;
+}
+html, body, input, select {
+	background: black;
+	color: silver;
+}
+.nav-bar {
+	background: darkblue;
+}
+a:link {
+	color: yellow;
+	text-decoration: none; /* Underlined links are so nineties */
+}
+a:visited {
+	color: lime;
+}
+a:hover {
+	color: white;
+}
+/* ::-webkit-scrollbar {
+	background-color: darkblue;
+} */
+
+
 /* Generic stuff */
 
 body {
@@ -43,7 +70,6 @@ hr {
 	display: flex;
 	flex-direction: row;
 	width: 100%;
-	background: white;
 	height: 32px;
 }
 .nav-bar > * {
@@ -137,4 +163,26 @@ td.null {
 }
 .validation-error {
 	color: red;
+}
+
+
+
+/* Filter forms */
+
+.filter-set {
+	display: flex;
+	flex-direction: row;
+}
+.filter-set .filter {
+	display: flex;
+}
+input, fieldset {
+	margin: 4px 6px;
+}
+
+/* Map page */
+
+.overlay {
+	position: absolute;
+	background: rgba(0,0,0,0.5);
 }

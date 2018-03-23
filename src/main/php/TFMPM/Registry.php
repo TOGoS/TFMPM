@@ -78,7 +78,7 @@ class TFMPM_Registry
 	}
 	
 	public function loadDbObjectNamer() {
-		return new EarthIT_DBC_OverridableNamer(new EarthIT_DBC_PostgresNamer());
+		return new EarthIT_DBC_OverridableNamer(new TFMPM_SnakeCaseDBObjectNamer());
 	}
 	
 	public function getRestNameFormatter() {

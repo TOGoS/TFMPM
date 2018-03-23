@@ -62,7 +62,9 @@ class TFMPM_Router extends TFMPM_Component
 		$path = $req->getPathInfo();
 		$method = $req->getRequestMethod();
 		if( $path == '/' ) {
-			return $this->createPageAction('ShowHello');
+			return $this->createPageAction('ShowHello', $this->mapModel->queryParamsToMapFilters($req->getParams()));
+		} else if( $path == '/compare-maps' ) {
+			return $this->createPageAction('ShowMapComparison', $this->mapModel->queryParamsToMapFilters($req->getParams()));
 		} else if( preg_match('<^/uri-res(/.*)>', $path, $bif) ) {
 			switch($req->requestMethod) {
 			case 'PUT':

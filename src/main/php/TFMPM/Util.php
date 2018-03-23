@@ -14,6 +14,37 @@ class TFMPM_Util
 		return "a ".gettype($thing);
 	}
 	
+	public static function parseCoordinate($thing) {
+		if( is_array($thing) ) {
+			if(
+				count($thing) == 2 and
+				isset($thing[0]) and is_numeric($thing[0]) and
+				isset($thing[1]) and is_numeric($thing[1])
+			) {
+				return array( (float)$thing[0], (float)$thing[1] );
+			}
+			else {
+				throw new Exception("Invalid coordinate array: ".json_encode($thing));
+			}
+		} else if( is_string($thing) ) {
+			$e = explode(',', $thing);
+			return self::parseCoordinate($e);
+		} else {
+			throw new Exception("Don't know how to parse ".self::describe($thing)." as coordinate");
+		}
+	}
+	
+	public static function toSet($thing) {
+		if( $thing === null ) return array();
+		if( is_scalar($thing) ) return array($thing=>$thing);
+		if( is_array($thing) ) {
+			$set = array();
+			foreach($thing as $v) $set[$v] = $v;
+			return $set;
+		}
+		throw new Exception("Don't know how to settify ".TFMPM_Util::describe($thing));
+	}
+	
 	/**
 	 * This is named to match PHP's built-in jsonSerialize method
 	 * and doesn't actually 'serialize', but turns a value
