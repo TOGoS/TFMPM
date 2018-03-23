@@ -152,6 +152,6 @@ class TFMPM_MapModel extends TFMPM_Component
 			unset($row['mapOffsetY']);
 			$maps[$row['generationId']] = $map;
 		}
-return $maps;
+		return $maps;
 	}
 }
