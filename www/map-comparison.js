@@ -33,7 +33,16 @@
 	MapComparisonUI.prototype.showMap = function(map) {
 		this.mapImageElement.setAttribute('src',this.mapImageUrl(map));
 		clearChildren(this.mapInfoTbody);
-		for( let attr in this.mapAttributeMetadata ) {
+		for( let attrIndex in this.mapAttributeMetadata ) {
+			let attr = this.mapAttributeMetadata[attrIndex];
+			let attrTr = document.createElement('tr');
+			let attrKeyTd = document.createElement('td');
+			attrKeyTd.appendChild(document.createTextNode(attr.code));
+			let attrValueTd = document.createElement('td');
+			attrValueTd.appendChild(document.createTextNode(map[attr.code]));
+			attrTr.appendChild(attrKeyTd);
+			attrTr.appendChild(attrValueTd);
+			this.mapInfoTbody.appendChild(attrTr);
 		}
 	};
 	MapComparisonUI.prototype.start = function() {
