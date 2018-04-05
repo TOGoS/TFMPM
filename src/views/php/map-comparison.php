@@ -6,10 +6,16 @@
 <h3>Halp!</h3>
 </div>
 
-<table id="map-info-table" class="overlay">
+<div id="info-overlay" class="overlay">
+<table id="map-info-table">
 <tbody id="map-info-tbody">
+<tr id="cursor-position-tr">
+  <td>Cursor Position</td>
+  <td id="cursor-position">&nbsp;</td>
+</tr>
 </tbody>
 </table>
+</div>
 
 <div id="map-container">
 <img id="map-image" width="1024" height="1024"/>
@@ -21,9 +27,13 @@
 		maps: <?php EarthIT_JSON::prettyPrint($maps, Nife_Util::getEchoFunction(), "\n\t\t"); ?>,
 		mapContainer: document.getElementById('map-container'),
 		mapImageElement: document.getElementById('map-image'),
+		cursorPositionElement: document.getElementById('cursor-position'),
 		mapInfoTable: document.getElementById('map-info-table'),
 		mapInfoTbody: document.getElementById('map-info-tbody'),
 	});
+	window.addEventListener('mousemove', mcUi.onMouseMove.bind(mcUi));
+	window.addEventListener('keydown', mcUi.onKey.bind(mcUi));
+	mcUi.mapImageElement.addEventListener('wheel', mcUi.onWheel.bind(mcUi));
 	mcUi.start();
 })();
 //]]></script>
