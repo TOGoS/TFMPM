@@ -105,6 +105,7 @@ class 'map generation' {
 	map offset : has a database column @ false : coordinate : filterability @ "exact-match"
 	map offset X : number
 	map offset Y : number
+	slope shading : number
 	generation start time : time : filterability @ "time-range"
 	generation end time : time : filterability @ "time-range"
 	map image URN : URI

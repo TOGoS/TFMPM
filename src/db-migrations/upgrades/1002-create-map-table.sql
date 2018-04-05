@@ -10,6 +10,7 @@ CREATE TABLE map_generation (
 	map_width integer, -- Also the height!
 	map_offset_x integer,
 	map_offset_y integer,
+	slope_shading real,
 	-- generation info:
 	generation_start_time timestamp,
 	generation_end_time timestamp,

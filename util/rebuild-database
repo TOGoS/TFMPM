@@ -75,6 +75,7 @@ class TFMPM_MapRecordInserter extends TFMPM_Component
 		$mapScale = self::findValue($genParams, 'mapScale');
 		$mapWidth = self::findValue($genParams, 'mapWidth');
 		$mapOffset = self::findValue($genParams, 'mapOffset');
+		$slopeShading = self::findValue($genParams, 'slopeShading');
 		if( $mapOffset === null ) $mapOffset = array(0,0);
 		if( is_string($mapOffset) ) $mapOffset = explode(',',$mapOffset);
 		$logFileUrn = self::findValue($genResult, 'logFile');
@@ -117,6 +118,7 @@ class TFMPM_MapRecordInserter extends TFMPM_Component
 				'map_width' => $mapWidth,
 				'map_offset_x' => $mapOffset[0],
 				'map_offset_y' => $mapOffset[1],
+				'slope_shading' => $slopeShading,
 				'map_image_urn' => self::findValue($genResult, 'mapFile'),
 				'log_file_urn' => $logFileUrn,
 				'generation_end_time' => self::findValue($info, 'endTime'),
