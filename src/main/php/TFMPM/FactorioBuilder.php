@@ -13,14 +13,16 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 		$this->gitCheckoutUtil = $gitCheckoutUtil;
 		$this->systemUtil = $systemUtil;
 	}
-		
-	public function checkOutFactorioDataOnly($commitId) {
-		$checkoutDir = "factorio-checkouts/$commitId.data-only";
+	
+	public function checkOutFactorioHeadlessData($commitId) {
+		$checkoutDir = "factorio-checkouts/$commitId.headless-data";
 		$checkoutConfirmationFile = "{$checkoutDir}/.checkout-completed";
 		if( !file_exists($checkoutConfirmationFile) ) {
 			$this->gitCheckoutUtil->gitCheckoutCopy($this->factorioGitDir, $commitId, $checkoutDir, array(
-				'sparsenessConfig' => '!*.png',
-				'files' => 'data'
+				'sparsenessConfig' => array(
+					'data/*',
+					'!*.png'
+				)
 			));
 			file_put_contents($checkoutConfirmationFile, "ok");
 		}
@@ -32,7 +34,10 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 		$checkoutConfirmationFile = "{$checkoutDir}/.checkout-completed";
 		if( !file_exists($checkoutConfirmationFile) ) {
 			$this->gitCheckoutUtil->gitCheckoutCopy($this->factorioGitDir, $commitId, $checkoutDir, array(
-				'sparsenessConfig' => '!*.png'
+				'sparsenessConfig' => array(
+					'*',
+					'!*.png'
+				)
 			));
 			file_put_contents($checkoutConfirmationFile, "ok");
 		}

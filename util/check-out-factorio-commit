@@ -10,8 +10,8 @@ $commitId = null;
 $mode = 'full';
 for( $i=1; $i<count($argv); ++$i ) {
 	$arg = $argv[$i];
-	if( $arg === '--data-only' ) {
-		$mode = 'data-only';
+	if( $arg === '--headless-data' ) {
+		$mode = 'headless-data';
 	} else if( $arg === '--headless' ) {
 		$mode = 'headless';
 	} else if( preg_match('/^[^-].*$/', $arg) ) {
@@ -27,8 +27,8 @@ if( !$commitId ) {
 }
 
 switch( $mode ) {
-case 'data-only':
-	$dir = $TFMPM_Registry->factorioBuilder->checkOutFactorioDataOnly($commitId);
+case 'headless-data':
+	$dir = $TFMPM_Registry->factorioBuilder->checkOutFactorioHeadlessData($commitId);
 	break;
 case 'headless':
 	$dir = $TFMPM_Registry->factorioBuilder->checkOutFactorioHeadless($commitId);
