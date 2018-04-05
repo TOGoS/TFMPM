@@ -23,13 +23,15 @@ class TFMPM_GitCheckoutUtil
 		}
 		if( $paths === array() ) return;
 
-		// The 'reset && checkout' approach is imperfect because
-		// it resets whatever the current branch was to the named commit.
-		// Basically I want to check out a commit (and be detached)
-		// without checking out files so that I can check out files separately
+		// Putting the working tree into 'detached' state for a specific commit
+		// while also checking out only specific files (or no files)
+		// is slightly tricky.
+		// Here I'm using the approach suggested by https://stackoverflow.com/questions/1282639/switch-git-branch-without-files-checkout#comment17573987_1282894
 		
-		$resetCmd = "$git reset ".escapeshellarg($commitId);
-		$this->systemUtil->runCommand($resetCmd);
+		unlink("$checkoutGitDir/HEAD");
+		file_put_contents("$checkoutGitDir/HEAD", $commitId);
+		$this->systemUtil->runCommand("$git reset");
+		$this->systemUtil->runCommand("$git read-tree -mu HEAD");
 		
 		$checkoutCmd = "$git checkout ".escapeshellarg($commitId);
 		if( $paths !== null ) foreach( $paths as $p ) {
