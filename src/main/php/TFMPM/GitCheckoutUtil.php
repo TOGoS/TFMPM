@@ -23,6 +23,9 @@ class TFMPM_GitCheckoutUtil
 		}
 		if( $paths === array() ) return;
 
+		$resetCmd = "$git reset ".escapeshellarg($commitId);
+		$this->systemUtil->runCommand($resetCmd);
+		
 		$checkoutCmd = "$git checkout ".escapeshellarg($commitId);
 		if( $paths !== null ) foreach( $paths as $p ) {
 				$checkoutCmd .= " ".escapeshellarg($p);

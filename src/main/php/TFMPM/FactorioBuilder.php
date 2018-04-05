@@ -45,10 +45,11 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 		if( !is_dir($dir."/docker/factorio-headless") ) {
 			throw new Exception("Version $commitId doesn't have a docker/factorio-headless directory; we'll need some extra smarts in order to build it...");
 		}
-		$this->systemUtil->runCommand(array('make','-C',$dir."/docker/factorio-headless"));
+		$buildId = "{$commitId}-headless";
+		$this->systemUtil->runCommand(array('make',"build_id={$buildId}",'-C',$dir."/docker/factorio-headless"));
 		return array(
 			'id' => trim(file_get_contents($dir."/docker/factorio-headless/docker-image-id")),
-			'tag' => "factorio/factorio:{$commitId}-headless"
+			'tag' => "factorio/factorio:{$buildId}"
 		);
 	}
 

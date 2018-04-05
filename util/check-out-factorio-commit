@@ -15,6 +15,9 @@ for( $i=1; $i<count($argv); ++$i ) {
 	} else if( $arg === '--headless' ) {
 		$mode = 'headless';
 	} else if( preg_match('/^[^-].*$/', $arg) ) {
+		if( $commitId !== null ) {
+			throw new Exception("More than one commit ID specified: $commitId");
+		}
 		$commitId = $arg;
 	}
 }
