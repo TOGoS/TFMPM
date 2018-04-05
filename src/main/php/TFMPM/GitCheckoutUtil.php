@@ -23,6 +23,11 @@ class TFMPM_GitCheckoutUtil
 		}
 		if( $paths === array() ) return;
 
+		// The 'reset && checkout' approach is imperfect because
+		// it resets whatever the current branch was to the named commit.
+		// Basically I want to check out a commit (and be detached)
+		// without checking out files so that I can check out files separately
+		
 		$resetCmd = "$git reset ".escapeshellarg($commitId);
 		$this->systemUtil->runCommand($resetCmd);
 		
