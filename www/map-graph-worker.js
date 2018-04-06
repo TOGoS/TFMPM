@@ -173,6 +173,7 @@ function generateMapGraph(maps) {
 	}
 	
 	return Promise.resolve({
+		dimensionMapAttributes,
 		xDim, yDim, zDim,
 		nodes
 	});

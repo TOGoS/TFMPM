@@ -20,6 +20,13 @@
 </tr>
 </tbody>
 </table>
+
+<hr />
+
+<table id="map-navigation-table">
+<tbody id="map-navigation-tbody">
+</tbody>
+</table>
 </div>
 
 <div id="map-container">
@@ -35,6 +42,7 @@
 		cursorPositionElement: document.getElementById('cursor-position'),
 		mapInfoTable: document.getElementById('map-info-table'),
 		mapInfoTbody: document.getElementById('map-info-tbody'),
+		mapNavigationTbody: document.getElementById('map-navigation-tbody'),
 		backgroundElement: document.getElementById('main-content-div'),
 	});
 	window.addEventListener('mousemove', mcUi.onMouseMove.bind(mcUi));

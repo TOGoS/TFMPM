@@ -188,17 +188,23 @@ input, fieldset {
 	background: rgba(0,0,0,0.5);
 }
 
-tr.separator td {
-	 height; 2px;
-	 background-color: rgba(255,255,255,0.5);
+hr {
+	border: none;
+	height: 2px;
+	background-color: rgba(255,255,255,0.5);
 }
+
 td.control-indicator {
-	 text-align: center;
-	 color: yellow;
+	text-align: center;
+	color: yellow;
 }
 
 #map-container {
 	display: flex;
 	flex-direction: row;
 	justify-content: center;
+}
+
+.code-value {
+	font-family: monospace;
 }

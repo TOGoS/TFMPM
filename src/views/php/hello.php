@@ -20,7 +20,6 @@
     <select id="<?php eht($fieldCode."SelectBox");?>" name="<?php eht($fieldCode); ?>[]" multiple size="20">
     <?php $PU->emitSelectOptions($filter['values'], $filter['selectedValues']); ?>
     </select>
-    <br />
     <a onclick="<?php eht("\$('#{$fieldCode}SelectBox option:selected').prop('selected',false);"); ?>">clear</a>
   </fieldset>
  <?php endif; ?>

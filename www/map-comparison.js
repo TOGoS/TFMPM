@@ -11,6 +11,7 @@
 		this.maps = params.maps;
 		this.mapImageElement = params.mapImageElement;
 		this.mapInfoTbody = params.mapInfoTbody;
+		this.mapNavigationTbody = params.mapNavigationTbody;
 		this.cursorPositionElement = params.cursorPositionElement;
 		this.backgroundElement = params.backgroundElement;
 		this.currentMapKey = undefined;
@@ -39,23 +40,40 @@
 	MapComparisonUI.prototype.mapImageUrl = function(map) {
 		return this.uriResolverPrefix + map.mapImageUrn + "/" + map.generationId + ".png";
 	};
+	MapComparisonUI.prototype.createTd = function(value, className, widthPercentage) {
+		if( value == undefined ) value = " ";
+		let td = document.createElement('td');
+		td.appendChild(document.createTextNode(value));
+		if( className ) td.className = className;
+		if( widthPercentage != undefined ) td.setAttribute('width', widthPercentage+'%');
+		return td;
+	}
 	MapComparisonUI.prototype.createSeparatorTr = function() {
 		let tr = document.createElement('tr');
 		tr.className = "separator";
 		let td = document.createElement('td');
 		td.setAttribute('colspan','2');
+		let hr = document.createElement('hr');
+		td.appendChild(hr);
 		tr.appendChild(td);
 		return tr;
 	}
 	MapComparisonUI.prototype.createKvTr = function(k, v, kClassName) {
 		let tr = document.createElement('tr');
 		let kTd = document.createElement('td');
-		kTd.className = kClassName;
-		kTd.appendChild(document.createTextNode(k));
-		let vTd = document.createElement('td');
-		vTd.appendChild(document.createTextNode(v));
-		tr.appendChild(kTd);
-		tr.appendChild(vTd);
+		tr.appendChild(this.createTd(k, kClassName));
+		tr.appendChild(this.createTd(v, 'code-value'));
+		return tr;
+	}
+	MapComparisonUI.prototype.createNavTr = function(dim, prevVal, prevSym, curVal, nextSym, nextVal) {
+		let tr = document.createElement('tr');
+		tr.appendChild(this.createTd(prevVal, 'code-value', 30));
+		tr.appendChild(this.createTd(prevSym, 'control-indicator', 0));
+		tr.appendChild(this.createTd(dim, 'code-value', 0));
+		tr.appendChild(this.createTd("=", 'code-value', 0));
+		tr.appendChild(this.createTd(curVal, 'code-value', 30));
+		tr.appendChild(this.createTd(nextSym, 'control-indicator', 0));
+		tr.appendChild(this.createTd(nextVal, 'code-value', 30));
 		return tr;
 	}
 	MapComparisonUI.prototype.rebuildMapInfoView = function() {
@@ -74,10 +92,32 @@
 				map && map[attr.code] || ""
 			));
 		}
-		if( this.mapGraph ) {
-			this.mapInfoTbody.appendChild(this.createSeparatorTr());
-			if( this.mapGraph.xDim ) this.mapInfoTbody.appendChild(this.createKvTr("↔", this.mapGraph.xDim, 'control-indicator'));
-			if( this.mapGraph.yDim ) this.mapInfoTbody.appendChild(this.createKvTr("↕", this.mapGraph.yDim, 'control-indicator'));
+		clearChildren(this.mapNavigationTbody);
+		let currentNode = this.mapGraph && this.mapGraph.nodes[this.currentMapKey]
+		if( this.mapGraph && currentNode ) {
+			let xDim = this.mapGraph.xDim;
+			let yDim = this.mapGraph.yDim;
+			let zDim = this.mapGraph.zDim;
+			const getMapDimAttr = (map,dim) => {
+				if( map == undefined ) return undefined;
+				let attrs = this.mapGraph.dimensionMapAttributes[dim];
+				let attrVals = [];
+				for( let a in attrs ) {
+					attrVals.push(map[attrs[a]]);
+				}
+				return attrVals.join('-');
+			}
+			const getNodeAttr = (nodeId,dim) => {
+				if( nodeId == undefined ) return '';
+				let map = this.maps[nodeId];
+				return getMapDimAttr(map, dim);
+			}
+			if( xDim ) this.mapNavigationTbody.appendChild(this.createNavTr(
+				xDim, getNodeAttr(currentNode.left, xDim), '←', getMapDimAttr(map,xDim), '→', getNodeAttr(currentNode.right, xDim)));
+			if( yDim ) this.mapNavigationTbody.appendChild(this.createNavTr(
+				yDim, getNodeAttr(currentNode.up  , yDim), '↑', getMapDimAttr(map,yDim), '↓', getNodeAttr(currentNode.down , yDim)));
+			if( zDim ) this.mapNavigationTbody.appendChild(this.createNavTr(
+				zDim, getNodeAttr(currentNode.out , zDim), '-', getMapDimAttr(map,zDim), '+', getNodeAttr(currentNode.in   , zDim)));
 		}
 	}
 	MapComparisonUI.prototype.showMap = function(mapKey) {
