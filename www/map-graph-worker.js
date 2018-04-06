@@ -22,7 +22,8 @@ function generateMapGraph(maps) {
 		commitId: ['factorioCommitId','dataCommitId'],
 		mapSeed: ['mapSeed'],
 		// map gen settings should go here when I have it
-		mapOffset: ['mapOffsetX','mapOffsetY'],
+		mapOffset: ['mapOffsetX'],
+		mapOffsetY: ['mapOffsetY'],
 		// everything else; stuff we probably don't want to navigate based on
 		slopeShading: ['slopeShading'],
 		mapScale: ['mapScale'],

@@ -139,37 +139,6 @@
 			this.cursorPositionElement.firstChild.nodeValue = "" + worldOffsetX + "," + worldOffsetY;
 		}
 	}
-	MapComparisonUI.prototype.onMouseMove = function( mmEvt ) {
-		this.cursorPixelPosition = {
-			x: (mmEvt.clientX - this.mapImageElement.offsetLeft),
-			y: (mmEvt.clientY - this.mapImageElement.offsetTop)
-		};
-		this.updateCursorCoordinates();
-	};
-	MapComparisonUI.prototype.keyCodeToDirection = function( keyCode ) {
-		const K_D = 68; const K_RIGHT = 39;
-		const K_A = 65; const K_LEFT  = 37;
-		const K_W = 87; const K_UP    = 38;
-		const K_S = 83; const K_DOWN  = 40;
-		switch( keyCode ) {
-		case K_D: case K_RIGHT: return 'right';
-		case K_A: case K_LEFT : return 'left';
-		case K_W: case K_UP   : return 'up';
-		case K_S: case K_DOWN : return 'down';
-		default: return undefined;
-		}
-	}
-	MapComparisonUI.prototype.onKey = function( keyEvent ) {
-		let keyCode = keyEvent.keyCode;
-		let dir = this.keyCodeToDirection(keyCode);
-		if( dir != undefined ) {
-			this.moveThroughGraph(dir);
-			keyEvent.preventDefault();
-			keyEvent.stopPropagation();
-			return;
-		}
-		console.log("Key event: "+keyCode);
-	}
 	MapComparisonUI.prototype.bump = function(message) {
 		if( this.backgroundElement ) {
 			let oldStyle = this.backgroundElement.style.background;
@@ -204,6 +173,41 @@
 		console.log(direction+" from "+currentMapKey+" is "+newIdx);
 		this.showMap(newIdx);
 	};
+	MapComparisonUI.prototype.onMouseMove = function( mmEvt ) {
+		this.cursorPixelPosition = {
+			x: (mmEvt.clientX - this.mapImageElement.offsetLeft),
+			y: (mmEvt.clientY - this.mapImageElement.offsetTop)
+		};
+		this.updateCursorCoordinates();
+	};
+	MapComparisonUI.prototype.keyCodeToDirection = function( keyCode ) {
+		const K_D = 68; const K_RIGHT = 39;
+		const K_A = 65; const K_LEFT  = 37;
+		const K_W = 87; const K_UP    = 38;
+		const K_S = 83; const K_DOWN  = 40;
+		const K_PLUS = 61;
+		const K_MINUS = 173;
+		switch( keyCode ) {
+		case K_D: case K_RIGHT: return 'right';
+		case K_A: case K_LEFT : return 'left';
+		case K_W: case K_UP   : return 'up';
+		case K_S: case K_DOWN : return 'down';
+		case K_PLUS: return 'in';
+		case K_MINUS: return 'out';
+		default: return undefined;
+		}
+	}
+	MapComparisonUI.prototype.onKey = function( keyEvent ) {
+		let keyCode = keyEvent.keyCode;
+		let dir = this.keyCodeToDirection(keyCode);
+		if( dir != undefined ) {
+			this.moveThroughGraph(dir);
+			keyEvent.preventDefault();
+			keyEvent.stopPropagation();
+			return;
+		}
+		console.log("Key event: "+keyCode);
+	}
 	MapComparisonUI.prototype.zoomIn = function() { this.moveThroughGraph('in'); }
 	MapComparisonUI.prototype.zoomOut = function() { this.moveThroughGraph('out'); }
 	MapComparisonUI.prototype.onWheel = function( wheelEvent ) {
