@@ -25,7 +25,7 @@ $paramMetadata = array(
 		'defaultValue' => '0,0'
 	),
 	'report quantities' => array(
-		'description' => 'List of names of prototype to report placement statistics about',
+		'description' => 'Comma-separated list of names of prototype to report placement statistics about',
 		'defaultValue' => '',
 	),
 );
@@ -38,6 +38,8 @@ foreach( $paramMetadata as $k=>&$info ) {
 	$paramReMap[$re] = $info;
 }; unset($info);
 
+$beLazy = false;
+$verbosity = 0;
 $params = array();
 for( $i=1; $i<count($argv); ++$i ) {
 	$arg = $argv[$i];
@@ -47,16 +49,25 @@ for( $i=1; $i<count($argv); ++$i ) {
 			continue 2;
 		}
 	}
-	if( $arg == '--help' ) {
+	if( $arg == '-v' ) {
+		$verbosity = 100;
+	} else if( $arg == '-vv' ) {
+		$verbosity = 200;
+	} else if( $arg == '--help' ) {
 		echo "Options:\n";
+		echo " --help ; show this\n";
+		echo " --lazy ; skip generating maps already generated (according to the SQLite database)\n";
 		foreach( $paramMetadata as $param ) {
 			echo "  {$param['argRoot']}=...";
 			if( isset($param['defaultValue']) ) echo " (default: {$param['defaultValue']})";
 			echo "\n";
 		}
 		exit(0);
+	} else if( $arg == '--lazy' ) {
+		$beLazy = true;
+	} else {
+		fwrite(STDERR, "Error: Unrecognized argument: ${arg}\nTry --help for help.\n");
 	}
-	fwrite(STDERR, "Error: Unrecognized argument: ${arg}\nTry --help for help.\n");
 }
 $unspecifiedParams = array();
 foreach( $paramMetadata as $param ) {
@@ -81,6 +92,22 @@ if( !is_dir($metalogDir) ) mkdir($metalogDir, 0777, true);
 
 $runner = $TFMPM_Registry->factorioRunner;
 $systemUtil = $TFMPM_Registry->systemUtil;
+
+if( $beLazy ) {
+	$filters = array();
+	foreach( $params as $k=>$v ) $filters[$k] = array($v);
+	$maps = $TFMPM_Registry->mapModel->getMaps($filters);
+	if( count($maps) > 0 ) {
+		if( $verbosity >= 200 ) {
+			fwrite(STDERR, "Skipping; already generated: ");
+			fwrite(STDERR, json_encode($params,JSON_PRETTY_PRINT).": ");
+			fwrite(STDERR, json_encode($maps,JSON_PRETTY_PRINT)."\n");
+		} else if( $verbosity >= 100 ) {
+			fwrite(STDERR, "Skipping; already generated!\n");
+		}
+		exit(0);
+	}
+}
 
 $selfCommitShellCmd = "git --git-dir=".escapeshellarg($selfGitDir)." rev-parse HEAD";
 $selfCommitId = trim(`$selfCommitShellCmd`);
@@ -112,7 +139,9 @@ $metalogStream = fopen( $metalogFile, "ab" );
 fwrite($metalogStream, json_encode($metalogRecord)."\n");
 fclose($metalogStream);
 
-echo json_encode($metalogRecord,JSON_PRETTY_PRINT), "\n";
+if( $verbosity >= 100 ) {
+	echo json_encode($metalogRecord,JSON_PRETTY_PRINT), "\n";
+}
 
 $TFMPM_Registry->mapRecordInserter->open();
 $TFMPM_Registry->mapRecordInserter->item($metalogRecord);

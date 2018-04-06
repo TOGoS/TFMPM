@@ -106,6 +106,7 @@ class 'map generation' {
 	map offset X : number
 	map offset Y : number
 	slope shading : number
+	report quantities : text
 	generation start time : time : filterability @ "time-range"
 	generation end time : time : filterability @ "time-range"
 	map image URN : URI

@@ -11,6 +11,7 @@ CREATE TABLE map_generation (
 	map_offset_x integer,
 	map_offset_y integer,
 	slope_shading real,
+	report_quantities text,
 	-- generation info:
 	generation_start_time timestamp,
 	generation_end_time timestamp,
