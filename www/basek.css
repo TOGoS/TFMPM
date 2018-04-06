@@ -175,6 +175,7 @@ td.null {
 }
 .filter-set .filter {
 	display: flex;
+	flex-direction: column;
 }
 input, fieldset {
 	margin: 4px 6px;

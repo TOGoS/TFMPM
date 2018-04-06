@@ -13,14 +13,15 @@
 <?php foreach($mapFilterMetadata as $fieldCode=>$filter): ?>
  <?php if( isset($filter['filterability']['exact-match']) and count($filter['values']) ): ?>
   <fieldset class="filter">
-  <legend><?php eht($filter['fieldName']); ?></legend>
-  <?php foreach($filter['selectedValues'] as $value): ?>
-  <input type="hidden" name="<?php eht($fieldCode); ?>[]" value="<?php eht($value); ?>"/>
-  <?php endforeach; ?>
-  <select id="<?php eht($fieldCode."SelectBox");?>" name="<?php eht($fieldCode); ?>[]" multiple size="20">
-  <?php $PU->emitSelectOptions($filter['values'], $filter['selectedValues']); ?>
-  </select>
-  <a onclick="<?php eht("\$('#{$fieldCode}SelectBox option:selected').prop('selected',false);"); ?>">clear</a>
+    <legend><?php eht($filter['fieldName']); ?></legend>
+   <?php foreach($filter['selectedValues'] as $value): ?>
+    <input type="hidden" name="<?php eht($fieldCode); ?>[]" value="<?php eht($value); ?>"/>
+   <?php endforeach; ?>
+    <select id="<?php eht($fieldCode."SelectBox");?>" name="<?php eht($fieldCode); ?>[]" multiple size="20">
+    <?php $PU->emitSelectOptions($filter['values'], $filter['selectedValues']); ?>
+    </select>
+    <br />
+    <a onclick="<?php eht("\$('#{$fieldCode}SelectBox option:selected').prop('selected',false);"); ?>">clear</a>
   </fieldset>
  <?php endif; ?>
 <?php endforeach; ?>
