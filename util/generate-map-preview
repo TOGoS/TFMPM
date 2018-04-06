@@ -113,3 +113,7 @@ fwrite($metalogStream, json_encode($metalogRecord)."\n");
 fclose($metalogStream);
 
 echo json_encode($metalogRecord,JSON_PRETTY_PRINT), "\n";
+
+$TFMPM_Registry->mapRecordInserter->open();
+$TFMPM_Registry->mapRecordInserter->item($metalogRecord);
+$TFMPM_Registry->mapRecordInserter->close();
