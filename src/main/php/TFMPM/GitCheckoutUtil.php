@@ -31,5 +31,20 @@ class TFMPM_GitCheckoutUtil
 
 		$checkoutCmd = "$git checkout ".escapeshellarg($commitId);
 		$this->systemUtil->runCommand($checkoutCmd);
+		$checkoutCmd2 = "$git checkout ".escapeshellarg($commitId)." .";
+		$this->systemUtil->runCommand($checkoutCmd2);
+
+		if( isset($options['shouldExist']) ) {
+			$shouldExist = is_array($options['shouldExist']) ? $options['shouldExist'] : array($options['shouldExist']);
+			$missing = array();
+			foreach( $shouldExist as $f ) {
+				if( !file_exists("$checkoutDir/$f") ) {
+					$missing[] = $f;
+				}
+			}
+			if( count($missing) > 0 ) {
+				throw new Exception("Oh no, checkout failed; ".EarthIT_Schema_WordUtil::oxfordlyFormatList($missing)." are missing");
+			}
+		}
 	}
 }

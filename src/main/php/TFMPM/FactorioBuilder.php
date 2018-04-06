@@ -37,7 +37,11 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 				'sparsenessConfig' => array(
 					'*',
 					'!*.png'
-				)
+				),
+				'shouldExist' => array(
+					'Makefile',
+					'src/Main.cpp',
+				),
 			));
 			file_put_contents($checkoutConfirmationFile, "ok");
 		}
