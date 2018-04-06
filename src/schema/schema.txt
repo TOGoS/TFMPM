@@ -93,6 +93,7 @@ reference property 'indicates ownee' :
 field modifier UTCR = uses user text canonicalization rules
 
 field property 'filterability' : string : long name @ "http://ns.nuke24.net/TFMPM/filterability"
+field property 'included in basic info' : string : long name @ "http://ns.nuke24.net/TFMPM/includedInBasicInfo"
 
 class 'map generation' {
 	# Generation metadata
@@ -110,7 +111,7 @@ class 'map generation' {
 	map offset X : number
 	map offset Y : number
 	slope shading : number
-	report quantities : text
+	report quantities : text : included in basic info @ false
 
 	# Outputs
 	generation start time : time : filterability @ "time-range"
@@ -119,4 +120,16 @@ class 'map generation' {
 	generation reported elapsed time : time interval : nullable
 	map image URN : URI
 	log file URN : URI
+}
+
+class 'map resource stats' {
+	map generation : reference(map generation) : inverse collection name @ "map resource stats" {
+		 generation ID
+	}
+	resource name : string
+	total quantity : number
+	average quantity : number : comment @ "average per tile (i.e. m²)"
+	max unclamped probability : number
+	max richness : number
+	average richness : number
 }

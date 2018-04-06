@@ -1,5 +1,5 @@
 CREATE TABLE map_generation (
-	generation_id text, -- probably a uuid
+	generation_id text, -- probably a uuid or a hash or something
 	tfmpm_commit_id text,
 	generator_node_name text, -- e.g. togos-fbs
 	-- generation parameters:
@@ -23,7 +23,7 @@ CREATE TABLE map_generation (
 	PRIMARY KEY ( generation_id )
 );
 
-CREATE TABLE resource_stats (
+CREATE TABLE map_resource_stats (
        generation_id text,
        resource_name text,
        total_quantity real,

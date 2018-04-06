@@ -22,6 +22,13 @@
 
 <hr />
 
+<table>
+<tbody id="map-resource-tbody">
+</tbody>
+</table>
+
+<hr />
+
 <table id="map-navigation-table">
 <tbody id="map-navigation-tbody">
 </tbody>
@@ -36,11 +43,13 @@
 (function() {
 	var mcUi = new window.tfmpm.MapComparisonUI({
 		maps: <?php EarthIT_JSON::prettyPrint($maps, Nife_Util::getEchoFunction(), "\n\t\t"); ?>,
+		schema: <?php EarthIT_JSON::prettyPrint($schema, Nife_Util::getEchoFunction(), "\n\t\t"); ?>,
 		mapContainer: document.getElementById('map-container'),
 		mapImageElement: document.getElementById('map-image'),
 		cursorPositionElement: document.getElementById('cursor-position'),
 		mapInfoTable: document.getElementById('map-info-table'),
 		mapInfoTbody: document.getElementById('map-info-tbody'),
+		mapResourceTbody: document.getElementById('map-resource-tbody'),
 		mapNavigationTbody: document.getElementById('map-navigation-tbody'),
 		backgroundElement: document.getElementById('main-content-div'),
 	});

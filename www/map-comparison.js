@@ -1,5 +1,11 @@
 (function() {
 	if( typeof window.tfmpm == 'undefined' ) window.tfmpm = {};
+
+	function count(obj) {
+		let c = 0;
+		for( let k in obj ) ++c;
+		return c;
+	}
 	
 	function clearChildren(elem) {
 		while(elem.firstChild) {
@@ -8,9 +14,11 @@
 	}
 	
 	var MapComparisonUI = function(params) {
+		this.schema = params.schema;
 		this.maps = params.maps;
 		this.mapImageElement = params.mapImageElement;
 		this.mapInfoTbody = params.mapInfoTbody;
+		this.mapResourceTbody = params.mapResourceTbody;
 		this.mapNavigationTbody = params.mapNavigationTbody;
 		this.cursorPositionElement = params.cursorPositionElement;
 		this.backgroundElement = params.backgroundElement;
@@ -43,7 +51,14 @@
 	MapComparisonUI.prototype.createTd = function(value, className, widthPercentage) {
 		if( value == undefined ) value = " ";
 		let td = document.createElement('td');
-		td.appendChild(document.createTextNode(value));
+		valueNode = document.createTextNode(value);
+		if( /^urn:/.exec(value) ) {
+			let link = document.createElement('a');
+			link.setAttribute('href', "uri-res/raw/"+value);
+			link.appendChild(valueNode);
+			valueNode = link;
+		}
+		td.appendChild(valueNode);
 		if( className ) td.className = className;
 		if( widthPercentage != undefined ) td.setAttribute('width', widthPercentage+'%');
 		return td;
@@ -63,6 +78,23 @@
 		let kTd = document.createElement('td');
 		tr.appendChild(this.createTd(k, kClassName));
 		tr.appendChild(this.createTd(v, 'code-value'));
+		return tr;
+	}
+	MapComparisonUI.prototype.createRowTr = function(values, elementName, decimalPlaceses) {
+		if( elementName == undefined ) elementName = 'td';
+		let tr = document.createElement('tr');
+		for( let v in values ) {
+			let cell = document.createElement(elementName);
+			let value = values[v];
+			let decimalPlaces = decimalPlaceses && decimalPlaces[v];
+			if( decimalPlaces != undefined ) {
+				cell.setAttribute('align','right');
+				value = (value == undefined || value == "") ? "" :
+					(+value).toFixed(decimalPlaces);
+			}
+			cell.appendChild(document.createTextNode(value));
+			tr.appendChild(cell);
+		}
 		return tr;
 	}
 	MapComparisonUI.prototype.createNavTr = function(dim, prevVal, prevSym, curVal, nextSym, nextVal) {
@@ -85,13 +117,54 @@
 		}
 		let map = this.getCurrentMap();
 		this.mapInfoTbody.appendChild(this.createSeparatorTr());
-		for( let attrIndex in this.mapAttributeMetadata ) {
-			let attr = this.mapAttributeMetadata[attrIndex];
+		let mapFields = this.schema.classes['map generation'].fields;
+		for( let f in mapFields ) {
+			let fieldInfo = mapFields[f];
+			if( !fieldInfo.includedInBasicInfo ) continue;
 			this.mapInfoTbody.appendChild(this.createKvTr(
-				attr.code,
-				map && map[attr.code] || ""
+				fieldInfo.name,
+				map && map[fieldInfo.jsoName] || ""
 			));
 		}
+		
+		// Build resource stats table
+		clearChildren(this.mapResourceTbody);
+		if( map.resourceStats && count(map.resourceStats) ) {
+			const columnInfo = [
+				{ name: "resource", attr: "resourceName" },
+				{ name: "average quantity", attr: "averageQuantity", decimalPlaces: 4 },
+				{ name: "total quantity", attr: "totalQuantity", decimalPlaces: 0 },
+				{ name: "max unclamped probability", attr: "maxUnclampedProbability", decimalPlaces: 3 },
+				{ name: "max richness", attr: "maxRichness",decimalPlaces: 3 },
+			];
+			let resourceHeaderTr = document.createElement('tr');
+			for( let c in columnInfo ) {
+				let th = document.createElement('th');
+				th.appendChild(document.createTextNode(columnInfo[c].name));
+				resourceHeaderTr.appendChild(th);
+			}
+			this.mapResourceTbody.appendChild(resourceHeaderTr);
+			for( let r in map.resourceStats ) {
+				let resourceStats = map.resourceStats[r];
+				let resourceTr = document.createElement('tr');
+				for( let c in columnInfo ) {
+					let ci = columnInfo[c];
+					let td = document.createElement('td');
+					let value = resourceStats[ci.attr];
+					if( ci.decimalPlaces != undefined ) {
+						if( value != undefined && value != '' ) {
+							value = (+value).toFixed(ci.decimalPlaces);
+						}
+						td.setAttribute('align','right');
+					}
+					td.appendChild(document.createTextNode(value));
+					resourceTr.appendChild(td);
+				}
+				this.mapResourceTbody.appendChild(resourceTr);
+			}
+		}
+		
+		// Build navigation table
 		clearChildren(this.mapNavigationTbody);
 		let currentNode = this.mapGraph && this.mapGraph.nodes[this.currentMapKey]
 		if( this.mapGraph && currentNode ) {

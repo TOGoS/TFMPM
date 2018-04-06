@@ -68,6 +68,12 @@ class TFMPM_MapRecordInserter extends TFMPM_Component
 				foreach( $lines as $line ) {
 					if( preg_match('/MapGenSettings compilation took (\d+(?:\.\d+)?) seconds/', $line, $bif) ) {
 						$compilationReportedElapsedTime = $bif[1];
+					} else if( preg_match('/Total (\S+): (\d+(?:\.\d+)?)$/', $line, $bif) ) {
+						// 0.16 style
+						$resourceName = $bif[1];
+						$resourceStats[$resourceName] = array(
+							'total' => $bif[2],
+						);
 					} else if( preg_match('/(\S+): (total:\d.*)$/', $line, $bif) ) {
 						$resourceName = $bif[1];
 						$stats = array();
@@ -115,7 +121,7 @@ class TFMPM_MapRecordInserter extends TFMPM_Component
 				$averageQuantity = $totalQuantity / $mapRealArea;
 			}
 			$inserts[] = array(
-				'$table' => 'resource_stats',
+				'$table' => 'map_resource_stats',
 				'generation_id' => $id,
 				'resource_name' => $resourceName,
 				'total_quantity' => $totalQuantity,

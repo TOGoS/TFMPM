@@ -57,6 +57,11 @@ class TFMPM_MapModel extends TFMPM_Component
 		}
 		return $wheres;
 	}
+
+	protected function filtersToWhereClause(array $filters, $alias, EarthIT_Schema_ResourceClass $rc, EarthIT_DBC_ParamsBuilder $PB) {
+		$wheres = $this->filtersToWhereSqls($filters, $alias, $rc, $PB);
+		return count($wheres) ? "WHERE ".implode("\n  AND ",$wheres)."\n" : "";
+	}
 	
 	protected static function whereClause(array $wheres) {
 		if(count($wheres) == 0) return array();
@@ -121,28 +126,44 @@ class TFMPM_MapModel extends TFMPM_Component
 		
 		return $availableFilters;
 	}
+
+	protected function generateSelects($rc, $alias) {
+		$selects = array();
+		$columnNamer = $this->dbObjectNamer;
+		foreach( $rc->getFields() as $fieldName=>$field ) {
+			if( $field->getFirstPropertyValue('http://ns.nuke24.net/Schema/Application/hasADatabaseColumn',true) === false ) continue;
+			$columnName = $columnNamer->getColumnName($rc, $field);
+			$fieldCode = EarthIT_Schema_WordUtil::toCamelCase($fieldName);
+			$selects[] = "{$alias}.\"$columnName\" AS \"$fieldCode\"";
+		}
+		return $selects;
+	}
+	
+	protected function getMapResourceStats(array $mapFilters) {
+		$mapRc = $this->schema->getResourceClass('map generation');
+		$mapResourceRc = $this->schema->getResourceClass('map resource stats');
+		$selects = $this->generateSelects($mapResourceRc, 'mapres');
+		$PB = new EarthIT_DBC_ParamsBuilder();
+		$sql =
+			"SELECT\n\t".implode(",\n\t", $selects)."\n".
+			"FROM map_generation AS mapgen\n".
+			"JOIN map_resource_stats AS mapres ON mapres.generation_id = mapgen.generation_id\n".
+			$this->filtersToWhereClause($mapFilters, 'mapgen', $mapRc, $PB);
+		return $this->storageHelper->queryRows($sql, $PB->getParams());
+	}
 	
 	/**
 	 * Get all maps matching the criteria, along with
 	 * @param array $filters - see StorageHelper documentation
 	 */
-	public function getMaps(array $filters) {
+	public function getMaps(array $filters, $withs=array()) {
 		$mapRc = $this->schema->getResourceClass('map generation');
-		$selects = array();
-		$columnNamer = $this->dbObjectNamer;
-		foreach( $mapRc->getFields() as $fieldName=>$field ) {
-			if( $field->getFirstPropertyValue('http://ns.nuke24.net/Schema/Application/hasADatabaseColumn',true) === false ) continue;
-			$columnName = $columnNamer->getColumnName($mapRc, $field);
-			$fieldCode = EarthIT_Schema_WordUtil::toCamelCase($fieldName);
-			$selects[] = "mapgen.\"$columnName\" AS \"$fieldCode\"";
-		}
+		$selects = $this->generateSelects($mapRc, 'mapgen');
 		$PB = new EarthIT_DBC_ParamsBuilder();
-		$wheres = $this->filtersToWhereSqls($filters, 'mapgen', $mapRc, $PB);
-		$whereClause = count($wheres) ? "WHERE ".implode("\n  AND ",$wheres)."\n" : "";
 		$sql =
 			"SELECT\n\t".implode(",\n\t", $selects)."\n".
 			"FROM map_generation AS mapgen\n".
-			$whereClause;
+			$this->filtersToWhereClause($filters, 'mapgen', $mapRc, $PB);
 		$rows = $this->storageHelper->queryRows($sql, $PB->getParams());
 		$maps = array();
 		foreach( $rows as $row ) {
@@ -152,6 +173,15 @@ class TFMPM_MapModel extends TFMPM_Component
 			unset($row['mapOffsetY']);
 			$maps[$row['generationId']] = $map;
 		}
+		
+		if( in_array('resourceStats',$withs) ) {
+			foreach( $maps as &$map ) $map['resourceStats'] = array(); unset($map);
+			$mapResources = $this->getMapResourceStats($filters);
+			foreach( $mapResources as $mapRes ) {
+				$maps[$mapRes['generationId']]['resourceStats'][] = $mapRes;
+			}
+		}
+		
 		return $maps;
 	}
 }
