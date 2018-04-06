@@ -30,7 +30,7 @@ class TFMPM_MapModel extends TFMPM_Component
 		return $filters;
 	}
 	
-	protected function filtersToWhereSqls(array $filters, EarthIT_Schema_ResourceClass $rc, EarthIT_DBC_ParamsBuilder $PB) {
+	protected function filtersToWhereSqls(array $filters, $alias, EarthIT_Schema_ResourceClass $rc, EarthIT_DBC_ParamsBuilder $PB) {
 		$columnByFieldCode = array();
 		$columnNamer = $this->dbObjectNamer;
 		foreach( $rc->getFields() as $fieldName=>$field ) {
@@ -45,12 +45,12 @@ class TFMPM_MapModel extends TFMPM_Component
 				$coordWheres = array();
 				foreach( $filter as $coord ) {
 					list($x,$y) = TFMPM_Util::parseCoordinate($coord);
-					$coordWheres[] = "map_offset_x = $x AND map_offset_y = $y";
+					$coordWheres[] = "{$alias}.map_offset_x = $x AND {$alias}.map_offset_y = $y";
 				}
 				$wheres[] = "(".implode(" OR ",$coordWheres).")";
 			} else {
 				if( !isset($columnByFieldCode[$k]) ) throw new Exception("Unrecognized field name: $k");
-				$leftSql = $columnByFieldCode[$k];
+				$leftSql = "{$alias}.{$columnByFieldCode[$k]}";
 				$rightValue = $filter;
 				$wheres[] = "{$leftSql} IN {".$PB->bind($rightValue)."}";
 			}
@@ -70,7 +70,7 @@ class TFMPM_MapModel extends TFMPM_Component
 		$availableFilters = array();
 		$columnNamer = $this->dbObjectNamer;
 		$PB = new EarthIT_DBC_ParamsBuilder();
-		$filterWheres = $this->filtersToWhereSqls($filters, $mapRc, $PB);
+		$filterWheres = $this->filtersToWhereSqls($filters, 'mapgen', $mapRc, $PB);
 		foreach( $mapGenFields as $fieldName => $field ) {
 			$filterability = $this->getFieldFilterability($field);
 			$columnName = $columnNamer->getColumnName($mapRc, $field);
@@ -83,8 +83,8 @@ class TFMPM_MapModel extends TFMPM_Component
 			if( isset($filterability['exact-match']) ) {
 				if( $fieldCode == 'mapOffset' ) {
 					$values = $this->storageHelper->queryValueSet(
-						"SELECT DISTINCT map_offset_x || ',' || map_offset_y\n".
-						"FROM map_generation\n".
+						"SELECT DISTINCT mapgen.map_offset_x || ',' || mapgen.map_offset_y\n".
+						"FROM map_generation AS mapgen\n".
 						self::whereClause(array_merge(
 							array("map_offset_x IS NOT NULL AND map_offset_y IS NOT NULL"),
 							$filterWheres
@@ -93,10 +93,10 @@ class TFMPM_MapModel extends TFMPM_Component
 					);
 				} else {
 					$values = $this->storageHelper->queryValueSet(
-						"SELECT DISTINCT($columnName)\n".
-						"FROM map_generation\n".
+						"SELECT DISTINCT(mapgen.\"$columnName\")\n".
+						"FROM map_generation AS mapgen\n".
 						self::whereClause(array_merge(
-							array("$columnName IS NOT NULL"),
+							array("mapgen.$columnName IS NOT NULL"),
 							$filterWheres
 						)),
 						$PB->getParams()
@@ -134,14 +134,14 @@ class TFMPM_MapModel extends TFMPM_Component
 			if( $field->getFirstPropertyValue('http://ns.nuke24.net/Schema/Application/hasADatabaseColumn',true) === false ) continue;
 			$columnName = $columnNamer->getColumnName($mapRc, $field);
 			$fieldCode = EarthIT_Schema_WordUtil::toCamelCase($fieldName);
-			$selects[] = "\"$columnName\" AS \"$fieldCode\"";
+			$selects[] = "mapgen.\"$columnName\" AS \"$fieldCode\"";
 		}
 		$PB = new EarthIT_DBC_ParamsBuilder();
-		$wheres = $this->filtersToWhereSqls($filters, $mapRc, $PB);
+		$wheres = $this->filtersToWhereSqls($filters, 'mapgen', $mapRc, $PB);
 		$whereClause = count($wheres) ? "WHERE ".implode("\n  AND ",$wheres)."\n" : "";
 		$sql =
 			"SELECT\n\t".implode(",\n\t", $selects)."\n".
-			"FROM map_generation\n".
+			"FROM map_generation AS mapgen\n".
 			$whereClause;
 		$rows = $this->storageHelper->queryRows($sql, $PB->getParams());
 		$maps = array();
