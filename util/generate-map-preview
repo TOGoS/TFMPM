@@ -84,6 +84,9 @@ if( count($unspecifiedParams) ) {
 	fwrite(STDERR, "Error: No values given (and no defaults) for the following parameters: ".implode(", ", $unspecifiedParams)."\n");
 	exit(1);
 }
+if( $params['reportQuantities'] == 'standard-stuff' ) {
+	$params['reportQuantities'] = 'coal,stone,iron-ore,copper-ore,crude-oil,uranium-ore,biter-spawner,spitter-spawner';
+}
 
 $selfGitDir = "$selfDir/.git";
 $blobRepoDir = getenv('HOME')."/.ccouch";
