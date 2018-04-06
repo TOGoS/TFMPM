@@ -1,6 +1,5 @@
 <?php
 	$PU->emitHtmlBoilerplate("Welcome to TFMPM!", $params + array('extra'=>array(
-		'Hit ? for help',
 		count($maps)." maps loaded"
 	)));
 ?>
