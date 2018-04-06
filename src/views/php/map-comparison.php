@@ -1,4 +1,9 @@
-<?php $PU->emitHtmlBoilerplate("Welcome to TFMPM!", $params + array('extra'=>'Hit ? for help')); ?>
+<?php
+	$PU->emitHtmlBoilerplate("Welcome to TFMPM!", $params + array('extra'=>array(
+		'Hit ? for help',
+		count($maps)." maps loaded"
+	)));
+?>
 
 <script type="text/javascript" src="map-comparison.js"></script>
 
@@ -30,6 +35,7 @@
 		cursorPositionElement: document.getElementById('cursor-position'),
 		mapInfoTable: document.getElementById('map-info-table'),
 		mapInfoTbody: document.getElementById('map-info-tbody'),
+		backgroundElement: document.getElementById('main-content-div'),
 	});
 	window.addEventListener('mousemove', mcUi.onMouseMove.bind(mcUi));
 	window.addEventListener('keydown', mcUi.onKey.bind(mcUi));
