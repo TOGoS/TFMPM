@@ -43,6 +43,7 @@ class 'text' : extends(string) : SQL type @ "TEXT"
 class 'hash' : extends(string) : regex @ "[A-Fa-f0-9]{40}" : comment @ "Hex-encoded SHA-1 of something (40 bytes)"
 class 'URI' : extends(string)
 class 'Git commit ID' : extends(string)
+class 'time interval' : extends(number) : SQL type @ "REAL" : comment @ "Number of seconds"
 class 'time' : extends(string) : SQL type @ "TIMESTAMP"
 class 'date' : extends(string) : SQL type @ "DATE"
 class 'coordinate' : extends(string) : comment @ "Treated as strings of the form '<x>,<y>' or arrays of [x,y]"
@@ -94,9 +95,12 @@ field modifier UTCR = uses user text canonicalization rules
 field property 'filterability' : string : long name @ "http://ns.nuke24.net/TFMPM/filterability"
 
 class 'map generation' {
+	# Generation metadata
 	generation ID : string
 	TFMPM commit ID : Git commit ID : filterability @ "exact-match"
 	generator node name : string : filterability @ "exact-match"
+
+	# Input parameters
 	factorio commit ID : Git commit ID : filterability @ "exact-match"
 	data commit ID : Git commit ID : filterability @ "exact-match"
 	map seed : integer : filterability @ "exact-match"
@@ -107,8 +111,12 @@ class 'map generation' {
 	map offset Y : number
 	slope shading : number
 	report quantities : text
+
+	# Outputs
 	generation start time : time : filterability @ "time-range"
 	generation end time : time : filterability @ "time-range"
+	compilation reported elapsed time : time interval : nullable
+	generation reported elapsed time : time interval : nullable
 	map image URN : URI
 	log file URN : URI
 }
