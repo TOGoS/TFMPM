@@ -1,5 +1,7 @@
 # TOGoS's Factorio Map Preview Manager
 
+![](doc/screenshot.png "Screenshot!")
+
 - ```make rebuild-database``` - create the map SQLite database.
 - ```util/generate-map-preview``` - generate a preview.
   Information will be stored into ```logs/(current date in Y_m_d format).jsonl```,
