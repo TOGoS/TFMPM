@@ -1,6 +1,9 @@
 (function() {
 	if( typeof window.tfmpm == 'undefined' ) window.tfmpm = {};
-
+	
+	const bumpAudio = new Audio('./bump.mp3');
+	bumpAudio.preload = 'auto';
+	
 	function ucfirst(str) {
 		return str.charAt(0).toUpperCase() + str.slice(1);
 	}
@@ -197,6 +200,8 @@
 		this.infoOverlayElement.style.display = this.infoOverlayElement.style.display == 'none' ? '' : 'none';
 	}
 	MapComparisonUI.prototype.bump = function(message) {
+		bumpAudio.load();
+		bumpAudio.play();
 		if( this.backgroundElement ) {
 			let oldStyle = this.backgroundElement.style.background;
 			this.backgroundElement.style.background = 'red';

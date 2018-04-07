@@ -14,6 +14,7 @@
 ```util/generate-map-preview```
 
 Takes several parameters that indicate which map to generate.
+If you don't specify enough, it will complain and crash.
 
 ```--factorio-commit-id``` indicates the commit hash from the Factorio repository to use.
 In the future I may change this to allow specific versions that we've released headless
