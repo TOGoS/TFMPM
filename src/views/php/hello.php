@@ -14,9 +14,6 @@
  <?php if( isset($filter['filterability']['exact-match']) and count($filter['values']) ): ?>
   <fieldset class="filter">
     <legend><?php eht($filter['fieldName']); ?></legend>
-   <?php foreach($filter['selectedValues'] as $value): ?>
-    <input type="hidden" name="<?php eht($fieldCode); ?>[]" value="<?php eht($value); ?>"/>
-   <?php endforeach; ?>
     <select id="<?php eht($fieldCode."SelectBox");?>" name="<?php eht($fieldCode); ?>[]" multiple size="20">
     <?php $PU->emitSelectOptions($filter['values'], $filter['selectedValues']); ?>
     </select>

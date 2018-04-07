@@ -72,7 +72,7 @@ class TFMPM_PageUtil extends TFMPM_Component
 		$selectedValues = TFMPM_Util::toSet($selectedValues);
 		foreach( $options as $k => $v ) {
 			echo "<option value=\"", htmlspecialchars($k), "\"",
-				(isset($set[$k]) ? ' selected' : ''), ">",
+				(isset($selectedValues[$k]) ? ' selected' : ''), ">",
 				htmlspecialchars($v), "</option>\n";
 		}
 	}
