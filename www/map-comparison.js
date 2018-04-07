@@ -294,9 +294,15 @@
 			className: "MapList",
 			maps: this.maps,
 		});
+		window.jobTraxr.addJob({
+			id: "build-graph",
+			description: "Generating navigable graph...",
+			isGlassy: true,
+		});
 		mapGraphWorker.onmessage = (e) => {
 			if( e.data.className == "MapGraphGenerated" ) {
 				console.log("Got the map graph!");
+				window.jobTraxr.removeJob("build-graph");
 				this.mapGraph = e.data.mapGraph;
 				this.rebuildMapInfoView();
 			} else if( e.data.className == "Progress" ) {

@@ -14,7 +14,7 @@ function footerClicked() {
 <body>
 
 <div class="nav-bar">
-<ul class="nav">
+<ul class="nav" id="nav-items">
 <li><?php echo $PU->linkHtml('/','Home'); ?></li>
 <li class="devtool" style="display:none">Hi there!</li>
 <?php if(isset($extra)) foreach(is_array($extra) ? $extra : array($extra) as $ex) echo "<li>".htmlspecialchars($ex)."</li>"; ?>

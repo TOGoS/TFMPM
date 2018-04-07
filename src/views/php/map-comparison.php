@@ -4,8 +4,6 @@
 	)));
 ?>
 
-<script type="text/javascript" src="map-comparison.js"></script>
-
 <div id="help" class="overlay" style="display:none">
 <h3>Halp!</h3>
 </div>
@@ -58,6 +56,16 @@
 <img id="map-image" width="1024" height="1024"/>
 </div>
 
+<script type="text/javascript" src="JobTraxr.js"></script>
+<script type="text/javascript">//<![CDATA[
+window.jobTraxr = new JobTraxr({ul: document.getElementById('nav-items')});
+window.jobTraxr.addJob({
+	id: "load-maps",
+	isGlassy: true,
+	description: "Loading map data...",
+});
+//]]></script>
+<script type="text/javascript" src="map-comparison.js"></script>
 <script type="text/javascript">//<![CDATA[
 (function() {
 	var mcUi = new window.tfmpm.MapComparisonUI({
@@ -78,6 +86,9 @@
 	mcUi.mapImageElement.addEventListener('wheel', mcUi.onWheel.bind(mcUi));
 	mcUi.start();
 })();
+//]]></script>
+<script type="text/javascript">//<![CDATA[
+window.jobTraxr.removeJob("load-maps");
 //]]></script>
 
 <?php $PU->emitHtmlFooter(); ?>
