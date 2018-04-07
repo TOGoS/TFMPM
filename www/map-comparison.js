@@ -75,23 +75,6 @@
 		tr.appendChild(this.createTd(v, 'code-value'));
 		return tr;
 	}
-	MapComparisonUI.prototype.createRowTr = function(values, elementName, decimalPlaceses) {
-		if( elementName == undefined ) elementName = 'td';
-		let tr = document.createElement('tr');
-		for( let v in values ) {
-			let cell = document.createElement(elementName);
-			let value = values[v];
-			let decimalPlaces = decimalPlaceses && decimalPlaces[v];
-			if( decimalPlaces != undefined ) {
-				cell.setAttribute('align','right');
-				value = (value == undefined || value == "") ? "" :
-					(+value).toFixed(decimalPlaces);
-			}
-			cell.appendChild(document.createTextNode(value));
-			tr.appendChild(cell);
-		}
-		return tr;
-	}
 	MapComparisonUI.prototype.createNavTr = function(dim, prevVal, prevSym, curVal, nextSym, nextVal) {
 		let tr = document.createElement('tr');
 		tr.appendChild(this.createTd(prevVal, 'code-value', 30));
@@ -146,7 +129,11 @@
 					let td = document.createElement('td');
 					let value = resourceStats[ci.attr];
 					if( ci.decimalPlaces != undefined ) {
-						if( value != undefined && value != '' ) {
+						if( value === "+inf" || value === "-inf" ) {
+							// keep it!
+						} else if( value == undefined || value == "" || isNaN(value) ) {
+							value = '';
+						} else {
 							value = (+value).toFixed(ci.decimalPlaces);
 						}
 						td.setAttribute('align','right');
