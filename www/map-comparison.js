@@ -20,6 +20,7 @@
 	var MapComparisonUI = function(params) {
 		this.schema = params.schema;
 		this.maps = params.maps;
+		this.infoOverlayElement = params.infoOverlayElement;
 		this.mapImageElement = params.mapImageElement;
 		this.mapInfoTbody = params.mapInfoTbody;
 		this.mapResourceTbody = params.mapResourceTbody;
@@ -205,6 +206,9 @@
 			this.cursorPositionElement.firstChild.nodeValue = "" + worldOffsetX + "," + worldOffsetY;
 		}
 	}
+	MapComparisonUI.prototype.toggleInfoOverlay = function() {
+		this.infoOverlayElement.style.display = this.infoOverlayElement.style.display == 'none' ? '' : 'none';
+	}
 	MapComparisonUI.prototype.bump = function(message) {
 		if( this.backgroundElement ) {
 			let oldStyle = this.backgroundElement.style.background;
@@ -246,15 +250,18 @@
 		};
 		this.updateCursorCoordinates();
 	};
+
+	const K_D = 68; const K_RIGHT = 39;
+	const K_A = 65; const K_LEFT  = 37;
+	const K_W = 87; const K_UP    = 38;
+	const K_S = 83; const K_DOWN  = 40;
+	const K_PLUS = 61;
+	const K_DIFFERENT_PLUS = 187;
+	const K_MINUS = 173;
+	const K_DIFFERENT_MINUS = 189;
+	const K_E = 69;
+
 	MapComparisonUI.prototype.keyCodeToDirection = function( keyCode ) {
-		const K_D = 68; const K_RIGHT = 39;
-		const K_A = 65; const K_LEFT  = 37;
-		const K_W = 87; const K_UP    = 38;
-		const K_S = 83; const K_DOWN  = 40;
-		const K_PLUS = 61;
-		const K_DIFFERENT_PLUS = 187;
-		const K_MINUS = 173;
-		const K_DIFFERENT_MINUS = 189;
 		switch( keyCode ) {
 		case K_D: case K_RIGHT: return 'right';
 		case K_A: case K_LEFT : return 'left';
@@ -272,6 +279,11 @@
 			this.moveThroughGraph(dir);
 			keyEvent.preventDefault();
 			keyEvent.stopPropagation();
+			return;
+		}
+		switch( keyCode ) {
+		case K_E:
+			this.toggleInfoOverlay();
 			return;
 		}
 		console.log("Key event: "+keyCode);

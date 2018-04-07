@@ -65,6 +65,7 @@
 		mapContainer: document.getElementById('map-container'),
 		mapImageElement: document.getElementById('map-image'),
 		cursorPositionElement: document.getElementById('cursor-position'),
+		infoOverlayElement: document.getElementById('info-overlay'),
 		mapInfoTable: document.getElementById('map-info-table'),
 		mapInfoTbody: document.getElementById('map-info-tbody'),
 		mapResourceTbody: document.getElementById('map-resource-tbody'),
