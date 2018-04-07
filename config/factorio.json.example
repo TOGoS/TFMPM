@@ -1,4 +1,8 @@
 {
-   "git-dir": "/path/to/your/Factorio/.fit",
-   "_comment": "Ideally this will be on the same drive as this project, so that files can be linked"
+	"git-dir": "/path/to/your/Factorio/.git",
+	"_comment": [
+		"This should be on the same drive as TFMPM,",
+		"as it will try to hardlink git objects from this repo",
+		"to cloned checkouts for building"
+	]
 }
