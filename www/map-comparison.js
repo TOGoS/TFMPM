@@ -1,6 +1,10 @@
 (function() {
 	if( typeof window.tfmpm == 'undefined' ) window.tfmpm = {};
 
+	function ucfirst(str) {
+		return str.charAt(0).toUpperCase() + str.slice(1);
+	}
+
 	function count(obj) {
 		let c = 0;
 		for( let k in obj ) ++c;
@@ -111,7 +115,7 @@
 			let fieldInfo = mapFields[f];
 			if( !fieldInfo.includedInBasicInfo ) continue;
 			this.mapInfoTbody.appendChild(this.createKvTr(
-				fieldInfo.name,
+				ucfirst(fieldInfo.name),
 				map && map[fieldInfo.jsoName] || ""
 			));
 		}
@@ -129,7 +133,7 @@
 			let resourceHeaderTr = document.createElement('tr');
 			for( let c in columnInfo ) {
 				let th = document.createElement('th');
-				th.appendChild(document.createTextNode(columnInfo[c].name));
+				th.appendChild(document.createTextNode(ucfirst(columnInfo[c].name)));
 				resourceHeaderTr.appendChild(th);
 			}
 			this.mapResourceTbody.appendChild(resourceHeaderTr);
