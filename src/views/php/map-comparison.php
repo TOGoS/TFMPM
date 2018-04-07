@@ -10,7 +10,29 @@
 <h3>Halp!</h3>
 </div>
 
-<div id="info-overlay" class="overlay">
+<style scoped>/*<![CDATA[*/
+#info-overlay {
+	display: grid;
+	grid-gap: 10px;
+}
+#map-info-table {
+	grid-row: 1;
+	grid-column: 1 / 2;
+	border-right: var(--separator-width) solid var(--separator-color);
+}
+#map-resource-table {
+	grid-row: 1;
+	grid-column: 2 / 3;
+}
+#map-navigation-table {
+	border-top: var(--separator-width) solid var(--separator-color);
+	grid-row: 2;
+	grid-column: 1 / 3;
+}
+/*]]>*/</style>
+
+<div id="info-overlay" class="overlay" style="display: grid">
+
 <table id="map-info-table">
 <tbody id="map-info-tbody">
 <tr id="cursor-position-tr">
@@ -20,14 +42,10 @@
 </tbody>
 </table>
 
-<hr />
-
-<table>
+<table id="map-resource-table">
 <tbody id="map-resource-tbody">
 </tbody>
 </table>
-
-<hr />
 
 <table id="map-navigation-table">
 <tbody id="map-navigation-tbody">

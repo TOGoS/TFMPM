@@ -63,16 +63,6 @@
 		if( widthPercentage != undefined ) td.setAttribute('width', widthPercentage+'%');
 		return td;
 	}
-	MapComparisonUI.prototype.createSeparatorTr = function() {
-		let tr = document.createElement('tr');
-		tr.className = "separator";
-		let td = document.createElement('td');
-		td.setAttribute('colspan','2');
-		let hr = document.createElement('hr');
-		td.appendChild(hr);
-		tr.appendChild(td);
-		return tr;
-	}
 	MapComparisonUI.prototype.createKvTr = function(k, v, kClassName) {
 		let tr = document.createElement('tr');
 		let kTd = document.createElement('td');
@@ -116,7 +106,6 @@
 			tr = nextTr;
 		}
 		let map = this.getCurrentMap();
-		this.mapInfoTbody.appendChild(this.createSeparatorTr());
 		let mapFields = this.schema.classes['map generation'].fields;
 		for( let f in mapFields ) {
 			let fieldInfo = mapFields[f];

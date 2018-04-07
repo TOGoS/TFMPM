@@ -7,15 +7,12 @@ html, body, input, select {
 	background: black;
 	color: silver;
 }
-.nav-bar {
-	background: darkblue;
-}
 a:link {
 	color: yellow;
 	text-decoration: none; /* Underlined links are so nineties */
 }
 a:visited {
-	color: lime;
+	color: orange;
 }
 a:hover {
 	color: white;
@@ -65,7 +62,8 @@ hr {
 /* Nav-bar */
 
 .nav-bar {
-	border-bottom: 1px solid silver;
+	background: #601500;
+	border-bottom: 1px solid #ff8c00;
 	margin-bottom: 8px;
 	display: flex;
 	flex-direction: row;
@@ -183,15 +181,27 @@ input, fieldset {
 
 /* Map page */
 
+* {
+	--separator-width: 2px;
+	--separator-color: rgba(192,192,192,0.5);
+	--subseparator-color: rgba(192,192,192,0.25);
+}
+
 .overlay {
 	position: absolute;
 	background: rgba(0,0,0,0.5);
 }
+.overlay td {
+	border-top: 1px solid var(--subseparator-color);
+}
+.overlay tbody > tr:nth-child(1) > td {
+	border-top: none;
+}
 
 hr {
 	border: none;
-	height: 2px;
-	background-color: rgba(255,255,255,0.5);
+	height: var(--separator-width);
+	background-color: var(--separator-color);
 }
 
 td.control-indicator {
