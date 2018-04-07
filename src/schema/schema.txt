@@ -111,7 +111,7 @@ class 'map generation' {
 	map offset X : number
 	map offset Y : number
 	slope shading : number
-	report quantities : text : included in basic info @ false
+	report quantities : text : filterability @ "exact-match" : included in basic info @ false
 
 	# Outputs
 	generation start time : time : filterability @ "time-range"
