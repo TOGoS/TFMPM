@@ -252,14 +252,16 @@
 		const K_W = 87; const K_UP    = 38;
 		const K_S = 83; const K_DOWN  = 40;
 		const K_PLUS = 61;
+		const K_DIFFERENT_PLUS = 187;
 		const K_MINUS = 173;
+		const K_DIFFERENT_MINUS = 189;
 		switch( keyCode ) {
 		case K_D: case K_RIGHT: return 'right';
 		case K_A: case K_LEFT : return 'left';
 		case K_W: case K_UP   : return 'up';
 		case K_S: case K_DOWN : return 'down';
-		case K_PLUS: return 'in';
-		case K_MINUS: return 'out';
+		case K_PLUS: case K_DIFFERENT_PLUS: return 'in';
+		case K_MINUS: case K_DIFFERENT_MINUS: return 'out';
 		default: return undefined;
 		}
 	}
