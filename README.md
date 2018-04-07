@@ -21,7 +21,7 @@ Docker images for so that you can use this tool without having to have access to
 
 It will try to use a Docker image tagged ```factorio/factorio:<commit-hash>-headless```.
 If that does not exist, it will clone the local git repository as configured in [```config/factorio.json```](config/factorio.json.example)
-and attempt to ````make docker/factorio-headless``` in order to build (and tag) said image.
+and attempt to ```make docker/factorio-headless``` in order to build (and tag) said image.
 This only works on relatively new revisions of the codebase.
 You may use versions that don't know how to ```make docker/factorio-headless```
 so long as you can generate the correctly tagged Docker image yourself.
