@@ -58,23 +58,25 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		$reportQuantities = isset($params['reportQuantities']) ? $params['reportQuantities'] : array();
 		$slopeShading = isset($params['slopeShading']) ? $params['slopeShading'] : 0;
 
-		if( $factorioCommitId != $dataCommitId ) {
-			throw new Exception("Dat acommit that's != factorio commit not supported: $dataCommitId != $factorioCommitId");
-		}
-
 		$factorioDockerImageId = $this->factorioBuilder->ensureFactorioHeadlessDockerImageExists($factorioCommitId);
 
-		# To checkout a data directory...
-		# git --git-dir=/home/tog/proj/Factorio/.git --work-tree=/home/tog/proj/TFMPM/factorio-checkouts/7bf41f085f84dca934d0e00e824de29260d854d6 checkout 7bf41f085f84dca934d0e00e824de29260d854d6 data
-		# might want to delete image files (*.png) or ignore them somehow...
+		$dataDir = null;
+		if( $factorioCommitId != $dataCommitId ) {
+			$dataDir = $this->factorioBuilder->checkOutFactorioHeadlessData($dataCommitId)."/data";
+			$dataDir = realpath($dataDir); // So that Docker will accept it
+		}
 		
-		$cmdArgs = array(
-			"docker","run",
-			"-v","{$mapDir}:/opt/bin/Factorio/map-previews",
-			// Mounting of data dir would go here
-			"-w","/opt/bin/Factorio",
-			$factorioDockerImageId
-		);
+		$cmdArgs = array("docker","run");
+		$cmdArgs[] = "-v";
+		$cmdArgs[] = "{$mapDir}:/opt/bin/Factorio/map-previews";
+		if( $dataDir ) {
+			$cmdArgs[] = "-v";
+			$cmdArgs[] = "{$dataDir}:/opt/bin/Factorio/data";
+		}
+		$cmdArgs[] = "-w";
+		$cmdArgs[] = "/opt/bin/Factorio";
+		$cmdArgs[] = $factorioDockerImageId;
+		// Factorio arguments
 		$cmdArgs[] = "--generate-map-preview=map-previews/{$mapBasename}";
 		$cmdArgs[] = "--map-gen-seed=".self::requireParam($params,'mapSeed');
 		$cmdArgs[] = "--map-preview-scale=".self::requireParam($params,'mapScale');
