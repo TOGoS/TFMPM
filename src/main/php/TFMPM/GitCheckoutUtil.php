@@ -4,8 +4,51 @@ class TFMPM_GitCheckoutUtil
 {
 	protected $systemUtil;
 	
+	use TFMPM_ComponentGears; // for log(...)
+	
 	public function __construct( TFMPM_SystemUtil $systemUtil ) {
 		$this->systemUtil = $systemUtil;
+	}
+	
+	protected static function smartSplitLines($text) {
+		$lines = explode("\n",$text);
+		$result = array();
+		foreach( $lines as $line ) {
+			$line = trim($line);
+			if( !empty($line) and $line[0] != '#' ) $result[] = $line;
+		}
+		return $result;
+	}
+	
+	protected function gitHasObject($gitDir, $objectId) {
+		$git = "git --git-dir=".escapeshellarg($gitDir);
+		$catCode = $this->systemUtil->runCommand("$git cat-file -t ".escapeshellarg($objectId)." >/dev/null 2>&1", array('onNz'=>'return'));
+		return $catCode == 0;
+	}
+	
+	protected function gitFetch($gitDir, $objectId) {
+		$git = "git --git-dir=".escapeshellarg($gitDir);
+		
+		if( $this->gitHasObject($git, $objectId) ) return;
+		
+		$remotes = self::smartSplitLines(`$git remote`);
+		foreach( $remotes as $rem ) {
+			$fetchCode = $this->systemUtil->runCommand(
+				"$git fetch ".escapeshellarg($rem)." ".escapeshellarg($objectId),
+				array('onNz' => 'return')
+			);
+			if( $fetchCode == 0 ) return;
+		}
+		
+		$this->log("Doin a git fetch --all to try to acquire $objectId");
+		// As a last resort, try fetch --all
+		$this->systemUtil->runCommand(
+			"$git fetch --all",
+			array('onNz' => 'return')
+		);
+		if( $this->gitHasObject($git, $objectId) ) return;
+		
+		throw new Exception("Oh no, we don't have git object $objectId!");
 	}
 	
 	public function gitCheckoutCopy($sourceGitDir, $commitId, $checkoutDir, array $options=array()) {
@@ -13,6 +56,8 @@ class TFMPM_GitCheckoutUtil
 		if( isset($options['paths']) ) {
 			throw new Exception("'paths' option to gitCheckoutCopy no longer supported - use sparsenessConfig instead");
 		}
+		
+		$this->gitFetch($sourceGitDir, $commitId);
 		
 		$checkoutGitDir = $checkoutDir."/.git";
 		$this->systemUtil->mkdir($checkoutDir);
