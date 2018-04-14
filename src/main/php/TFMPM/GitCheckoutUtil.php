@@ -29,7 +29,7 @@ class TFMPM_GitCheckoutUtil
 	protected function gitFetch($gitDir, $objectId) {
 		$git = "git --git-dir=".escapeshellarg($gitDir);
 		
-		if( $this->gitHasObject($git, $objectId) ) return;
+		if( $this->gitHasObject($gitDir, $objectId) ) return;
 		
 		$remotes = self::smartSplitLines(`$git remote`);
 		foreach( $remotes as $rem ) {
@@ -46,7 +46,7 @@ class TFMPM_GitCheckoutUtil
 			"$git fetch --all",
 			array('onNz' => 'return')
 		);
-		if( $this->gitHasObject($git, $objectId) ) return;
+		if( $this->gitHasObject($gitDir, $objectId) ) return;
 		
 		throw new Exception("Oh no, we don't have git object $objectId!");
 	}
