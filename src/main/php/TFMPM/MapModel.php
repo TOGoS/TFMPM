@@ -27,6 +27,7 @@ class TFMPM_MapModel extends TFMPM_Component
 			}
 			// todo: if date range, check for lt/gt options
 		}
+		$filters['dataCommitMustMatchFactorioCommit'] = !empty($queryParams['dataCommitMustMatchFactorioCommit']);
 		return $filters;
 	}
 	
@@ -48,6 +49,10 @@ class TFMPM_MapModel extends TFMPM_Component
 					$coordWheres[] = "{$alias}.map_offset_x = $x AND {$alias}.map_offset_y = $y";
 				}
 				$wheres[] = "(".implode(" OR ",$coordWheres).")";
+			} else if( $k == 'dataCommitMustMatchFactorioCommit' ) {
+				if( $filter ) {
+					$wheres[] = "{$alias}.data_commit_id = {$alias}.factorio_commit_id";
+				}
 			} else {
 				if( !isset($columnByFieldCode[$k]) ) throw new Exception("Unrecognized field name: $k");
 				$leftSql = "{$alias}.{$columnByFieldCode[$k]}";
@@ -123,7 +128,10 @@ class TFMPM_MapModel extends TFMPM_Component
 			}
 			$availableFilters[$fieldCode] = $filterInfo;
 		}
-		
+		$availableFilters['dataCommitMustMatchFactorioCommit'] = array(
+			'fieldName' => 'data commit must match Factorio commit',
+			'filterability' => 'boolean'
+		);
 		return $availableFilters;
 	}
 

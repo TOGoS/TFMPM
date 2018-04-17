@@ -14,6 +14,8 @@ class TFMPM_PageAction_ShowHello extends TFMPM_PageAction_TemplatePageAction
 		foreach( $mapFilterMetadata as $fieldCode => &$filter ) {
 			if( isset($filter['values']) ) {
 				$filter['selectedValues'] = isset($this->mapFilters[$fieldCode]) ?	$this->mapFilters[$fieldCode] : array();
+			} else if( $filter['filterability'] == 'boolean' ) {
+				$filter['selectedValue'] = $this->mapFilters[$fieldCode];
 			}
 		}
 		return array(
