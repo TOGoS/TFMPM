@@ -1,0 +1,33 @@
+# Replace {{tfmpm_dir}} with the path to TFMPM's project directory.
+# Based on advice at https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/?utm_source=tool.lu#proxy-everything
+server {
+	listen 80;
+	listen [::]:80;
+
+	server_name tfmpm.togos-fbs.nuke24.net;
+
+	root {{tfmpm_dir}}/www/;
+	error_log /var/log/nginx/debug.log debug;
+
+	# Add index.php to the list if you are using PHP
+	index index.html index.htm index.nginx-debian.html;
+
+	location / {
+		# Note that we DON'T try $uri/, as that results in 403s!
+		# We want to serve any existing files, and pass everything else to PHP
+		# This approach will never serve directories directly.
+		try_files $uri @phpapp;
+	}
+	location @phpapp {
+		fastcgi_split_path_info ^()(.+)$;
+		
+		fastcgi_pass   unix:/run/php/php7.0-fpm.sock;
+		fastcgi_param  SCRIPT_FILENAME  {{tfmpm_dir}}/www/bootstrap.php;
+		fastcgi_param  SERVER_SOFTWARE  nginx;
+		fastcgi_param  QUERY_STRING     $query_string;
+		fastcgi_param  REQUEST_METHOD   $request_method;
+		fastcgi_param  CONTENT_TYPE     $content_type;
+		fastcgi_param  CONTENT_LENGTH   $content_length;
+		fastcgi_param  PATH_INFO        $fastcgi_path_info;
+	}
+}
