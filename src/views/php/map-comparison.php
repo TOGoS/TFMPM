@@ -10,6 +10,8 @@
 
 <style scoped>/*<![CDATA[*/
 #info-overlay {
+	margin: 0;
+	width: 100%;
 	display: grid;
 	grid-gap: 10px;
 	grid-template-columns: repeat(2, 1fr);

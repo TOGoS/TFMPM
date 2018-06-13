@@ -59,12 +59,14 @@
 	MapComparisonUI.prototype.createTd = function(value, className, widthPercentage) {
 		if( value == undefined ) value = " ";
 		let td = document.createElement('td');
-		valueNode = document.createTextNode(value);
-		if( /^urn:/.exec(value) ) {
-			let link = document.createElement('a');
-			link.setAttribute('href', "uri-res/raw/"+value);
-			link.appendChild(valueNode);
-			valueNode = link;
+		let valueNode;
+		if( typeof(value) == 'string' ) {
+			valueNode = document.createTextNode(value);
+		} else if( value instanceof Node) {
+			valueNode = value;
+		} else {
+			valueNode = document.createTextNode(""+value);
+			//throw new Error("Don't know how to turn "+value+" into a DOM node");
 		}
 		td.appendChild(valueNode);
 		if( className ) td.className = className;
@@ -75,18 +77,43 @@
 		let tr = document.createElement('tr');
 		let kTd = document.createElement('td');
 		tr.appendChild(this.createTd(k, kClassName));
-		tr.appendChild(this.createTd(v, 'code-value'));
+		tr.appendChild(this.createTd(this.formatValue(v, k), 'code-value'));
 		return tr;
+	}
+	MapComparisonUI.prototype.formatCommitId = function(commitId) {
+		let textNode = document.createTextNode(commitId);
+		let textElem = document.createElement('a');
+		textElem.setAttribute('href', "https://github.com/wube/Factorio/commit/"+commitId);
+		textElem.appendChild(textNode);
+		textElem.className = 'shortenable-commit-id';
+		return textElem;
+	}
+	MapComparisonUI.prototype.formatValue = function(value, dim) {
+		if( /^urn:/.exec(value) ) {
+			let link = document.createElement('a');
+			link.setAttribute('href', "uri-res/raw/"+value);
+			link.appendChild(document.createTextNode(value));
+			return link;
+		}
+		let m;
+		if( dim == 'commitId' && (m = /^([a-f0-9]{40})-([a-f0-9]{40})$/.exec(value)) ) {
+			let span = document.createElement('span');
+			span.appendChild(this.formatCommitId(m[1]));
+			span.appendChild(document.createTextNode('-'));
+			span.appendChild(this.formatCommitId(m[2]));
+			return span;
+		}
+		return value;
 	}
 	MapComparisonUI.prototype.createNavTr = function(dim, prevVal, prevSym, curVal, nextSym, nextVal) {
 		let tr = document.createElement('tr');
-		tr.appendChild(this.createTd(prevVal, 'code-value', 30));
+		tr.appendChild(this.createTd(this.formatValue(prevVal, dim), 'code-value', 30));
 		tr.appendChild(this.createTd(prevSym, 'control-indicator', 0));
 		tr.appendChild(this.createTd(dim, 'code-value', 0));
 		tr.appendChild(this.createTd("=", 'code-value', 0));
-		tr.appendChild(this.createTd(curVal, 'code-value', 30));
+		tr.appendChild(this.createTd(this.formatValue(curVal, dim), 'code-value', 30));
 		tr.appendChild(this.createTd(nextSym, 'control-indicator', 0));
-		tr.appendChild(this.createTd(nextVal, 'code-value', 30));
+		tr.appendChild(this.createTd(this.formatValue(nextVal, dim), 'code-value', 30));
 		return tr;
 	}
 	MapComparisonUI.prototype.rebuildMapInfoView = function() {

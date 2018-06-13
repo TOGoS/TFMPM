@@ -97,7 +97,7 @@ ul.nav li {
 /* Content area */
 
 div.content {
-	padding: 3px 6px 3px 6px;
+	padding: 0;
 }
 
 /* Footer */
@@ -193,6 +193,8 @@ input, fieldset {
 }
 .overlay td {
 	border-top: 1px solid var(--subseparator-color);
+	overflow-x: hidden;
+	text-overflow: ellipsis;
 }
 .overlay tbody > tr:nth-child(1) > td {
 	border-top: none;
@@ -217,4 +219,13 @@ td.control-indicator {
 
 .code-value {
 	font-family: monospace;
+}
+
+/* When you want to provide a commit ID but not necessarily show the whole thing */
+.shortenable-commit-id {
+	display: inline-block;
+	vertical-align: middle;
+	width: 9em;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
 }
