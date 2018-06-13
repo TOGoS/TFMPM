@@ -72,4 +72,10 @@ class TFMPM_Util
 		}
 		return "(".gettype($v).")";
 	}
+
+	public static function resolveRelativePath($base, $relative) {
+		if( $relative[0] == '/' ) return $relative;
+		if( $base[strlen($base)-1] == '/' ) return $base.$relative;
+		return $base.'/'.$relative;
+	}
 }

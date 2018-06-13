@@ -74,7 +74,9 @@ class TFMPM_Registry
 	}
 	
 	public function loadDbAdapter() {
-		return Doctrine_DBAL_DriverManager::getConnection( $this->getConfig('dbc') );
+		$dbConfig = $this->getConfig('dbc');
+		if(isset($dbConfig['path'])) $dbConfig['path'] = TFMPM_Util::resolveRelativePath($this->projectRootDir, $dbConfig['path']);
+		return Doctrine_DBAL_DriverManager::getConnection( $dbConfig );
 	}
 	
 	public function loadDbObjectNamer() {
