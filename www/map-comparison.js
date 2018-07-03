@@ -302,6 +302,8 @@
 		}
 	}
 	MapComparisonUI.prototype.onKey = function( keyEvent ) {
+		if( keyEvent.getModifierState("Alt") ) return;
+		
 		let keyCode = keyEvent.keyCode;
 		let dir = this.keyCodeToDirection(keyCode);
 		if( dir != undefined ) {
