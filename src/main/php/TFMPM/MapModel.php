@@ -186,7 +186,7 @@ class TFMPM_MapModel extends TFMPM_Component
 			foreach( $maps as &$map ) $map['resourceStats'] = array(); unset($map);
 			$mapResources = $this->getMapResourceStats($filters);
 			foreach( $mapResources as $mapRes ) {
-				$maps[$mapRes['generationId']]['resourceStats'][] = $mapRes;
+				$maps[$mapRes['generationId']]['resourceStats'][$mapRes['resourceName']] = $mapRes;
 			}
 		}
 		

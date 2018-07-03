@@ -35,8 +35,14 @@
 		this.mapAttributeMetadata = [];
 		this.cursorPixelPosition = undefined;
 		let keyedMapAttributeMetadata = {};
+		let keyedResourceNames = {};
 		for( let m in this.maps ) {
 			let map = this.maps[m];
+			if( map.resourceStats && count(map.resourceStats) ) {
+				for( let k in map.resourceStats ) {
+					keyedResourceNames[k] = k;
+				}
+			}
 			for( let k in map ) {
 				if( keyedMapAttributeMetadata[k] == undefined ) {
 					let attrInfo = {
@@ -48,6 +54,9 @@
 			}
 		}
 		this.mapGraph = undefined;
+		this.resourceNames = [];
+		for( let k in keyedResourceNames ) this.resourceNames.push(k);
+		this.resourceNames.sort();
 	}
 	MapComparisonUI.prototype.getCurrentMap = function() {
 		if( this.currentMapKey == undefined ) return undefined;
@@ -136,7 +145,7 @@
 		
 		// Build resource stats table
 		clearChildren(this.mapResourceTbody);
-		if( map.resourceStats && count(map.resourceStats) ) {
+		{
 			const columnInfo = [
 				{ name: "resource", attr: "resourceName" },
 				{ name: "average quantity", attr: "averageQuantity", decimalPlaces: 4 },
@@ -151,13 +160,14 @@
 				resourceHeaderTr.appendChild(th);
 			}
 			this.mapResourceTbody.appendChild(resourceHeaderTr);
-			for( let r in map.resourceStats ) {
-				let resourceStats = map.resourceStats[r];
+			for( let r in this.resourceNames ) {
+				let resourceName = this.resourceNames[r]
+				let resourceStats = map.resourceStats ? map.resourceStats[resourceName] : undefined;
 				let resourceTr = document.createElement('tr');
 				for( let c in columnInfo ) {
 					let ci = columnInfo[c];
 					let td = document.createElement('td');
-					let value = resourceStats[ci.attr];
+					let value = ci.attr == 'resourceName' ? resourceName : resourceStats ? resourceStats[ci.attr] : undefined;
 					if( ci.decimalPlaces != undefined ) {
 						if( value === "+inf" || value === "-inf" ) {
 							// keep it!
