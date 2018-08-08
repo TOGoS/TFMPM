@@ -165,7 +165,8 @@ class TFMPM_Registry
 			$this->requireConfig('factorio/git-dir'),
 			$this->projectRootDir,
 			new TFMPM_GitCheckoutUtil($this->systemUtil),
-			$this->systemUtil
+			$this->systemUtil,
+			$this->dockerImageMetadataCache
 		);
 	}
 	

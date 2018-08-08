@@ -65,19 +65,36 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 			$dataDir = $this->factorioBuilder->checkOutFactorioHeadlessData($dataCommitId)."/data";
 			$dataDir = realpath($dataDir); // So that Docker will accept it
 		}
+
+		// Different images allow (non-package builds) or require (package builds)
+		// data to be in different places.
+		// So here we'll try to figure out which kind of image this is.
+		$imageInfo = $this->dockerImageMetadataCache->getImageMetadata($factorioDockerImageId);
+		$explicitWorkingDir = null;
+		if( isset($imageInfo['Config']['Labels']['factorio_data_directory']) ) {
+			$containedFactorioDataDir = $imageInfo['Config']['Labels']['factorio_data_directory'];
+		} else if( isset($imageInfo['Config']['WorkingDir']) ) {
+			$containedFactorioDataDir = $imageInfo['Config']['WorkingDir'] . "/data";
+		} else {
+			$explicitWorkingDir = "/opt/bin/Factorio";
+			$containedFactorioDataDir = $explicitWorkingDir . "/data";
+		}
+		
 		
 		$cmdArgs = array("docker","run");
 		$cmdArgs[] = "-v";
-		$cmdArgs[] = "{$mapDir}:/opt/bin/Factorio/map-previews";
+		$cmdArgs[] = "{$mapDir}:/mnt/map-previews";
 		if( $dataDir ) {
 			$cmdArgs[] = "-v";
-			$cmdArgs[] = "{$dataDir}:/opt/bin/Factorio/data";
+			$cmdArgs[] = "{$dataDir}:{$containedFactorioDataDir}";
 		}
-		$cmdArgs[] = "-w";
-		$cmdArgs[] = "/opt/bin/Factorio";
+		if( $explicitWorkingDir ) {
+			$cmdArgs[] = "-w";
+			$cmdArgs[] = $explicitWorkingDir;
+		}
 		$cmdArgs[] = $factorioDockerImageId;
 		// Factorio arguments
-		$cmdArgs[] = "--generate-map-preview=map-previews/{$mapBasename}";
+		$cmdArgs[] = "--generate-map-preview=/mnt/map-previews/{$mapBasename}";
 		$cmdArgs[] = "--map-gen-seed=".self::requireParam($params,'mapSeed');
 		$cmdArgs[] = "--map-preview-scale=".self::requireParam($params,'mapScale');
 		$cmdArgs[] = "--map-preview-offset=$mapOffset";
