@@ -11,7 +11,7 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		return $params[$key];
 	}
 
-	public static function normalizeParams(array $params) {
+	public function normalizeParams(array $params) {
 		if( !isset($params['mapOffset']) ) $params['mapOffset'] = array(0,0);
 		if( is_string($params['mapOffset']) ) $params['mapOffset'] = explode(',', $params['mapOffset']);
 		if( isset($params['reportQuantities']) ) {
@@ -21,7 +21,34 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 				$params['reportQuantities'] = explode(',', $params['reportQuantities']);
 			}
 		}
+		
+		$mapGenSettings = null;
+		if( isset($params['mapGenSettings']) ) {
+			$mapGenSettings = $params['mapGenSettings'];
+			unset($params['mapGenSettings']);
+		}
+		if( isset($params['mapGenSettingsFile']) ) {
+			$mapGenSettings = file_get_contents($this->getFile($params['mapGenSettingsFile']));
+			unset($params['mapGenSettingsFile']);
+		}
+		if( $mapGenSettings ) {
+			$params['mapGenSettingsUrn'] = $this->primaryBlobRepository->putString($mapGenSettings, $this->storeSector);
+		}
+			
 		return $params;
+	}
+
+	protected function getFile($urn) {
+		if( file_exists($urn) ) return $urn;
+		
+		$blob = $this->blobRepository->getBlob($urn);
+		if( $blob instanceof Nife_FileBlob ) {
+			return $blob->getFile();
+		} else {
+			$file = $this->primaryBlobRepository->newTempFile();
+			file_put_contents($file, (string)$blob);
+			return $file;
+		}
 	}
 
 	/**
@@ -80,30 +107,41 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 			$containedFactorioDataDir = $explicitWorkingDir . "/data";
 		}
 		
-		
-		$cmdArgs = array("docker","run");
-		$cmdArgs[] = "-v";
-		$cmdArgs[] = "{$mapDir}:/mnt/map-previews";
+		$dockArgs = array("docker","run");
+		$dockArgs[] = "-v";
+		$dockArgs[] = "{$mapDir}:/mnt/map-previews";
 		if( $dataDir ) {
-			$cmdArgs[] = "-v";
-			$cmdArgs[] = "{$dataDir}:{$containedFactorioDataDir}";
+			$dockArgs[] = "-v";
+			$dockArgs[] = "{$dataDir}:{$containedFactorioDataDir}";
 		}
 		if( $explicitWorkingDir ) {
-			$cmdArgs[] = "-w";
-			$cmdArgs[] = $explicitWorkingDir;
+			$dockArgs[] = "-w";
+			$dockArgs[] = $explicitWorkingDir;
 		}
-		$cmdArgs[] = $factorioDockerImageId;
+		
 		// Factorio arguments
-		$cmdArgs[] = "--generate-map-preview=/mnt/map-previews/{$mapBasename}";
-		$cmdArgs[] = "--map-gen-seed=".self::requireParam($params,'mapSeed');
-		$cmdArgs[] = "--map-preview-scale=".self::requireParam($params,'mapScale');
-		$cmdArgs[] = "--map-preview-offset=$mapOffset";
-		$cmdArgs[] = "--map-preview-size=$mapWidth";
-		if( count($reportQuantities) ) {
-			$cmdArgs[] = "--report-quantities=".implode(',',$reportQuantities);
+		$factArgs = array();
+		$factArgs[] = "--generate-map-preview=/mnt/map-previews/{$mapBasename}";
+		$factArgs[] = "--map-gen-seed=".self::requireParam($params,'mapSeed');
+		$factArgs[] = "--map-preview-scale=".self::requireParam($params,'mapScale');
+		$factArgs[] = "--map-preview-offset=$mapOffset";
+		$factArgs[] = "--map-preview-size=$mapWidth";
+		if( isset($params['mapGenSettingsUrn']) ) {
+			$hostMgsFile = realpath($this->getFile($params['mapGenSettingsUrn']));
+			$mgsBasename = basename($hostMgsFile);
+			$hostMgsDir = dirname($hostMgsFile);
+			$containedMgsDir = "/mnt/mapgen-configs";
+			$dockArgs[] = "-v";
+			$dockArgs[] = "{$hostMgsDir}:{$containedMgsDir}";
+			$factArgs[] = "--map-gen-settings={$containedMgsDir}/{$mgsBasename}";
 		}
-		$cmdArgs[] = "--slope-shading=$slopeShading";
-
+		if( count($reportQuantities) ) {
+			$factArgs[] = "--report-quantities=".implode(',',$reportQuantities);
+		}
+		$factArgs[] = "--slope-shading=$slopeShading";
+		
+		$cmdArgs = array_merge($dockArgs, array($factorioDockerImageId), $factArgs);
+		
 		$this->systemUtil->runCommand($cmdArgs, array(
 			'outputFile' => $logFile,
 			'errorFd' => '1',

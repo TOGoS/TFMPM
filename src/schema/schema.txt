@@ -104,6 +104,7 @@ class 'map generation' {
 	# Input parameters
 	factorio commit ID : Git commit ID : filterability @ "exact-match"
 	data commit ID : Git commit ID : filterability @ "exact-match"
+	map gen settings URN : URI : nullable
 	map seed : integer : filterability @ "exact-match"
 	map width : integer : filterability @ "exact-match"
 	map scale : number : filterability @ "exact-match"
@@ -119,7 +120,7 @@ class 'map generation' {
 	compilation reported elapsed time : time interval : nullable
 	generation reported elapsed time : time interval : nullable
 	map image URN : URI
-	log file URN : URI
+	log URN : URI
 }
 
 class 'map resource stats' {

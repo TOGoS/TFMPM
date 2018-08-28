@@ -5,6 +5,7 @@ CREATE TABLE map_generation (
 	-- generation parameters:
 	factorio_commit_id text,
 	data_commit_id text,
+	map_gen_settings_urn text,
 	map_seed integer,
 	map_scale integer,
 	map_width integer, -- Also the height!
@@ -19,7 +20,7 @@ CREATE TABLE map_generation (
 	generation_reported_elapsed_time real, -- number of seconds generation took
 	-- outputs:
 	map_image_urn text,
-	log_file_urn text,
+	log_urn text,
 	PRIMARY KEY ( generation_id )
 );
 

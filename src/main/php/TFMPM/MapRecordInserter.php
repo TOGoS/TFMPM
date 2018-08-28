@@ -57,12 +57,12 @@ class TFMPM_MapRecordInserter extends TFMPM_Component
 		$reportQuantities = self::findValue($genParams, 'reportQuantities', array());
 		if( $mapOffset === null ) $mapOffset = array(0,0);
 		if( is_string($mapOffset) ) $mapOffset = explode(',',$mapOffset);
-		$logFileUrn = self::findValue($genResult, 'logFile');
+		$logUrn = self::findValue($genResult, 'logFile');
 		$compilationReportedElapsedTime = null;
 		$generationReportedElapsedTime = null;
 		$resourceStats = array();
-		if( $logFileUrn ) {
-			$log = $this->blobRepository->getBlob($logFileUrn);
+		if( $logUrn ) {
+			$log = $this->blobRepository->getBlob($logUrn);
 			if( $log !== null ) {
 				$lines = explode("\n", (string)$log);
 				foreach( $lines as $line ) {
@@ -98,6 +98,7 @@ class TFMPM_MapRecordInserter extends TFMPM_Component
 				'generator_node_name' => self::findValue($info, 'generatorNodeName'),
 				'factorio_commit_id' => self::findValue($genParams, 'factorioCommitId'),
 				'data_commit_id' => self::findValue($genParams, array('dataCommitId', 'factorioCommitId')),
+				'map_gen_settings_urn' => self::findValue($genParams, 'mapGenSettingsUrn'),
 				'map_seed' => self::findValue($genParams, 'mapSeed'),
 				'map_scale' => $mapScale,
 				'map_width' => $mapWidth,
@@ -106,7 +107,7 @@ class TFMPM_MapRecordInserter extends TFMPM_Component
 				'slope_shading' => $slopeShading,
 				'report_quantities' => implode(',', $reportQuantities),
 				'map_image_urn' => self::findValue($genResult, 'mapFile'),
-				'log_file_urn' => $logFileUrn,
+				'log_urn' => $logUrn,
 				'generation_end_time' => self::findValue($info, 'endTime'),
 				'compilation_reported_elapsed_time' => $compilationReportedElapsedTime,
 				'generation_reported_elapsed_time' => $generationReportedElapsedTime,

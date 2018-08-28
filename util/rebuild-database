@@ -13,10 +13,11 @@ class TFMPM_DatabaseUpgrader extends TFMPM_Component
 	public function runUpgrades() {
 		$upgradesDir = "{$this->registry->projectRootDir}/src/db-migrations/upgrades";
 		$upgradeFiles = scandir($upgradesDir);
+		$this->log("Running upgrade scripts...");
 		foreach( $upgradeFiles as $f ) {
 			if( $f[0] == '.' ) continue; // e.g. . and ..
 			$file = "$upgradesDir/$f";
-			$this->log("Running $file...");
+			$this->log("  Running $file...");
 			$this->sqlRunner->doRawQuery(file_get_contents($file));
 		}
 	}
@@ -27,7 +28,9 @@ $inserter = $TFMPM_Registry->mapRecordInserter;
 
 $errors = array();
 $logFiles = glob("logs/*.jsonl");
+$inserter->log("Processing log files...");
 foreach( $logFiles as $logFile ) {
+	$inserter->log("  $logFile...");
 	$fh = fopen( $logFile, "rb" );
 	if( $fh === false ) {
 		$errors[] = array('message'=>"Failed to open $logFile");

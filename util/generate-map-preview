@@ -9,6 +9,14 @@ require_once "$selfDir/init-error-handling.php";
 $paramMetadata = array(
 	'map seed' => array(),
 	'factorio commit ID' => array(),
+	'map gen settings' => array(
+		'description' => 'Custom map gen settings JSON as a string',
+		'requiresValue' => false
+	),
+	'map gen settings file' => array(
+		'description' => 'Path to file containing custom map gen settings',
+		'requiresValue' => false
+	),
 	'data commit ID' => array(
 		'requiresValue' => false
 	),
@@ -55,11 +63,12 @@ for( $i=1; $i<count($argv); ++$i ) {
 		$verbosity = 200;
 	} else if( $arg == '--help' ) {
 		echo "Options:\n";
-		echo " --help ; show this\n";
-		echo " --lazy ; skip generating maps already generated (according to the SQLite database)\n";
+		echo "  --help ; show this\n";
+		echo "  --lazy ; skip generating maps already generated (according to the SQLite database)\n";
 		foreach( $paramMetadata as $param ) {
 			echo "  {$param['argRoot']}=...";
-			if( isset($param['defaultValue']) ) echo " (default: {$param['defaultValue']})";
+			if( !empty($param['defaultValue']) ) echo " (default: {$param['defaultValue']})";
+			if( !empty($param['description']) ) echo " ; {$param['description']}";
 			echo "\n";
 		}
 		exit(0);
@@ -96,6 +105,8 @@ if( !is_dir($metalogDir) ) mkdir($metalogDir, 0777, true);
 $runner = $TFMPM_Registry->factorioRunner;
 $systemUtil = $TFMPM_Registry->systemUtil;
 
+$params = $runner->normalizeParams($params);
+
 if( $beLazy ) {
 	$filters = array();
 	foreach( $params as $k=>$v ) $filters[$k] = array($v);
@@ -121,8 +132,6 @@ if( $selfCommitId === '' ) {
 
 $metalogFile = $metalogDir."/".date('Y_m_d').".jsonl";
 $systemUtil->mkparentDirs($metalogFile);
-
-$params = TFMPM_FactorioRunner::normalizeParams($params);
 
 $startTime = date('c');
 $result = $runner->generateMapPreview($params);
