@@ -109,7 +109,10 @@ $params = $runner->normalizeParams($params);
 
 if( $beLazy ) {
 	$filters = array();
-	foreach( $params as $k=>$v ) $filters[$k] = array($v);
+	foreach( $params as $k=>$v ) {
+		if( $k == 'reportQuantities' ) continue; // Can't filter on that!
+		$filters[$k] = array($v);
+	}
 	$maps = $TFMPM_Registry->mapModel->getMaps($filters);
 	if( count($maps) > 0 ) {
 		if( $verbosity >= 200 ) {
