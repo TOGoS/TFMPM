@@ -20,6 +20,7 @@ function generateMapGraph(maps) {
 	
 	let dimensionMapAttributes = {
 		commitId: ['factorioCommitId','dataCommitId'],
+		mapGenSettingsUrn: ['mapGenSettingsUrn'],
 		mapSeed: ['mapSeed'],
 		// map gen settings should go here when I have it
 		mapOffset: ['mapOffsetX'],
@@ -65,6 +66,7 @@ function generateMapGraph(maps) {
 		}
 	}
 	
+	// Names of dimensions with more than one value
 	let dimensionKeys = [];
 	for( dim in dimensionMapAttributes ) {
 		if( count(dimensionValues[dim]) > 1 ) {
@@ -74,7 +76,7 @@ function generateMapGraph(maps) {
 	
 	let xDim = dimensionKeys[0];
 	let yDim = dimensionKeys[1];
-	let zDim = 'mapScale';
+	let zDim = 'mapScale'; // Might not be in 'dimensionKeys'!
 	
 	/*
 	 * dimension:
@@ -97,6 +99,11 @@ function generateMapGraph(maps) {
 			throw new Error("Oh no, no dimension map attributes for dimension '"+dim+"'");
 		}
 		let otherwiseKey = keyMapIgnoringDimension(map, dim);
+		if( mapLists[dim] == undefined ) {
+			// Maybe it's fine!
+			return undefined;
+			//throw new Error("Oh no, no map list list for dimension '"+dim+"'");
+		}
 		let mapList = mapLists[dim][otherwiseKey];
 		let closestDimValue = undefined;
 		for( let neighborDimValue in mapList ) {
