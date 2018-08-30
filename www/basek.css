@@ -170,6 +170,7 @@ td.null {
 .filter-set {
 	display: flex;
 	flex-direction: row;
+	flex-wrap: wrap;
 }
 .filter-set .filter {
 	display: flex;

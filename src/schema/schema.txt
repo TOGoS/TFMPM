@@ -104,7 +104,7 @@ class 'map generation' {
 	# Input parameters
 	factorio commit ID : Git commit ID : filterability @ "exact-match"
 	data commit ID : Git commit ID : filterability @ "exact-match"
-	map gen settings URN : URI : nullable
+	map gen settings URN : URI : nullable : filterability @ "exact-match"
 	map seed : integer : filterability @ "exact-match"
 	map width : integer : filterability @ "exact-match"
 	map scale : number : filterability @ "exact-match"
