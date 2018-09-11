@@ -1,0 +1,63 @@
+#!/usr/bin/env php
+<?php
+
+$selfDir = dirname(__DIR__);
+require_once "$selfDir/init-environment.php";
+require_once "$selfDir/init-error-handling.php";
+
+$factorioGitDir = null;
+$commitId = null;
+$heavyMode = false;
+$verbosity = 0;
+for( $i=1; $i<count($argv); ++$i ) {
+	$arg = $argv[$i];
+	if( $arg == '-v' ) {
+		$verbosity = 100;
+	} else if( $arg == '-vv' ) {
+		$verbosity = 200;
+	} else if( preg_match('/^[^-].*$/', $arg) ) {
+		$commitId = $arg;
+	}
+}
+
+if( !$commitId ) {
+	throw new Exception("No commit ID specified");
+}
+
+$selfGitDir = "$selfDir/.git";
+$blobRepoDir = getenv('HOME')."/.ccouch";
+$metalogDir = "$selfDir/logs";
+$metalogFile = $metalogDir."/".date('Y_m_d')."-tests.jsonl";
+$selfCommitShellCmd = "git --git-dir=".escapeshellarg($selfGitDir)." rev-parse HEAD";
+$selfCommitId = trim(`$selfCommitShellCmd`);
+if( $selfCommitId === '' ) {
+	fwrite(STDERR, "Warning: Unable to determine own commit ID\n");
+	$selfCommitId = null;
+}
+
+$testParams = array(
+	'factorioCommitId' => $commitId,
+	'heavyMode' => $heavyMode,
+);
+
+$systemUtil = $TFMPM_Registry->systemUtil;
+$systemUtil->mkparentDirs($metalogFile);
+
+$startTime = date('c');
+$testResult = $TFMPM_Registry->factorioRunner->runUnitTests($testParams);
+$endTime = date('c');
+$metalogRecord = array(
+	'startTime' => $startTime,
+	'endTime' => $endTime,
+	'tfmpmCommitId' => $selfCommitId,
+	'testParams' => $testParams,
+	'testResult' => $testResult,
+);
+
+$metalogStream = fopen( $metalogFile, "ab" );
+fwrite($metalogStream, json_encode($metalogRecord)."\n");
+fclose($metalogStream);
+
+if( $verbosity >= 100 ) {
+	echo json_encode($metalogRecord,JSON_PRETTY_PRINT), "\n";
+}

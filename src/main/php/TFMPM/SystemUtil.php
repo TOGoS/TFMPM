@@ -2,6 +2,10 @@
 
 class TFMPM_SystemUtil
 {
+	public function log($stuff) {
+		fwrite(STDERR, "{$stuff}\n");
+	}	
+	
 	public function unlink($whatever) {
 		if( @unlink($whatever) === false ) {
 			if( !file_exists($whatever) ) {
@@ -47,6 +51,7 @@ class TFMPM_SystemUtil
 	}
 	public function runCommand($args, array $options=array()) {
 		$cmdString = is_array($args) ? self::buildShellCommand($args, $options) : $args;
+		$this->log("$ $cmdString");
 		system($cmdString, $status);
 		$onNz = isset($options['onNz']) ? $options['onNz'] : 'error';
 		if( $status != 0 && $onNz == 'error' ) {

@@ -82,4 +82,33 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 		$this->buildFactorioHeadlessDockerImage($commitId);
 		return $tag;
 	}
+
+	public function buildFactorioTestDockerImage($commitId) {
+		$dir = $this->checkOutFactorioHeadless($commitId);
+		if( file_exists("$dir/Makefile") ) {
+			$this->systemUtil->runCommand(array('make', '-C', $dir, 'regenerate_build_version_file'));
+		} else {
+			// Presumably this is a version that uses CMake
+			// and the CMake scripts will take care of it
+		}
+		if( !is_dir($dir."/docker/factorio-test") ) {
+			throw new Exception("Version $commitId doesn't have a docker/factorio-test directory; we'll need some extra smarts in order to build it...");
+		}
+		$buildId = "{$commitId}";
+		$this->systemUtil->runCommand(array('make',"build_id={$buildId}",'-C',$dir."/docker/factorio-test"));
+		return array(
+			'id' => trim(file_get_contents($dir."/docker/factorio-test/docker-image-id")),
+			'tag' => "factorio/factorio:{$buildId}"
+		);
+	}
+
+	public function ensureFactorioTestDockerImageExists($commitId) {
+		$tag = "factorio/factorio-test:{$commitId}";
+		if( $this->dockerImageMetadataCache->doesDockerImageExist($tag) ) return $tag;
+		// TODO: I suppose we could try pulling from dockerhub
+		$this->log("Oh no, $tag doesn't seem to exist.  I'll have to build it...");
+		$this->buildFactorioTestDockerImage($commitId);
+		return $tag;
+	}
+
 }

@@ -135,6 +135,9 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 			$dockArgs[] = "{$hostMgsDir}:{$containedMgsDir}";
 			$factArgs[] = "--map-gen-settings={$containedMgsDir}/{$mgsBasename}";
 		}
+		if( !is_array($reportQuantities) ) {
+			throw new Exception("'reportQuantities' should be an array.  Given: ".json_encode($reportQuantities));
+		}
 		if( count($reportQuantities) ) {
 			$factArgs[] = "--report-quantities=".implode(',',$reportQuantities);
 		}
@@ -148,6 +151,42 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		));
 		$files = array('logFile'=>$logFile, 'mapFile'=>$mapFile);
 		$result = array();
+		foreach( $files as $k => $file ) {
+			if( file_exists($file) ) {
+				$result[$k] = $this->primaryBlobRepository->putTempFile($file, $this->storeSector);
+			}
+		}
+		return $result;
+	}
+
+	public function runUnitTests( array $params ) {
+		$storeOptions = array(TOGoS_PHPN2R_Repository::OPT_SECTOR => $this->storeSector);
+		$factorioCommitId = self::requireParam($params, 'factorioCommitId');
+		$testDockerImageId = $this->factorioBuilder->ensureFactorioTestDockerImageExists($factorioCommitId);
+		$logFile = $this->primaryBlobRepository->newTempFile($storeOptions);
+		
+		$dockArgs = array("docker","run");
+
+		$testArgs = array();
+		if( !empty($params['heavyMode']) ) {
+			$testArgs[] = "--heavy-mode";
+		}
+		// Those socket tests are finicky.
+		$testArgs[] = "--contains=Socket";
+		$testArgs[] = "--invert-selection";
+
+		$cmdArgs = array_merge($dockArgs, array($testDockerImageId), $testArgs);
+
+		$exitCode = $this->systemUtil->runCommand($cmdArgs, array(
+			'outputFile' => $logFile,
+			'errorFd' => '1',
+			'onNz' => 'return',
+		));
+
+		$files = array('logFile'=>$logFile);
+		$result = array(
+			'exitCode' => $exitCode
+		);
 		foreach( $files as $k => $file ) {
 			if( file_exists($file) ) {
 				$result[$k] = $this->primaryBlobRepository->putTempFile($file, $this->storeSector);
