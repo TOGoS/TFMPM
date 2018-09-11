@@ -52,6 +52,10 @@ class TFMPM_GitCheckoutUtil
 	}
 	
 	public function gitCheckoutCopy($sourceGitDir, $commitId, $checkoutDir, array $options=array()) {
+		$checkoutConfirmationFile = isset($options['checkoutConfirmationFile']) ? $options['checkoutConfirmationFile'] : null;
+		if( $checkoutConfirmationFile === true ) $checkoutConfirmationFile = "{$checkoutDir}/.checkout-completed";
+		if( $checkoutConfirmationFile !== null and file_exists($checkoutConfirmationFile) ) return $checkoutDir;
+		
 		$sparsenessConfig = isset($options['sparsenessConfig']) ? $options['sparsenessConfig'] : null;
 		if( isset($options['paths']) ) {
 			throw new Exception("'paths' option to gitCheckoutCopy no longer supported - use sparsenessConfig instead");
@@ -91,5 +95,11 @@ class TFMPM_GitCheckoutUtil
 				throw new Exception("Oh no, checkout failed; ".EarthIT_Schema_WordUtil::oxfordlyFormatList($missing)." are missing");
 			}
 		}
+
+		if( $checkoutConfirmationFile !== null ) {
+			file_put_contents($checkoutConfirmationFile, "ok\n");
+		}
+
+		return $checkoutDir;
 	}
 }

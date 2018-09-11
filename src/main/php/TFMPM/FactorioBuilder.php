@@ -22,37 +22,27 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 	}
 	
 	public function checkOutFactorioHeadlessData($commitId) {
-		$checkoutDir = "factorio-checkouts/$commitId.headless-data";
-		$checkoutConfirmationFile = "{$checkoutDir}/.checkout-completed";
-		if( !file_exists($checkoutConfirmationFile) ) {
-			$this->gitCheckoutUtil->gitCheckoutCopy($this->factorioGitDir, $commitId, $checkoutDir, array(
-				'sparsenessConfig' => array(
-					'data/*',
-					'!*.png'
-				)
-			));
-			file_put_contents($checkoutConfirmationFile, "ok");
-		}
-		return $checkoutDir;
+		return $this->gitCheckoutUtil->gitCheckoutCopy($this->factorioGitDir, $commitId, "factorio-checkouts/$commitId.headless-data", array(
+			'sparsenessConfig' => array(
+				'data/*',
+				'!*.png'
+			),
+			'checkoutConfirmationFile' => true,
+		));
 	}
 
 	public function checkOutFactorioHeadless($commitId) {
-		$checkoutDir = "factorio-checkouts/$commitId.headless";
-		$checkoutConfirmationFile = "{$checkoutDir}/.checkout-completed";
-		if( !file_exists($checkoutConfirmationFile) ) {
-			$this->gitCheckoutUtil->gitCheckoutCopy($this->factorioGitDir, $commitId, $checkoutDir, array(
-				'sparsenessConfig' => array(
-					'*',
-					'!data/**.png' // This is also used by unit tests, for which tests/**.png are still needed.
-				),
-				'shouldExist' => array(
-					'docker/Makefile',
-					'src/Main.cpp',
-				),
-			));
-			file_put_contents($checkoutConfirmationFile, "ok");
-		}
-		return $checkoutDir;
+		return $this->gitCheckoutUtil->gitCheckoutCopy($this->factorioGitDir, $commitId, "factorio-checkouts/$commitId.headless", array(
+			'sparsenessConfig' => array(
+				'*',
+				'!data/**.png' // This is also used by unit tests, for which tests/**.png are still needed.
+			),
+			'shouldExist' => array(
+				'docker/Makefile',
+				'src/Main.cpp',
+			),
+			'checkoutConfirmationFile' => true
+		));
 	}
 
 	public function buildFactorioHeadlessDockerImage($commitId) {
@@ -110,5 +100,4 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 		$this->buildFactorioTestDockerImage($commitId);
 		return $tag;
 	}
-
 }
