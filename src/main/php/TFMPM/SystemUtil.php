@@ -47,6 +47,9 @@ class TFMPM_SystemUtil
 		if( isset($options['inputFile']) ) {
 			$cmdString .= " <".escapeshellarg($options['inputFile']);
 		}
+		if( isset($options['teeOutputFile']) ) {
+			$cmdString .= " | tee ".escapeshellarg($options['teeOutputFile']);
+		}
 		return $cmdString;
 	}
 	public function runCommand($args, array $options=array()) {

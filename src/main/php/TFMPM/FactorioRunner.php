@@ -159,7 +159,7 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		return $result;
 	}
 
-	public function runUnitTests( array $params ) {
+	public function runUnitTests( array $params, array $options=array() ) {
 		$storeOptions = array(TOGoS_PHPN2R_Repository::OPT_SECTOR => $this->storeSector);
 		$factorioCommitId = self::requireParam($params, 'factorioCommitId');
 		$testDockerImageId = $this->factorioBuilder->ensureFactorioTestDockerImageExists($factorioCommitId);
@@ -177,8 +177,10 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 
 		$cmdArgs = array_merge($dockArgs, array($testDockerImageId), $testArgs);
 
+        $outputFileKey = empty($options['streamOutput']) ? 'outputFile' : 'teeOutputFile';
+        
 		$exitCode = $this->systemUtil->runCommand($cmdArgs, array(
-			'outputFile' => $logFile,
+			$outputFileKey => $logFile,
 			'errorFd' => '1',
 			'onNz' => 'return',
 		));

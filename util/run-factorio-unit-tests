@@ -46,7 +46,9 @@ $systemUtil = $TFMPM_Registry->systemUtil;
 $systemUtil->mkparentDirs($metalogFile);
 
 $startTime = date('c');
-$testResult = $TFMPM_Registry->factorioRunner->runUnitTests($testParams);
+$testResult = $TFMPM_Registry->factorioRunner->runUnitTests($testParams, array(
+    'streamOutput' => ($verbosity >= 100)
+));
 $endTime = date('c');
 $metalogRecord = array(
 	'startTime' => $startTime,
