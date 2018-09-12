@@ -48,6 +48,7 @@ class TFMPM_SystemUtil
 			$cmdString .= " <".escapeshellarg($options['inputFile']);
 		}
 		if( isset($options['teeOutputFile']) ) {
+			$cmdString = "set -o pipefail; ".$cmdString;
 			$cmdString .= " | tee ".escapeshellarg($options['teeOutputFile']);
 		}
 		return $cmdString;
