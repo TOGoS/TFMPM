@@ -177,10 +177,8 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 
 		$cmdArgs = array_merge($dockArgs, array($testDockerImageId), $testArgs);
 
-        $outputFileKey = empty($options['streamOutput']) ? 'outputFile' : 'teeOutputFile';
-        
 		$exitCode = $this->systemUtil->runCommand($cmdArgs, array(
-			$outputFileKey => $logFile,
+			'outputFile' => $logFile,
 			'errorFd' => '1',
 			'onNz' => 'return',
 		));

@@ -54,6 +54,9 @@ class TFMPM_SystemUtil
 		return $cmdString;
 	}
 	public function runCommand($args, array $options=array()) {
+		if( isset($options['teeOutputFile']) ) {
+			throw new Exception("teeOutputFile not supported because 'set -o pipefail' isn't");
+		}
 		$cmdString = is_array($args) ? self::buildShellCommand($args, $options) : $args;
 		$this->log("$ $cmdString");
 		system($cmdString, $status);
