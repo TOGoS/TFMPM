@@ -38,11 +38,17 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		return $params;
 	}
 
+	/**
+	 * Turn a UEN or file path into a path to an existing (but potentially temporary) file.
+	 * Throws an exception if the named resource could not be found.
+	 */
 	protected function getFile($urn) {
 		if( file_exists($urn) ) return $urn;
 		
 		$blob = $this->blobRepository->getBlob($urn);
-		if( $blob instanceof Nife_FileBlob ) {
+		if( $blob === null ) {
+			throw new Exception("'$urn' could not be found");
+		} else if( $blob instanceof Nife_FileBlob ) {
 			return $blob->getFile();
 		} else {
 			$file = $this->primaryBlobRepository->newTempFile();
