@@ -127,6 +127,7 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		
 		// Factorio arguments
 		$factArgs = array();
+		$factArgs[] = "--verbose";
 		$factArgs[] = "--generate-map-preview=/mnt/map-previews/{$mapBasename}";
 		$factArgs[] = "--map-gen-seed=".self::requireParam($params,'mapSeed');
 		$factArgs[] = "--map-preview-scale=".self::requireParam($params,'mapScale');
