@@ -8,6 +8,7 @@ mapgen_seeds="1001 2001 3001 4001 5001"
 map_scales="1 2 4 8"
 map_gen_settings_files="/dev/null"
 map_width=1024
+map_offsets="0,0"
 
 while [[ $# > 0 ]]
 do
@@ -24,6 +25,8 @@ do
 	map_gen_settings_files="${BASH_REMATCH[1]}"
     elif [[ $key =~ --map-width=(.*) ]] ; then
 	map_width="${BASH_REMATCH[1]}"
+    elif [[ $key =~ --map-offset=(.*) ]] ; then
+	map_offsets="${BASH_REMATCH[1]}"
     else
 	echo "$0: Unrecognized argument: '$key'" >&2
 	exit 1
@@ -42,21 +45,24 @@ fi
 for fcommit in $factorio_commit_ids ; do
     for dcommit in $data_commit_ids ; do
 	for mgs_file in $map_gen_settings_files ; do
-	    if [ $mgs_file == '/dev/null' ] ; then
-		mgs_arg=""
-	    else
-		mgs_arg="--map-gen-settings-file=$mgs_file"
-	    fi
-	    for seed in $mapgen_seeds ; do
-    		for scale in $map_scales ; do
-		    util/generate-map-preview -v --lazy \
-					      --report-quantities=standard-stuff \
-					      --factorio-commit-id=$fcommit \
-					      ${mgs_arg} \
-					      --data-commit-id=$dcommit \
-					      --map-seed=$seed \
-					      --map-scale=$scale \
-					      --map-width=$map_width
+	    for offset in $map_offsets ; do
+		if [ $mgs_file == '/dev/null' ] ; then
+		    mgs_arg=""
+		else
+		    mgs_arg="--map-gen-settings-file=$mgs_file"
+		fi
+		for seed in $mapgen_seeds ; do
+		    for scale in $map_scales ; do
+			util/generate-map-preview -v --lazy \
+						  --report-quantities=standard-stuff \
+						  --factorio-commit-id=$fcommit \
+						  ${mgs_arg} \
+						  --data-commit-id=$dcommit \
+						  --map-seed=$seed \
+						  --map-scale=$scale \
+						  --map-offset=$offset \
+						  --map-width=$map_width
+		    done
 		done
 	    done
 	done
