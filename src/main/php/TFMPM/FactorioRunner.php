@@ -57,6 +57,55 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		}
 	}
 
+	public function getFactorioDockerImageProperties($factorioDockerImageId) {
+		$imageInfo = $this->dockerImageMetadataCache->getImageMetadata($factorioDockerImageId);
+		$explicitWorkingDir = null;
+		if( isset($imageInfo['Config']['Labels']['factorio_data_directory']) ) {
+			$containedFactorioDataDir = $imageInfo['Config']['Labels']['factorio_data_directory'];
+		} else if( isset($imageInfo['Config']['WorkingDir']) ) {
+			$containedFactorioDataDir = $imageInfo['Config']['WorkingDir'] . "/data";
+		} else {
+			$explicitWorkingDir = "/opt/bin/Factorio";
+			$containedFactorioDataDir = $explicitWorkingDir . "/data";
+		}
+		return array(
+			'explicitWorkingDir' => $explicitWorkingDir,
+			'dataDir' => $containedFactorioDataDir,
+		);
+	}
+
+	public function runFactorio(array $params) {
+		$factorioCommitId = self::requireParam($params, 'factorioCommitId');
+		$dataDir = isset($params['dataDir']) ? $params['dataDir'] : null;
+		// Factorio arguments
+		$factArgs = self::requireParam($params, 'factorioArguments');
+		
+		$factorioDockerImageId = $this->factorioBuilder->ensureFactorioHeadlessDockerImageExists($factorioCommitId);
+		
+		$facDocProps = $this->getFactorioDockerImageProperties($factorioDockerImageId);
+		$explicitWorkingDir = $facDocProps['explicitWorkingDir'];
+		$containedFactorioDataDir = $facDocProps['dataDir'];
+		
+		$dockArgs = array("docker","run");
+		$dockArgs[] = "--rm"; // I never want the container to stick around afterwards!
+		$dockArgs[] = "-v";
+		if( $dataDir ) {
+			$dockArgs[] = "-v";
+			$dockArgs[] = "{$dataDir}:{$containedFactorioDataDir}";
+		}
+		if( $explicitWorkingDir ) {
+			$dockArgs[] = "-w";
+			$dockArgs[] = $explicitWorkingDir;
+		}
+		
+		$cmdArgs = array_merge($dockArgs, array($factorioDockerImageId), $factArgs);
+
+		$this->systemUtil->runCommand($cmdArgs, array(
+			'outputFile' => $logFile,
+			'errorFd' => '1',
+		));
+	}
+	
 	/**
 	 * @param $params array of
 	 *   factorioCommitId
@@ -102,16 +151,9 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		// Different images allow (non-package builds) or require (package builds)
 		// data to be in different places.
 		// So here we'll try to figure out which kind of image this is.
-		$imageInfo = $this->dockerImageMetadataCache->getImageMetadata($factorioDockerImageId);
-		$explicitWorkingDir = null;
-		if( isset($imageInfo['Config']['Labels']['factorio_data_directory']) ) {
-			$containedFactorioDataDir = $imageInfo['Config']['Labels']['factorio_data_directory'];
-		} else if( isset($imageInfo['Config']['WorkingDir']) ) {
-			$containedFactorioDataDir = $imageInfo['Config']['WorkingDir'] . "/data";
-		} else {
-			$explicitWorkingDir = "/opt/bin/Factorio";
-			$containedFactorioDataDir = $explicitWorkingDir . "/data";
-		}
+		$facDocProps = $this->getFactorioDockerImageProperties($factorioDockerImageId);
+		$explicitWorkingDir = $facDocProps['explicitWorkingDir'];
+		$containedFactorioDataDir = $facDocProps['dataDir'];
 		
 		$dockArgs = array("docker","run");
 		$dockArgs[] = "--rm"; // I never want the container to stick around afterwards!
