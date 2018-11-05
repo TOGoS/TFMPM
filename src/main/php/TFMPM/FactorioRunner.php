@@ -114,6 +114,7 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		}
 		
 		$dockArgs = array("docker","run");
+		$dockArgs[] = "--rm"; // I never want the container to stick around afterwards!
 		$dockArgs[] = "-v";
 		$dockArgs[] = "{$mapDir}:/mnt/map-previews";
 		if( $dataDir ) {
