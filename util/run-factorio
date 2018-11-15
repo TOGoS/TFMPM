@@ -9,6 +9,21 @@ $factorioCommitId = null;
 $dataDir = null;
 $volumes = array();
 $factorioArgs = array();
+
+function translatePath($path, $containedDir, array &$volumes, $writable=false) {
+	$dirname = dirname($path);
+	$basename = basename($path);
+	if( !isset($volumes[$containedDir]) ) {
+		if( $writable && !is_dir($dirname) ) {
+			mkdir($mpDir, 0755, true);
+		}
+		$volumes[$containedDir] = $dirname;
+	} else if( $volumes[$containedDir] != $dirname ) {
+		throw new Exception("Can't mount both $dirname and {$volumes[$containedDir]} as '$containedDir'!");
+	}
+	return "{$containedDir}/{$basename}";
+}
+
 for( $i=1; $i<count($argv); ++$i ) {
 	$arg = $argv[$i];
 	if( preg_match('/^--factorio-commit-id=(.*)/', $arg, $bif) ){
@@ -16,11 +31,9 @@ for( $i=1; $i<count($argv); ++$i ) {
 	} else if( preg_match('/^--data-dir=(.*)/', $arg, $bif) ) {
 		$dataDir = $bif[1];
 	} else if( preg_match('/^--generate-map-preview=(.*)/', $arg, $bif) ) {
-		$mapPreviewFile = $bif[1];
-		$mpDir = dirname($mapPreviewFile);
-		$volumes["/var/map-previews"] = $mpDir;
-		$factorioArgs[] = "--generate-map-preview=/var/map-previews/".basename($mapPreviewFile);
-		if( !is_dir($mpDir) ) mkdir($mpDir, 0755, true);
+		$factorioArgs[] = "--generate-map-preview=".translatePath($bif[1], "/mnt/map-previews", $volumes, true);
+	} else if( preg_match('/^--map-gen-settings=(.*)/', $arg, $bif) ) {
+		$factorioArgs[] = "--map-gen-settings=".translatePath($bif[1], "/mnt/map-gen-settings", $volumes, false);
 	} else {
 		$factorioArgs[] = $arg;
 	}
