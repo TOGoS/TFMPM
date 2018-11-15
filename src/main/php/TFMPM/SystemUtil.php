@@ -4,8 +4,32 @@ class TFMPM_SystemUtil
 {
 	public function log($stuff) {
 		fwrite(STDERR, "{$stuff}\n");
-	}	
+	}
 	
+	public function getHomeDir() {
+		$d = getenv('HOME');
+		if( empty($d) ) {
+			throw new Exception("Failed to determine home directory");
+		}
+		return $d;
+	}
+	
+	public function resolvePath($path) {
+		if( preg_match('#^~(/.*|$)#', $path, $bif) ) {
+			$resolved = $this->getHomeDir().$bif[1];
+		} else if( preg_match('#^~([^/]+)(.*)#', $path, $bif) ) {
+			$resolved = "/home/{$bif[1]}{$bif[2]}";
+		} else {
+			$resolved = $path;
+		}
+		$resolved = realpath($resolved);
+		if( $resolved === false or $resolved == '' ) {
+			throw new Exception("Failed to resolve path '$path'");
+		}
+		return $resolved;
+	}
+
+
 	public function unlink($whatever) {
 		if( @unlink($whatever) === false ) {
 			if( !file_exists($whatever) ) {

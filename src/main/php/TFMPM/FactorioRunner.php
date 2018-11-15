@@ -90,7 +90,13 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		$dockArgs[] = "--rm"; // I never want the container to stick around afterwards!
 		if( $dataDir ) {
 			$dockArgs[] = "-v";
-			$dockArgs[] = realpath($dataDir).":{$containedFactorioDataDir}";
+			$dockArgs[] = $this->systemUtil->resolvePath($dataDir).":{$containedFactorioDataDir}";
+		}
+		if( isset($params['volumes']) ) {
+			foreach($params['volumes'] as $contained=>$host ) {
+				$dockArgs[] = "-v";
+				$dockArgs[] = $this->systemUtil->resolvePath($host).":{$contained}";
+			}
 		}
 		if( $explicitWorkingDir ) {
 			$dockArgs[] = "-w";
@@ -143,7 +149,7 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		$dataDir = null;
 		if( $factorioCommitId != $dataCommitId ) {
 			$dataDir = $this->factorioBuilder->checkOutFactorioHeadlessData($dataCommitId)."/data";
-			$dataDir = realpath($dataDir); // So that Docker will accept it
+			$dataDir = $this->systemUtil->resolvePath($dataDir); // So that Docker will accept it
 		}
 
 		// Different images allow (non-package builds) or require (package builds)
@@ -175,7 +181,7 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		$factArgs[] = "--map-preview-offset=$mapOffset";
 		$factArgs[] = "--map-preview-size=$mapWidth";
 		if( isset($params['mapGenSettingsUrn']) ) {
-			$hostMgsFile = realpath($this->getFile($params['mapGenSettingsUrn']));
+			$hostMgsFile = $this->systemUtil->resolvePath($this->getFile($params['mapGenSettingsUrn']));
 			$mgsBasename = basename($hostMgsFile);
 			$hostMgsDir = dirname($hostMgsFile);
 			$containedMgsDir = "/mnt/mapgen-configs";
