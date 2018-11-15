@@ -1,0 +1,36 @@
+#!/usr/bin/env php
+<?php
+
+$selfDir = dirname(__DIR__);
+require_once "$selfDir/init-environment.php";
+require_once "$selfDir/init-error-handling.php";
+
+$factorioCommitId = null;
+$dataDir = null;
+$factorioArgs = array();
+for( $i=1; $i<count($argv); ++$i ) {
+	$arg = $argv[$i];
+	if( preg_match('/^--factorio-commit-id=(.*)/', $arg, $bif) ){
+		$factorioCommitId = $bif[1];
+	} else if( preg_match('/^--data-dir=(.*)/', $arg, $bif) ) {
+		$dataDir = $bif[1];
+	} else {
+		$factorioArgs[] = $arg;
+	}
+}
+
+if( $factorioCommitId == null ) {
+	fwrite(STDERR, "No factorio commit ID specified\n");
+	exit(1);
+}
+
+// e.g. docker run --rm -v /home/tog/workspace/Wube/Factorio/data:/usr/share/factorio -v /home/tog/workspace/Wube/Factorio/map-previews:/mnt/map-previews 'factorio/factorio:9b07167cc4947051a45748d4e90c8566ae7c5f6b-headless' --verbose --generate-map-preview=/mnt/map-previews/xxx.png --map-gen-seed=5001 --map-preview-scale=8 --map-preview-offset=0,0 --map-preview-size=1024 '--report-quantities=coal,stone,iron-ore,copper-ore,crude-oil,uranium-ore,biter-spawner,spitter-spawner' --slope-shading=0.3
+
+$reg = $TFMPM_Registry;
+
+//$reg->factorioBuilder->ensureFactorioHeadlessDockerImageExists($factorioCommitId);
+$reg->factorioRunner->runFactorio(array(
+	'factorioCommitId' => $factorioCommitId,
+	'dataDir' => $dataDir,
+	'factorioArguments' => $factorioArgs,
+));

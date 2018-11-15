@@ -88,10 +88,9 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		
 		$dockArgs = array("docker","run");
 		$dockArgs[] = "--rm"; // I never want the container to stick around afterwards!
-		$dockArgs[] = "-v";
 		if( $dataDir ) {
 			$dockArgs[] = "-v";
-			$dockArgs[] = "{$dataDir}:{$containedFactorioDataDir}";
+			$dockArgs[] = realpath($dataDir).":{$containedFactorioDataDir}";
 		}
 		if( $explicitWorkingDir ) {
 			$dockArgs[] = "-w";
@@ -101,7 +100,6 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		$cmdArgs = array_merge($dockArgs, array($factorioDockerImageId), $factArgs);
 
 		$this->systemUtil->runCommand($cmdArgs, array(
-			'outputFile' => $logFile,
 			'errorFd' => '1',
 		));
 	}
