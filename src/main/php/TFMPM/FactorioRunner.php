@@ -43,8 +43,8 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 	 * Throws an exception if the named resource could not be found.
 	 */
 	protected function getFile($urn) {
-		$resolved = $this->systemUtil->resolvePath($urn);
-		if( file_exists($resolved) ) return $urn;
+		$resolved = $this->systemUtil->resolvePath($urn, array('onError'=>'return'));
+		if( $resolved !== null and file_exists($resolved) ) return $resolved;
 		
 		$blob = $this->blobRepository->getBlob($urn);
 		if( $blob === null ) {

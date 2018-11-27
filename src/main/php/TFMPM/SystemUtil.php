@@ -14,7 +14,7 @@ class TFMPM_SystemUtil
 		return $d;
 	}
 	
-	public function resolvePath($path) {
+	public function resolvePath($path, $options=array()) {
 		if( preg_match('#^~(/.*|$)#', $path, $bif) ) {
 			$resolved = $this->getHomeDir().$bif[1];
 		} else if( preg_match('#^~([^/]+)(.*)#', $path, $bif) ) {
@@ -24,7 +24,11 @@ class TFMPM_SystemUtil
 		}
 		$resolved = realpath($resolved);
 		if( $resolved === false or $resolved == '' ) {
-			throw new Exception("Failed to resolve path '$path'");
+			if( !isset($options['onError']) or $options['onError'] == 'throw' ) {
+				throw new Exception("Failed to resolve path '$path'");
+			} else {
+				return null;
+			}
 		}
 		return $resolved;
 	}
