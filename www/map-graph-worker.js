@@ -85,6 +85,14 @@ function generateMapGraph(maps) {
 	 */
 	let mapLists = {};
 
+	// TODO: Proper sorting; e.g. commit IDs should be sorted based on some custom thing
+	const compareDimensionValues = function( dimension, v0, v1 ) {
+		if( dimension == 'mapScale' ) { v0 = +v0; v1 = +v1; }
+		if( v0 > v1 ) return +1;
+		if( v0 < v1 ) return -1;
+		return 0;
+	}
+
 	/**
 	 * Find the next map in the given direction in the given dimension
 	 * that shares all other attribute values.
@@ -107,14 +115,15 @@ function generateMapGraph(maps) {
 		let mapList = mapLists[dim][otherwiseKey];
 		let closestDimValue = undefined;
 		for( let neighborDimValue in mapList ) {
-			if( neighborDimValue == dimValue ) continue;
-			// TODO: Proper sorting; e.g. commit IDs should be sorted based on some custom thing
+			let neighborCompRes = compareDimensionValues(dim, neighborDimValue, dimValue);
+			let neighborClosestCompRes = closestDimValue == undefined ? undefined : compareDimensionValues(dim, neighborDimValue, closestDimValue);
+			if( neighborCompRes == 0 ) continue;
 			if( direction > 0 ) {
-				if( neighborDimValue > dimValue && (closestDimValue == undefined || neighborDimValue < closestDimValue) ) {
+				if( neighborCompRes > 0 && (closestDimValue == undefined || neighborClosestCompRes < 0) ) {
 					closestDimValue = neighborDimValue;
 				}
 			} else if( direction < 0 ) {
-				if( neighborDimValue < dimValue && (closestDimValue == undefined || neighborDimValue > closestDimValue) ) {
+				if( neighborCompRes < 0 && (closestDimValue == undefined || neighborClosestCompRes > 0) ) {
 					closestDimValue = neighborDimValue;
 				}
 			} else {
