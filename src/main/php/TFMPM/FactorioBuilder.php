@@ -28,6 +28,7 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 				'!*.png',
 				'!*.ttf',
 				'!data/base/sound',
+				'!data/core/sound',
 			),
 			'checkoutConfirmationFile' => true,
 		));
@@ -40,6 +41,7 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 				'!data/**.png', // This is also used by unit tests, for which tests/**.png are still needed.
 				'!data/**.ttf',
 				'!data/base/sound',
+				'!data/core/sound',
 			),
 			'shouldExist' => array(
 				'docker/Makefile',
