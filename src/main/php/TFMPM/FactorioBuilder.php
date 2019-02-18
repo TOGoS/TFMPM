@@ -25,7 +25,8 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 		return $this->gitCheckoutUtil->gitCheckoutCopy($this->factorioGitDir, $commitId, "factorio-checkouts/$commitId.headless-data", array(
 			'sparsenessConfig' => array(
 				'data/*',
-				'!*.png'
+				'!*.png',
+				'!*.ttf',
 			),
 			'checkoutConfirmationFile' => true,
 		));
@@ -35,7 +36,8 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 		return $this->gitCheckoutUtil->gitCheckoutCopy($this->factorioGitDir, $commitId, "factorio-checkouts/$commitId.headless", array(
 			'sparsenessConfig' => array(
 				'*',
-				'!data/**.png' // This is also used by unit tests, for which tests/**.png are still needed.
+				'!data/**.png', // This is also used by unit tests, for which tests/**.png are still needed.
+				'!data/**.ttf',
 			),
 			'shouldExist' => array(
 				'docker/Makefile',
