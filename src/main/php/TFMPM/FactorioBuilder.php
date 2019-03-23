@@ -27,6 +27,7 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 				'data/*',
 				'!*.png',
 				'!*.ttf',
+				'!license IBMPlex.txt', // Filenames with spaces cause problems for my Makefiles.
 				'!data/base/sound',
 				'!data/core/sound',
 			),
