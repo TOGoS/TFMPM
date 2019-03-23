@@ -83,6 +83,17 @@ class TFMPM_GitCheckoutUtil
 		$checkoutCmd2 = "$git checkout ".escapeshellarg($commitId)." .";
 		$this->systemUtil->runCommand($checkoutCmd2);
 
+		if( isset($options['mkdirs']) ) {
+			foreach( $options['mkdirs'] as $dir ) {
+				$fullPath = "$checkoutDir/$dir";
+				if( !is_dir($fullPath) ) {
+					if( !mkdir($fullPath, 0755, true) ) {
+						throw new Exception("Failed to make directory $fullPath");
+					}
+				}
+			}
+		}
+		
 		if( isset($options['shouldExist']) ) {
 			$shouldExist = is_array($options['shouldExist']) ? $options['shouldExist'] : array($options['shouldExist']);
 			$missing = array();
