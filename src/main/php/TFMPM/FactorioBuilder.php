@@ -41,6 +41,7 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 				'*',
 				'!data/**.png', // This is also used by unit tests, for which tests/**.png are still needed.
 				'!data/**.ttf',
+				'!license IBMPlex.txt', // Filenames with spaces cause problems for my Makefiles.
 				'!data/base/sound',
 				'!data/core/sound',
 			),
