@@ -57,6 +57,8 @@ class TFMPM_GitCheckoutUtil
 		if( $checkoutConfirmationFile !== null and file_exists($checkoutConfirmationFile) ) return $checkoutDir;
 		
 		$sparsenessConfig = isset($options['sparsenessConfig']) ? $options['sparsenessConfig'] : null;
+		// Git sparse checkout doesn't seem to support exclusions!
+		// Once you include a directory, everything in it is included.
 		if( isset($options['paths']) ) {
 			throw new Exception("'paths' option to gitCheckoutCopy no longer supported - use sparsenessConfig instead");
 		}
