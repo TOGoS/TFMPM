@@ -46,11 +46,18 @@ class TFMPM_MapPreviewManager extends TFMPM_Component
 		
 		$paramReMap = array();
 		foreach( $paramMetadata as $k=>&$info ) {
+			$names = array($k);
+			if( isset($info['aliases']) ) {
+				foreach( $info['aliases'] as $a ) $names[] = $a;
+			}
 			$info['name'] = EarthIT_Schema_WordUtil::toCamelCase($k);
 			$argRoot = "--".EarthIT_Schema_WordUtil::toKebabCase($k);
 			$info['argRoot'] = $argRoot;
-			$re = "/^$argRoot=(.*)$/";
-			$paramReMap[$re] = $info;
+			foreach( $names as $name ) {
+				$argRoot = "--".EarthIT_Schema_WordUtil::toKebabCase($name);
+				$re = "/^$argRoot=(.*)$/";
+				$paramReMap[$re] = $info;
+			}
 		}; unset($info);
 
 		$params = array();
