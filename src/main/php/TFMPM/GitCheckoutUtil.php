@@ -50,8 +50,39 @@ class TFMPM_GitCheckoutUtil
 		
 		throw new Exception("Oh no, we don't have git object $objectId!");
 	}
+
+	protected function rmRf($path) {
+		if( is_dir($path) ) {
+			$dh = opendir($path);
+			while( ($fn = readdir($dh)) !== false ) {
+				if( $fn == '.' or $fn == '..' ) continue;
+				$this->rmRf($path.'/'.$fn);
+			}
+			rmdir($path);
+		} else {
+			unlink($path);
+		}
+	}
+
+	protected function enforceSparseness($ruleset, $dir) {
+		$finder = new TOGoS_GitIgnore_FileFinder(array(
+			'ruleset' => $ruleset,
+			'invertRulesetResult' => false,
+			'defaultResult' => false,
+			'includeDirectories' => true,
+			'callback' => function($f, $shouldInclude) use ($dir) {
+				if( !$shouldInclude ) {
+					if( $dir == '' or $f == '' ) {
+						throw new Exception("Refusing to rmRf «{$dir}» / «{$f}» because one of those path segments is empty and that could be dangerous");
+					}
+					$this->rmRf($dir.'/'.$f);
+				}
+			}
+		));
+		$finder->findFiles($dir);
+	}
 	
-	public function gitCheckoutCopy($sourceGitDir, $commitId, $checkoutDir, array $options=array()) {
+	protected function _gitCheckoutCopy($sourceGitDir, $commitId, $checkoutDir, array $options=array()) {
 		$checkoutConfirmationFile = isset($options['checkoutConfirmationFile']) ? $options['checkoutConfirmationFile'] : null;
 		if( $checkoutConfirmationFile === true ) $checkoutConfirmationFile = "{$checkoutDir}/.checkout-completed";
 		if( $checkoutConfirmationFile !== null and file_exists($checkoutConfirmationFile) ) return $checkoutDir;
@@ -95,6 +126,12 @@ class TFMPM_GitCheckoutUtil
 				}
 			}
 		}
+
+		if( $sparsenessConfig !== null ) {
+			if( is_string($sparsenessConfig) ) $sparsenessConfig = explode("\n", $sparsenessConfig);
+			$ruleset = TOGoS_GitIgnore_Ruleset::loadFromStrings($sparsenessConfig);
+			$this->enforceSparseness($ruleset, $checkoutDir);
+		}
 		
 		if( isset($options['shouldExist']) ) {
 			$shouldExist = is_array($options['shouldExist']) ? $options['shouldExist'] : array($options['shouldExist']);
@@ -114,5 +151,21 @@ class TFMPM_GitCheckoutUtil
 		}
 
 		return $checkoutDir;
+	}
+
+	public function gitCheckoutCopy($sourceGitDir, $commitId, $checkoutDir, array $options=array()) {
+		$existedAlready = is_dir($checkoutDir);
+		$success = false;
+		try {
+			$result = $this->_gitCheckoutCopy($sourceGitDir, $commitId, $checkoutDir, $options);
+			$success = true;
+			return $result;
+		} finally {
+			if( !$success ) {
+				fwrite(STDERR, "Checkout failed; deleting $checkoutDir...");
+				$this->rmRf($checkoutDir);
+				fwrite(STDERR, "done\n");
+			}
+		}
 	}
 }

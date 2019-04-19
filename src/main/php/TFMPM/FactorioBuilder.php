@@ -27,7 +27,7 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 				'data/*',
 				'!*.png',
 				'!*.ttf',
-				'!license IBMPlex.txt', // Filenames with spaces cause problems for my Makefiles.
+				'!license*.txt', // Filenames with spaces cause problems for my Makefiles.
 				'!data/base/sound',
 				'!data/core/sound',
 			),
@@ -41,7 +41,7 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 				'*',
 				'!data/**.png', // This is also used by unit tests, for which tests/**.png are still needed.
 				'!data/**.ttf',
-				'!license IBMPlex.txt', // Filenames with spaces cause problems for my Makefiles.
+				'!license*.txt', // Filenames with spaces cause problems for my Makefiles.
 				'!data/base/sound',
 				'!data/core/sound',
 			),
@@ -62,6 +62,7 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 			// and the CMake scripts will take care of it
 		}
 		if( !is_dir($dir."/docker/factorio-headless") ) {
+			fwrite(STDERR, $dir."/docker/factorio-headless"." doesn't exist!");
 			throw new Exception("Version $commitId doesn't have a docker/factorio-headless directory; we'll need some extra smarts in order to build it...");
 		}
 		$buildId = "{$commitId}-headless";
