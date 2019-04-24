@@ -124,4 +124,63 @@ class TFMPM_MapPreviewManager extends TFMPM_Component
 		}
 		return $this->selfCommitId == '' ? null : $this->selfCommitId;
 	}
+
+	public function generateMapPreview($params, $runOptions) {
+		$selfGitDir = "{$this->registry->projectRootDir}/.git";
+		$blobRepoDir = getenv('HOME')."/.ccouch";
+		$metalogDir = "{$this->registry->projectRootDir}/logs";
+		if( !is_dir($metalogDir) ) mkdir($metalogDir, 0777, true);
+		
+		$runner = $this->factorioRunner;
+		$systemUtil = $this->systemUtil;
+		
+		if( $runOptions['beLazy'] ) {
+			$filters = array();
+			foreach( $params as $k=>$v ) {
+				if( $k == 'reportQuantities' ) continue; // Can't filter on that!
+				$filters[$k] = array($v);
+			}
+			$maps = $this->mapModel->getMaps($filters);
+			if( count($maps) > 0 ) {
+				if( $runOptions['verbosity'] >= 200 ) {
+					fwrite(STDERR, "Skipping; already generated: ");
+					fwrite(STDERR, json_encode($params,JSON_PRETTY_PRINT).": ");
+					fwrite(STDERR, json_encode($maps,JSON_PRETTY_PRINT)."\n");
+				} else if( $runOptions['verbosity'] >= 100 ) {
+					fwrite(STDERR, "Skipping; already generated!\n");
+				}
+				return;
+			}
+		}
+		
+		$selfCommitId = $this->getTfmpmCommitId();
+		
+		$metalogFile = $metalogDir."/".date('Y_m_d').".jsonl";
+		$systemUtil->mkparentDirs($metalogFile);
+		
+		$startTime = date('c');
+		$result = $runner->generateMapPreview($params);
+		$endTime = date('c');
+		$metalogRecord = array(
+			'startTime' => $startTime,
+			'endTime' => $endTime,
+			'tfmpmCommitId' => $selfCommitId,
+			'generationParams' => $params,
+			'generationResult' => $result,
+		);
+		
+		// ".jsonl" extension as recommended by http://jsonlines.org/
+		
+		$metalogStream = fopen( $metalogFile, "ab" );
+		fwrite($metalogStream, json_encode($metalogRecord)."\n");
+		fclose($metalogStream);
+		
+		if( $runOptions['verbosity'] >= 100 ) {
+			echo json_encode($metalogRecord,JSON_PRETTY_PRINT), "\n";
+		}
+		
+		$this->mapRecordInserter->open();
+		$this->mapRecordInserter->item($metalogRecord);
+		$this->mapRecordInserter->close();
+	}
 }
