@@ -69,8 +69,9 @@ class TFMPM_GitCheckoutUtil
 			'ruleset' => $ruleset,
 			'invertRulesetResult' => false,
 			'defaultResult' => false,
-			'includeDirectories' => true,
+			'includeDirectories' => false,
 			'callback' => function($f, $shouldInclude) use ($dir) {
+				if( preg_match('#^\.git(?:|$)#', $f) ) return;
 				if( !$shouldInclude ) {
 					if( $dir == '' or $f == '' ) {
 						throw new Exception("Refusing to rmRf «{$dir}» / «{$f}» because one of those path segments is empty and that could be dangerous");
