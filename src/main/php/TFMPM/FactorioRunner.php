@@ -27,6 +27,10 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 			$mapGenSettings = $params['mapGenSettings'];
 			unset($params['mapGenSettings']);
 		}
+		if( is_array($mapGenSettings) ) {
+			ksort($mapGenSettings);
+			$mapGenSettings = json_encode($mapGenSettings);
+		}
 		if( isset($params['mapGenSettingsFile']) ) {
 			$mapGenSettings = file_get_contents($this->getFile($params['mapGenSettingsFile']));
 			unset($params['mapGenSettingsFile']);
