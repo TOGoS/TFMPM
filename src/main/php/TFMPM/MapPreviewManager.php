@@ -140,16 +140,27 @@ class TFMPM_MapPreviewManager extends TFMPM_Component
 				if( $k == 'reportQuantities' ) continue; // Can't filter on that!
 				$filters[$k] = array($v);
 			}
-			$maps = $this->mapModel->getMaps($filters);
-			if( count($maps) > 0 ) {
+			$mapGenerations = $this->mapModel->getMaps($filters);
+			if( count($mapGenerations) > 0 ) {
 				if( $runOptions['verbosity'] >= 200 ) {
 					fwrite(STDERR, "Skipping; already generated: ");
 					fwrite(STDERR, json_encode($params,JSON_PRETTY_PRINT).": ");
-					fwrite(STDERR, json_encode($maps,JSON_PRETTY_PRINT)."\n");
+					fwrite(STDERR, json_encode($mapGenerations,JSON_PRETTY_PRINT)."\n");
 				} else if( $runOptions['verbosity'] >= 100 ) {
 					fwrite(STDERR, "Skipping; already generated!\n");
 				}
-				return;
+				foreach( $mapGenerations as $mapGeneration ) {
+					return array(
+						'startTime' => $mapGeneration['generationStartTime'],
+						'endTime' => $mapGeneration['generationEndTime'],
+						'tfmpmCommitId' => $mapGeneration['tfmpmCommitId'],
+						'generationParams' => $params,
+						'generationResult' => array(
+							'mapFile' => $mapGeneration['mapImageUrn'],
+							'logFile' => $mapGeneration['logUrn'],
+						),
+					);
+				}
 			}
 		}
 		
@@ -182,5 +193,6 @@ class TFMPM_MapPreviewManager extends TFMPM_Component
 		$this->mapRecordInserter->open();
 		$this->mapRecordInserter->item($metalogRecord);
 		$this->mapRecordInserter->close();
+		return $metalogRecord;
 	}
 }
