@@ -1,0 +1,216 @@
+#!/usr/bin/env php
+<?php
+
+$selfDir = dirname(__DIR__);
+require_once "$selfDir/init-environment.php";
+require_once "$selfDir/init-error-handling.php";
+
+function expressionToFunction($expression, array $ctx) {
+	switch( $expression['classRef'] ) {
+	case "http://ns.nuke24.net/TOGVM/Expressions/LiteralNumber":
+		$value = +$expression['literalValue'];
+		return function($x) use ($value) { return $value; };
+	case "http://ns.nuke24.net/TOGVM/Expressions/Variable":
+		if( $expression['variableName'] == $ctx['parameterName'] ) {
+			return function($x) { return $x; };
+		} else {
+			throw new Exception("Undefined expression variable '$varName'");
+		}
+	case "http://ns.nuke24.net/TOGVM/Expressions/FunctionApplication":
+		$argumentFunctions = array();
+		foreach( $expression['arguments'] as $k=>$arg ) {
+			$argumentFunctions[$k] = expressionToFunction($arg, $ctx);
+		}
+		switch( $expression['functionRef'] ) {
+		case "http://ns.nuke24.net/TOGVM/Functions/Divide":
+			if( count($argumentFunctions) != 2 ) throw new Exception("'Divide' expects 2 arguments, but got ".count($argumentFunctions));
+			return function($x) use ($argumentFunctions) {
+				return $argumentFunctions[0]($x) / $argumentFunctions[1]($x);
+			};
+		case "http://ns.nuke24.net/TOGVM/Functions/Exponentiate":
+			if( count($argumentFunctions) != 2 ) throw new Exception("'Exponentiate' expects 2 arguments, but got ".count($argumentFunctions));
+			return function($x) use ($argumentFunctions) {
+				return pow($argumentFunctions[0]($x), $argumentFunctions[1]($x));
+			};
+		default:
+			throw new Exception("Unsupported function: '{$expression['functionRef']}'");
+		}
+	default:
+		throw new Exception("Unsupported expression type: '{$expression['classRef']}'");
+	}
+}
+
+function parseAnimationValues($valuesStr, $propertyName) {
+	$transformStrs = explode('|', $valuesStr);
+	$valuesStr = array_shift($transformStrs);
+	$transformationParameterName = 'x';
+	$transformationExpression = array(
+		'classRef' => "http://ns.nuke24.net/TOGVM/Expressions/Variable",
+		'variableName' => $transformationParameterName
+	);
+	for( $i=0; $i < count($transformStrs); ++$i ) {
+		$transformStr = $transformStrs[$i];
+		if( $transformStr == 'invert' ) {
+			$transformationExpression = array(
+				'classRef' => "http://ns.nuke24.net/TOGVM/Expressions/FunctionApplication",
+				'functionRef' => "http://ns.nuke24.net/TOGVM/Functions/Divide",
+				'arguments' => array(
+					array( 'classRef' => "http://ns.nuke24.net/TOGVM/Expressions/LiteralNumber", 'literalValue' => 1),
+					$transformationExpression,
+				)
+			);
+			continue;
+		}
+		if( preg_match('/^exp\((\d+(?:\.\d+)?)\)$/', $transformStr, $bif) ) {
+			$base = +$bif[1];
+			$transformationExpression = array(
+				'classRef' => "http://ns.nuke24.net/TOGVM/Expressions/FunctionApplication",
+				'functionRef' => "http://ns.nuke24.net/TOGVM/Functions/Exponentiate",
+				'arguments' => array(
+					array( 'classRef' => "http://ns.nuke24.net/TOGVM/Expressions/LiteralNumber", 'literalValue' => $base),
+					$transformationExpression,
+				)
+			);
+			continue;
+		}
+		throw new Exception("Unrecognized transformation: '$transformStr'");
+	}
+	
+	return array(
+		'propertyName' => $propertyName,
+		'transformationExpression' => $transformationExpression,
+		'transformationFunction' => expressionToFunction($transformationExpression, array(
+			'parameterName'=>$transformationParameterName
+		)),
+		'values' => explode(',',$valuesStr),
+	);
+}
+
+
+$MPM = $TFMPM_Registry->mapPreviewManager;
+$FR = $TFMPM_Registry->factorioRunner;
+
+$animationFrameCount = null;
+$animationDuration = null;
+$frameDuration = null;
+$animationVariables = array();
+$remainingArgv = array();
+
+foreach( $argv as $arg ) {
+	if( preg_match('/^--animation-frames=(\d+)$/', $arg, $bif) ) {
+		$animationFrameCount = +$bif[1];
+	} else if( preg_match('/^--animation-duration=(\d+(?:\.\d+)?)$/', $arg, $bif) ) {
+		$animationDuration = +$bif[1];
+	} else if( preg_match('/^--frame-duration=(\d+(?:\.\d+)?)$/', $arg, $bif) ) {
+		$frameDuration = +$bif[1];
+	} else if( preg_match('/^--animate=([^=]+)=([^=]+)$/', $arg, $bif) ) {
+		// Hidden variable
+		$animationVariables['.'.$bif[1]] = parseAnimationValues($bif[2], $bif[1]);
+	} else if( preg_match('/^--animate=([^=]+)=([^=]*)=([^=]+)$/', $arg, $bif) ) {
+		$animationVariables[$bif[1]] = parseAnimationValues($bif[3], $bif[2]);
+	} else if( preg_match('/^--animate=(.*)$/', $arg, $bif) ) {
+		fwrite(STDERR, "Invalid animation specification: '{$bif[1]}'");
+		exit(1);
+	} else {
+		$remainingArgv[] = $arg;
+	}
+}
+
+$options = array(
+	'beLazy' => true,
+	'verbosity' => 0
+);
+$baseParams = $MPM->parseMapGenerationParamsFromCommandLine($remainingArgv, $options);
+
+$baseMapGenSettings = array();
+if( isset($baseParams['mapGenSettingsUrn']) ) {
+	$baseMapGenSettingsJson = $TFMPM_Registry->blobRepository->getBlob($baseParams['mapGenSettingsUrn']);
+	$baseMapGenSettings = json_decode($baseMapGenSettingsJson, true);
+}
+
+if( $animationFrameCount === null and $animationDuration !== null and $frameCount !== null ) {
+	$animationFrameCount = $animationDuration / $frameCount;
+}
+if( $frameDuration === null ) {
+	if( $animationDuration !== null and $animationFrameCount !== null ) {
+		$frameDuration = $animationDuration / $animationFrameCount;
+	} else {
+		$frameDuration = 1/10;
+	}
+}
+if( $animationFrameCount === null ) {
+	$maxVariableValueCount = 1;
+	foreach( $animationVariables as $av ) {
+		$maxVariableValueCount = max($maxVariableValueCount, count($av['values']));
+	}
+}
+
+function lerp($a, $b, $ratio) {
+	return $a * (1 - $ratio) + $b * $ratio;
+}
+
+$frames = array();
+$maxLabelValueLength = 0;
+$maxLabelKeyLength = 0;
+
+foreach( $animationVariables as $niceName => &$av ) {
+	$av['includedInDisplay'] = false;
+	if( $niceName[0] != '.' ) {
+		$av['includedInDisplay'] = true;
+		$maxLabelKeyLength = max($maxLabelKeyLength, strlen($niceName));
+	}
+	$av['includedInMapGenSettings'] = strlen($av['propertyName']) != 0;
+}; unset($av);
+
+for( $f=0; $f<$animationFrameCount; ++$f ) {
+	$labelValues = array();
+	$mapGenSettings = $baseMapGenSettings;
+	
+	foreach( $animationVariables as $niceName => $av ) {
+		$valueIndex = $f * (count($av['values'])-1) / $animationFrameCount;
+		$prevValueIndex = floor($valueIndex);
+		$nextValueIndex = ceil($valueIndex);
+		//if( $nextValueIndex >= count($av['values']) ) $nextValueIndex = count($av['values'])-1;
+		$prevRawValue = $av['values'][$prevValueIndex];
+		$nextRawValue = $av['values'][$nextValueIndex];
+		$rawValue = lerp($prevRawValue, $nextRawValue, $valueIndex - $prevValueIndex);
+		$value = $av['transformationFunction']($rawValue);
+
+		if( $av['includedInDisplay'] ) {
+			$labelValues[$niceName] = sprintf("%0.3f", $value);
+			$maxLabelValueLength = max($maxLabelValueLength, strlen($labelValues[$niceName]));
+		}
+		if( $av['includedInMapGenSettings'] ) {
+			$mapGenSettings['property_expression_names'][$av['propertyName']] = $value;
+		}
+	}
+	$frames[] = array(
+		'duration' => $frameDuration,
+		'labelValues' => $labelValues,
+		'mapGenSettings' => $mapGenSettings
+	);
+}
+
+
+foreach( $frames as &$frame ) {
+	$frameParams = $baseParams;
+	$frameParams['mapGenSettings'] = $frame['mapGenSettings'];
+	$normalizedFrameParams = $FR->normalizeParams($frameParams);
+	$logRecord = $MPM->generateMapPreview($normalizedFrameParams, $options);
+	$frame['imageUrn'] = $logRecord['generationResult']['mapFile'];
+}; unset($frame);
+
+foreach( $frames as $frame ) {
+	$labelTexts = array();
+	foreach( $frame['labelValues'] as $k=>$v ) {
+		$labelTexts[] = sprintf("% {$maxLabelKeyLength}s: %{$maxLabelValueLength}s", $k, $v);
+	}
+	echo "#EXTINF:".$frame['duration'].", ".implode("\x1F", $labelTexts)."\n";
+	echo "#URN:{$frame['imageUrn']}\n";
+	$blob = $TFMPM_Registry->blobRepository->getBlob($frame['imageUrn']);
+	if( $blob instanceof Nife_FileBlob ) {
+		echo $blob->getFile(), "\n";
+	} else {
+		echo "{$frame['imageUrn']}\n";
+	}
+}

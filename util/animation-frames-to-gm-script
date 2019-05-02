@@ -1,0 +1,140 @@
+#!/usr/bin/env php
+<?php
+
+$selfDir = dirname(__DIR__);
+require_once "$selfDir/init-environment.php";
+require_once "$selfDir/init-error-handling.php";
+
+class TFMPM_FrameParser extends TOGoS_PHPipeable_AbstractFilter
+{
+	protected $defaultFrame = array(
+		'duration' => 1/10,
+		'labels' => array(),
+	);
+	protected $currentFrame;
+	protected function initializeEmptyFrame() {
+		$this->currentFrame = $this->defaultFrame;
+	}
+	protected function flushItem() {
+		$this->emitItem($this->currentFrame);
+		$this->initializeEmptyFrame();
+	}
+
+	public function open(array $fileInfo=array()) {
+		$this->initializeEmptyFrame();
+		parent::open($fileInfo);
+	}
+	public function item($line, array $metadata=array()) {
+		if( preg_match('/^#EXTINF:(\d+(?:\.\d+)?)(?:,\s*(.*))/', $line, $bif) ) {
+			$this->currentFrame['duration'] = $bif[1];
+			$labelsStr = $bif[2];
+			if( !empty($labelsStr) ) {
+				$this->currentFrame['labels'] = preg_split('/\s*\x1F\s*/',$labelsStr);
+			}
+		} else if( preg_match('/^[^#].*$/', $line, $bif) ) {
+			$this->currentFrame['imageFile'] = $line;
+			$this->flushItem();
+		} else if( preg_match('/^(?:#.*)?$/', $line, $bif) ) {
+			// Empty line! Ignore!
+		}
+	}
+}
+
+/* How to overlay text and make an animation with GM
+
+gm convert -loop 0 -delay 100 -pointsize 32 -font Courier -fill white -draw "text 4,32 'Henlo: 123.45'" -draw "text 4,64 'Starf: 456.78'" datastore/data/factorio-map-previews/ZX/ZXBZXKWKHVO56U52MNGT4R3J4KZE3OOI -delay 50 -fill white -draw "text 4,32 'Henlo: 100.75'" -draw "text 4,64 'Starf:   0.12'" datastore/data/factorio-map-previews/ZZ/ZZKKWMPOBQ5HVSOCDDAAQ6ST6HDXSK3J henlo.gif
+
+*/
+
+class TFMPM_CommandEmitter extends TOGoS_PHPipeable_AbstractFilter
+{
+	protected $wordsWritten = 0;
+	public function item($word, array $metadata=array()) {
+		if( $this->wordsWritten ) $this->emitItem(" ");
+		$this->emitItem(escapeshellarg($word));
+		++$this->wordsWritten;
+	}
+	public function close(array $metadata=array()) {
+		$this->emitItem("\n");
+		$this->wordsWritten = 0;
+		return array();
+	}
+}
+
+class TFMPM_GMAnimationScriptEmitter extends TOGoS_PHPipeable_AbstractFilter
+{
+	public function item($frame, array $metadata=array()) {
+		$labelX = 4;
+		$labelY = 0;
+		$labelLineHeight = 32;
+
+		$this->emitItem("-delay");
+		$this->emitItem(round($frame['duration'] * 100));
+		$this->emitItem("-pointsize");
+		$this->emitItem($labelLineHeight);
+		$this->emitItem("-font");
+		$this->emitItem("Courier");
+		$this->emitItem("-fill");
+		$this->emitItem("white");
+		foreach( $frame['labels'] as $label ) {
+			$labelY += $labelLineHeight;
+			$this->emitItem("-draw");
+			$label = str_replace("'","\'",$label);
+			$this->emitItem("text $labelX,$labelY '$label'");
+		}
+		$this->emitItem($frame['imageFile']);
+	}
+}
+
+$outputFilename = null;
+for( $i = 1; $i < count($argv); ++$i ) {
+	$arg = $argv[$i];
+	if( preg_match('/^--output-image-file=(.*)$/', $arg, $bif) ) {
+		$outputFilename = $bif[1];
+	} else {
+		fwrite(STDERR, "Unrecognized argument: '$arg'\n");
+		exit(1);
+	}
+}
+
+if( $outputFilename == null ) {
+	fwrite(STDERR, "No --output-image-file=... specified\n");
+	exit(1);
+}
+
+class TFMPM_StreamWriter2 implements TOGoS_PHPipeable_Sink
+{
+	protected $stream;
+	public function __construct($stream) {
+		$this->stream = $stream;
+	}
+	public function open(array $fileInfo=array()) { }
+	public function item($str, array $metadata=array()) {
+		fwrite($this->stream, $str);
+	}
+	public function __invoke($str, array $metadata=array()) {
+		$this->item($str, $metadata);
+	}
+	public function close(array $fileInfo=array()) {
+		return array();
+	}
+}
+
+$streamWriter = new TFMPM_StreamWriter2(STDOUT);
+$commandEmitter = new TFMPM_CommandEmitter();
+$gmAnimationScriptEmitter = new TFMPM_GMAnimationScriptEmitter();
+$frameParser = new TFMPM_FrameParser();
+
+$commandEmitter->pipe($streamWriter);
+$gmAnimationScriptEmitter->pipe($commandEmitter);
+$frameParser->pipe($gmAnimationScriptEmitter);
+
+$frameParser->open();
+$commandEmitter->item("gm");
+$commandEmitter->item("convert");
+while( ($line = fgets(STDIN)) !== false ) {
+	$line = trim($line);
+	$frameParser->item($line);
+}
+$commandEmitter->item($outputFilename);
+$frameParser->close();
