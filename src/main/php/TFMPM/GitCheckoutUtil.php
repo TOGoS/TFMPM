@@ -99,7 +99,10 @@ class TFMPM_GitCheckoutUtil
 		
 		$checkoutGitDir = $checkoutDir."/.git";
 		$this->systemUtil->mkdir($checkoutDir);
-		$this->systemUtil->runCommand("cp -al ".escapeshellarg($sourceGitDir)." ".escapeshellarg($checkoutGitDir));
+		$this->systemUtil->runCommand(array("cp","-al",$sourceGitDir,$checkoutGitDir));
+		if( !is_dir($checkoutGitDir) ) {
+			throw new Exception("$checkoutGitDir does not exist after copying from $sourceGitDir");
+		}
 		$git = "git --git-dir=".escapeshellarg($checkoutGitDir)." --work-tree=".escapeshellarg($checkoutDir);
 		$this->systemUtil->runCommand("$git config core.sparseCheckout true");
 		if( $sparsenessConfig !== null ) {
