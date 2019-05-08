@@ -9,12 +9,15 @@ map_scales="1 2 4 8"
 map_gen_settings_files="/dev/null"
 map_width=1024
 map_offsets="0,0"
+lazy_arg=--lazy
 
 while [[ $# > 0 ]]
 do
     key="$1"
     if [[ $key =~ --factorio-commit-id=(.*) ]] ; then
 	factorio_commit_ids="${BASH_REMATCH[1]}"
+    elif [[ $key =~ --not-lazy ]] ; then
+	lazy_arg=""
     elif [[ $key =~ --data-commit-id=(.*) ]] ; then
 	data_commit_ids="${BASH_REMATCH[1]}"
     elif [[ $key =~ --seed=(.*) ]] ; then
@@ -53,7 +56,7 @@ for fcommit in $factorio_commit_ids ; do
 		fi
 		for seed in $mapgen_seeds ; do
 		    for scale in $map_scales ; do
-			util/generate-map-preview -v --lazy \
+			util/generate-map-preview -v $lazy_arg \
 						  --report-quantities=standard-stuff \
 						  --factorio-commit-id=$fcommit \
 						  ${mgs_arg} \
