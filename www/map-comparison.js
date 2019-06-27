@@ -217,7 +217,15 @@
 	MapComparisonUI.prototype.showMap = function(mapKey) {
 		this.currentMapKey = mapKey;
 		let map = this.maps[mapKey];
-		this.mapImageElement.setAttribute('src',this.mapImageUrl(map));
+		let mapImageElement = this.mapImageElement;
+		let mapImageUrl = this.mapImageUrl(map);
+		let blankImageUrl = 'data:image/png,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8AgCQAEHwEaXsb4awAAAABJRU5ErkJggg==';
+		mapImageElement.setAttribute('src',mapImageUrl)
+		if( !mapImageElement.complete ) {
+			// Set it to blank to make sure the old image doesn't show in the meantime.
+			mapImageElement.setAttribute('src',blankImageUrl);
+			setTimeout(function() { mapImageElement.setAttribute('src',mapImageUrl) }, 0);
+		}
 		this.rebuildMapInfoView();
 		this.updateCursorCoordinates();
 	};
