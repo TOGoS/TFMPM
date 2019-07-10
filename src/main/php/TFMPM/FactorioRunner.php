@@ -153,10 +153,15 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 
 		$dataDir = null;
 		if( $factorioCommitId != $dataCommitId ) {
-			$dataDir = $this->factorioBuilder->checkOutFactorioHeadlessData($dataCommitId)."/data";
-			if( empty($dataDir) ) throw new Exception("checkOutFactorioHeadlessData returned blank path!");				
-			$dataDir = $this->systemUtil->resolvePath($dataDir); // So that Docker will accept it
-			if( empty($dataDir) ) throw new Exception("SystemUtil::resolvePath returned blank path for checked-out data directory!");
+			$dataCheckoutDir = $this->factorioBuilder->checkOutFactorioHeadlessData($dataCommitId);
+			if( empty($dataCheckoutDir) ) throw new Exception("checkOutFactorioHeadlessData returned blank path!");				
+			$dataCheckoutDir = $this->systemUtil->resolvePath($dataCheckoutDir); // So that Docker will accept it
+			if( empty($dataCheckoutDir) ) throw new Exception("SystemUtil::resolvePath returned blank path for checked-out data directory!");
+			$dataDir = $dataCheckoutDir."/data";
+
+			if( !is_dir($dataDir) ) {
+				throw new Exception("Data directory for commit '$dataCommitId', '$dataDir', doesn't exist!");
+			}
 		}
 
 		// Different images allow (non-package builds) or require (package builds)
