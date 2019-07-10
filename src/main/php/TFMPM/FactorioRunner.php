@@ -150,6 +150,9 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 		$slopeShading = isset($params['slopeShading']) ? $params['slopeShading'] : 0;
 
 		$factorioDockerImageId = $this->factorioBuilder->ensureFactorioHeadlessDockerImageExists($factorioCommitId);
+		if( empty($factorioDockerImageId) ) {
+			throw new Exception("Factorio docker image ID returned from ensureFactorioHeadlessDockerImageExists is empty!");
+		}
 
 		$dataDir = null;
 		if( $factorioCommitId != $dataCommitId ) {
