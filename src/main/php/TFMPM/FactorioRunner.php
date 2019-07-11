@@ -65,6 +65,9 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 	public function getFactorioDockerImageProperties($factorioDockerImageId) {
 		$imageInfo = $this->dockerImageMetadataCache->getImageMetadata($factorioDockerImageId);
 		$this->log("Retrieved info on Docker image '$factorioDockerImageId': ".json_encode($imageInfo));
+		if( $imageInfo === false or $imageInfo === null ) {
+			throw new Exception("No metadata for docker image '$factorioDockerImageId'; can't derive anything!");
+		}
 		$explicitWorkingDir = null;
 		if( isset($imageInfo['Config']['Labels']['factorio_data_directory']) ) {
 			$containedFactorioDataDir = $imageInfo['Config']['Labels']['factorio_data_directory'];
