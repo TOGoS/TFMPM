@@ -26,4 +26,9 @@ extends TFMPM_Component
 		$info = $this->getImageMetadata($tag);
 		return !empty($info);
 	}
+
+	public function invalidate($tag=null) {
+		if( $tag === null ) $this->imageMetadatas = array();
+		else unset($this->imageMetadatas[$tag]);
+	}
 }

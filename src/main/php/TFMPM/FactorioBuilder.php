@@ -53,6 +53,22 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 		));
 	}
 
+	/**
+	 * Checks that the docker image ID file exists, reads it,
+	 * invalidates the docker image metadata cache for the ID and tag,
+	 * and returns array of 'id' => ... and 'tag' => ...
+	 */
+	protected function newDockerImageAndTagFromIdFile($file, $tag) {
+		$id = file_get_contents($file);
+		$id = trim($id);
+		if( empty($id) ) {
+			throw new Exception("Failed to read docker image ID from $file");
+		}
+		$this->dockerImageMetadataCache->invalidate($id);
+		$this->dockerImageMetadataCache->invalidate($tag);
+		return array('id' => $id, 'tag' => $tag);
+	}
+
 	public function buildFactorioHeadlessDockerImage($commitId) {
 		$dir = $this->checkOutFactorioHeadless($commitId);
 		if( file_exists("$dir/Makefile") ) {
@@ -67,10 +83,7 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 		}
 		$buildId = "{$commitId}-headless";
 		$this->systemUtil->runCommand(array('make',"build_id={$buildId}",'-C',$dir."/docker/factorio-headless"));
-		return array(
-			'id' => trim(file_get_contents($dir."/docker/factorio-headless/docker-image-id")),
-			'tag' => "factorio/factorio:{$buildId}"
-		);
+		return $this->newDockerImageAndTagFromIdFile($dir."/docker/factorio-headless/docker-image-id", "factorio/factorio:{$buildId}");
 	}
 
 	public function ensureFactorioHeadlessDockerImageExists($commitId) {
@@ -95,10 +108,7 @@ class TFMPM_FactorioBuilder extends TFMPM_Component
 		}
 		$buildId = "{$commitId}";
 		$this->systemUtil->runCommand(array('make',"build_id={$buildId}",'-C',$dir."/docker/factorio-test"));
-		return array(
-			'id' => trim(file_get_contents($dir."/docker/factorio-test/docker-image-id")),
-			'tag' => "factorio/factorio:{$buildId}"
-		);
+		return $this->newDockerImageAndTagFromIdFile($dir."/docker/factorio-test/docker-image-id", "factorio/factorio:{$buildId}");
 	}
 
 	public function ensureFactorioTestDockerImageExists($commitId) {
