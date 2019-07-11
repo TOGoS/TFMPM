@@ -2,6 +2,9 @@
 
 class TFMPM_MapRecordInserter extends TFMPM_Component
 {
+	public $badTfmpmCommitIds = array();
+	public $countOfRecordsIgnoredDueToBadTfmpmCommits = array();
+	
 	protected function buildInsertQuery( $tableName, $values ) {
 		$params = array();
 		$columnNames = array();
@@ -138,6 +141,10 @@ class TFMPM_MapRecordInserter extends TFMPM_Component
 	public function open(array $metadata=array()) { }
 	
 	public function item($rec, array $metadata=array()) {
+		if( isset($this->badTfmpmCommitIds[$rec['tfmpmCommitId']]) ) {
+			++$this->countOfRecordsIgnoredDueToBadTfmpmCommits;
+			return;
+		}
 		$tabVals = $this->munge($rec, $metadata);
 		$inserts = $this->buildInsertQueries($tabVals);
 		foreach( $inserts as $insert ) {

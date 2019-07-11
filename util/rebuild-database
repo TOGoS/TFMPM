@@ -26,6 +26,24 @@ class TFMPM_DatabaseUpgrader extends TFMPM_Component
 $TFMPM_Registry->databaseUpgrader->runUpgrades();
 $inserter = $TFMPM_Registry->mapRecordInserter;
 
+$badCommitListFile = "$selfDir/bad-tfmpm-commits.lst";
+$badCommitIds = array();
+if( file_exists($badCommitListFile) ) {
+	$fh = fopen( $badCommitListFile, "rb" );
+	if( $fh === false ) throw new Exception("Failed to open $badCommitListFile for reading");
+	while( ($line = fgets($fh)) ) {
+		$line = trim($line);
+		if( $line == '' or $line[0] == '#' ) continue;
+		if( preg_match('/^[0-9a-f]{40}$/',$line) ) {
+			$badCommitIds[$line] = $line;
+		} else {
+			throw new Exception("Weird line in $badCommitListFile doesn't look like a git commit ID: «$line»");
+		}
+	}
+	fclose($fh);
+}
+$inserter->badTfmpmCommitIds = $badCommitIds;
+
 $errors = array();
 $logFiles = glob("logs/*.jsonl");
 $inserter->log("Processing log files...");
@@ -64,4 +82,5 @@ if( count($errors) > 0 ) {
 		fwrite(STDERR, "  $pfx{$err['message']}\n");
 	}
 }
-// TODO: Scan log files, insert rex
+
+fwrite(STDERR, count($inserter->countOfRecordsIgnoredDueToBadTfmpmCommits)". records ignored due to bad TFMPM commits\n");
