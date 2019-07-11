@@ -64,6 +64,7 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 
 	public function getFactorioDockerImageProperties($factorioDockerImageId) {
 		$imageInfo = $this->dockerImageMetadataCache->getImageMetadata($factorioDockerImageId);
+		$this->log("Retrieved info on Docker image '$factorioDockerImageId': ".json_encode($imageInfo));
 		$explicitWorkingDir = null;
 		if( isset($imageInfo['Config']['Labels']['factorio_data_directory']) ) {
 			$containedFactorioDataDir = $imageInfo['Config']['Labels']['factorio_data_directory'];
@@ -73,10 +74,12 @@ class TFMPM_FactorioRunner extends TFMPM_Component
 			$explicitWorkingDir = "/opt/bin/Factorio";
 			$containedFactorioDataDir = $explicitWorkingDir . "/data";
 		}
-		return array(
+		$info = array(
 			'explicitWorkingDir' => $explicitWorkingDir,
 			'dataDir' => $containedFactorioDataDir,
 		);
+		$this->log("Derived info for Docker image '$factorioDockerImageId': ".json_encode($info));
+		return $info;
 	}
 
 	public function runFactorio(array $params) {
